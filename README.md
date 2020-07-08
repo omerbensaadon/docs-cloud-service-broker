@@ -18,7 +18,7 @@ Then, if necessary, immediately cherry-pick/copy any changes that you want to pu
 
 ## Book Repo
 
-The book repo associated with this content is [pivotal-cf/docs-book-cloud-service-broker](https://github.com/pivotal-cf/docs-book-cloud-service-broker).
+The book repo associated with this content is [pivotal-cf/docs-book-csb](https://github.com/pivotal-cf/docs-book-csb).
 
 ### Staging Environment
 
