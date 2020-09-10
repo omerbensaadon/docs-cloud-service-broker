@@ -7,53 +7,63 @@ owner: Partners
 
 **If this product is in beta, keep and edit the warning note below.**
 <p class="note warning">
-<strong>Warning: </strong>
-The Cloud Service Broker for VMware Tanzu tile is currently in beta and is intended for evaluation and test purposes only.
-Do not use this product in a VMware Tanzu production environment.
+  <strong>Warning:</strong> The <%= vars.product_full %> tile is currently in beta and is intended
+  for evaluation and test purposes only.
+  Do not use this product in a VMware Tanzu production environment.
 </p>
 
-**This topic begins with a brief description of what the product tile (e.g. Cloud Service Broker for VMware Tanzu) does,
-whereas the Overview section below describes what the service itself (e.g. Apigee Edge) does. See below for an example.**
-
+**This topic begins with a brief description of what the product tile (e.g. <%= vars.product_full %>)
+does, whereas the Overview section below describes what the service itself (e.g. Apigee Edge) does.
+See below for an example.**
 
 **Note**: This description appears under **OVERVIEW** in the tile's listing on
-[Pivotal Network](http://network.pivotal.io).
+[<%= vars.product_network %>](http://network.pivotal.io).
 
-## <a id='overview'></a>Overview
+
+## <a id='overview'></a> Overview
 
 **The overview describes the service that your product offers to VMware Tanzu developers.
 Make sure to overview the features of the integration.
 Don't focus only on the overview of your product that is being integrated.
 See below for an example.**
 
-This documentation describes the Cloud Service Broker for VMware Tanzu. The Cloud Service Broker for VMware Tanzu enables platform operators to easily expose services to their developers from any public cloud with a Terraform provider. Cloud Service Broker is thoroughly extensible, and can expose new services or public clouds through the use of custom Brokerpaks.
+This documentation describes the <%= vars.product_full %>.
+The <%= vars.product_full %> enables platform operators to easily expose services to their developers
+from any public cloud with a Terraform provider.
+<%= vars.product_short %> is thoroughly extensible, and can expose new services or public clouds
+through the use of custom brokerpaks.
 
+**Note**: This overview appears under **OVERVIEW**, combined with the description above in the tile's
+listing on [<%= vars.product_network %>](http://network.pivotal.io).
 
-
-**Note**: This overview appears under **OVERVIEW**, combined with the description above in the tile's listing on
-[Pivotal Network](http://network.pivotal.io).
 
 ## <a id='features'></a>Key Features
 
 **Note**: This feature list appears under **FEATURES** in the tile's listing on
-[Pivotal Network](http://network.pivotal.io).
-Make sure you list the key features of the tile (the integration).
+[<%= vars.product_network %>](http://network.pivotal.io).
+Ensure you list the key features of the tile (the integration).
 We cannot accept a list of the key features of your product that we are integrating.
 
-Cloud Service Broker includes the following key features:
+<%= vars.product_short %> includes the following key features:
 
-- **Easily extensible and maintainable** Less talking to far flung teams, more getting work done.
-- **One common broker for all brokered services.** Cloud Service Broker decouples the service broker functionality from the catalog of services that it exposes.
-- **Credhub integration out-of-the-box** CredHub encrypts and manages all the secrets associated with your usage of cloud services.
-- **Community** When you expose a service via a [Brokerpak](https://github.com/pivotal/cloud-service-broker/blob/master/docs/brokerpak-intro.md), you can make it available to everyone who uses CSB and vice versa.
-- **Easy to migrate** Migrate existing services using [TF Import](https://www.terraform.io/docs/import/index.html)
-
-
+- **Easily extensible and maintainable:** <%# Needs specifics, however brief: What makes it easily extensible? What makes it easy to maintain? %> Less talking to far flung teams,
+more getting work done.
+- **One common broker for all brokered services:** <%= vars.product_short %> decouples the service
+broker functionality from the catalog of services that it exposes.
+- **Credhub integration out-of-the-box:** CredHub encrypts and manages all the secrets associated
+with your usage of cloud services.
+- **Community:** When you expose a service through a brokerpak, you can make it available to
+everyone who uses <%= vars.product_short %> and vice versa. For more information, see the
+[Brokerpak](https://github.com/pivotal/cloud-service-broker/blob/master/docs/brokerpak-intro.md)
+GitHub repository.
+- **Service migration through Terraform:** Easily migrate existing services through the import
+feature in Terraform. For more information, see the
+[Terraform documentation](https://www.terraform.io/docs/import/index.html).
 
 
 ## <a id="snapshot"></a>Product Snapshot
 
-The following table provides version and version-support information about Cloud Service Broker.
+The following table provides version and version-support information about <%= vars.product_short %>.
 
 <table class="nice">
     <th>Element</th>
@@ -71,20 +81,20 @@ The following table provides version and version-support information about Cloud
         <td>YOUR-SOFTWARE-COMPONENT-VERSION-NUMBER</td>
     </tr>
     <tr>
-        <td>Compatible Ops Manager version(s)</td>
-        <td>2.7+</td>
+        <td>Compatible <%= vars.ops_manager %> versions</td>
+        <td>2.7 and later</td>
     </tr>
     <tr>
-        <td>Compatible Pivotal Application Service version(s)</td>
+        <td>Compatible <%= vars.app_runtime_full %> version</td>
         <td>2.7</td>
     </tr>
         <tr>
-        <td>Compatible Pivotal Application Service for Windows version(s)</td>
+        <td>Compatible <%= vars.windows_runtime_full %> version</td>
         <td>2.7</td>
     </tr>
     <tr>
        <td>BOSH stemcell version</td>
-       <td>N/A</td>
+       <td><em>n/a</em></td>
     </tr>
     <tr>
         <td>IaaS support</td>
@@ -93,28 +103,33 @@ The following table provides version and version-support information about Cloud
 </table>
 
 
-## <a id="reqs"></a>Requirements
+## <a id="reqs"></a> Requirements
 
 **Provide any general or specific requirements, prerequisites, or dependencies here.
 A general requirement might be something like, "An AppDynamics account."
 A specific requirement might be something like, "Packaging Dependencies for Offline Buildpacks."**
 
-Cloud Service Broker has the following requirements:
+<%= vars.product_short %> has the following requirements:
 
-+ Access to the console on either AWS, Azure, or GCP
++ Access to the console <%# What console? CSB console? %> on Amazon Web Services (AWS), Azure, or
+Google Cloud Platform (GCP).
++ <%= vars.app_runtime_abbr %> installed on your platform of choice.
 
-+ PAS is installed on your platform of choice
 
-## <a id="limitations"></a>Limitations
+## <a id="limitations"></a> Limitations
 
-+ Currently, the broker can only be extended to additional IaaS or services by pulling the broker from Github. Custom brokerpaks are not supported by the tiles at this time.
++ Currently the broker can only be extended to additional IaaS or services by pulling the broker
+from GitHub. The tiles do not support custom brokerpaks at this time.
++ Currently the broker does not support cross-IaaS provisioning of service instances.
 
-+ Currently, the broker does not support cross-IaaS provisioning of service insrances
 
-## <a id="feedback"></a>Feedback
+## <a id="feedback"></a> Feedback
 
-If you have a feature request, questions, or information about an issue, please open an issue on our Github Repo: https://github.com/pivotal/cloud-service-broker or ask it in the channel #cloud-service-broker-beta on the Cloud Foundry Slack (https://slack.cloudfoundry.org/)
+If you have a feature request, questions, or information about an issue, please open an issue on
+the [cloud-service-broker](https://github.com/pivotal/cloud-service-broker) GitHub repository or post
+in the #cloud-service-broker-beta [Cloud Foundry Slack](https://slack.cloudfoundry.org/) channel.
 
-## <a id='license'></a>License
+
+## <a id='license'></a> License
 
 **List any license information here.**
