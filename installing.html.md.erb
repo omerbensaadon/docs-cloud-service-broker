@@ -34,11 +34,11 @@ To configure AZs and networks for <%= vars.product_short %>:
 
 1. Configure the fields as follows:
 
-| Field | Instructions |
-|-------|----------------|
-| Place singleton jobs in | Select the AZ in which the <%= vars.product_short %> broker VM runs. The broker runs as a singleton job. |
-| Balance other jobs in | Select the AZs in which other jobs can run. |
-| Network | Select a subnet for the <%= vars.product_short %> broker. This is typically the same subnet that includes the <%= vars.app_runtime_abbr %> or <%= vars.app_runtime_full %> component VMs. |
+    | Field | Instructions |
+    |-------|----------------|
+    | Place singleton jobs in | Select the AZ in which the <%= vars.product_short %> broker VM runs. The broker runs as a singleton job. |
+    | Balance other jobs in | Select the AZs in which other jobs can run. |
+    | Network | Select a subnet for the <%= vars.product_short %> broker. This is typically the same subnet that includes the <%= vars.app_runtime_abbr %> or <%= vars.app_runtime_full %> component VMs. |
 
 1. Click **Save**.
 
@@ -51,23 +51,23 @@ To configure the Azure credentials the broker requires to manage service instanc
 
 1. Configure the fields as follows:
 
-| Field | Instructions |
-|-------|--------------|
-| Subscription ID | Enter the Azure Subscription ID |
-| Tenant ID | Enter the Azure Tenant ID |
-| Client ID | Enter the Azure Client ID |
-| Client Secret | Enter the Azure Client Secret |
-| Default Resource Group | Enter the default resource group for Azure resources |
-| Location | Enter the default Azure location for resources |
-| Disable Automatic Service Registration | Select to disable automatic service registration |
+    | Field | Instructions |
+    |-------|--------------|
+    | Subscription ID | Enter the Azure Subscription ID |
+    | Tenant ID | Enter the Azure Tenant ID |
+    | Client ID | Enter the Azure Client ID |
+    | Client Secret | Enter the Azure Client Secret |
+    | Default Resource Group | Enter the default resource group for Azure resources |
+    | Location | Enter the default Azure location for resources |
+    | Disable Automatic Service Registration | Select to disable automatic service registration |
 
 1. Return to the <%= vars.ops_manager %> Installation Dashboard and click **Apply changes** to
 install <%= vars.product_short %> tile.
 
-**If needed, include additional configuration information below, as needed. For example:
-configuration options not required for installation but which could be useful for some users.<br><br>
+<%# If needed, include additional configuration information below, as needed. For example:
+configuration options not required for installation but which could be useful for some users.
 Typical topics include:
 * **Self-service:** Recommendations for how to configure plans in the tile so that users can choose
 the best options for themselves.
 * **High availability:** Instructions for configuring and deploying a service tile to be highly
-available.
+available. %>
