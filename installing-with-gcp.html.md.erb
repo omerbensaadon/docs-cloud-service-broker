@@ -1,0 +1,66 @@
+---
+title: Installing and Configuring Cloud Service Broker
+owner: Partners
+---
+
+<strong><%= modified_date %></strong>
+
+This topic describes how to install and configure Cloud Service Broker.
+
+##<a id='install'></a> Install and Configure Cloud Service Broker
+
+To install the Cloud Service Broker file on the Ops Manager Installation Dashboard, do the following:
+
+1. Download the product file from Pivotal Network.
+
+1. Navigate to the Ops Manager Installation Dashboard and click **Import a Product** to upload the product file.
+
+1. Under **Import a Product**, click **+** next to the version number of Cloud Service Broker.
+This adds the tile to your staging area.
+
+1. Click the newly added **Cloud Service Broker** tile.
+
+1. Configure AZs and Networks
+
+This section describes how to choose an AZ to run the service broker for Cloud Service Broker. It also describes how to select networks for Cloud Service Broker.
+
+To configure AZs and networks for Cloud Service Broker:
+
+    Click Assign AZs and Networks.
+
+    Configure the fields as follows:
+
+    | Field |	Instructions |
+    |-------|----------------|
+    | Place singleton jobs in  | Select the AZ in which the Cloud Service Broker broker VM runs. The broker runs as a singleton job. |
+    | Balance other jobs in | Select the AZ's in which other jobs may run |
+    | Network |	Select a subnet for the Cloud Service Broker broker. This is typically the same subnet that includes the PAS or Elastic Runtime component VMs. |
+
+    Click Save.
+
+1. Configure Azure Credentials
+
+This section describes how to configure the Azure credentials the broker requires to manage service instances.
+
+To configure Azure credentials:
+
+    Click Azure Config
+
+    Configure the fields as follows:
+
+    | Field | Instructions |
+    |-------|--------------|
+    | Subscription Id | Azure subscription id |
+    | Tenant Id | Azure tenant id |
+    | Client Id | Azure client id |
+    | Client Secret | Azure client secret |
+    | Default Resource Group | Default resource group for Azure resources |
+    | Location | Default Azure location for resources | 
+    | Disable Automatic Service Registration | Select to disable automatic service registration | 
+
+3. Return to the Ops Manager Installation Dashboard and click **Apply changes** to install Cloud Service Broker tile.
+
+**If needed, include additional configuration information below. For example, maybe there are
+configuration options not required for installation but which could be useful for certain users. Typical topics include:**
+1. **Self-service**--Do you have recommendations on how to configure/design plans in the tile so that users can choose the best options for themselves?
+1. **High availability**--How do you configure/deploy X Service tile to be highly available?
