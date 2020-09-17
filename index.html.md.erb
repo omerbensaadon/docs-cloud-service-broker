@@ -44,8 +44,7 @@ We cannot accept a list of the key features of your product that we are integrat
 
 <%= vars.product_short %> includes the following key features:
 
-- **Easily extensible and maintainable:** <%# Needs specifics, however brief: What makes it easily extensible? What makes it easy to maintain? %> Less talking to far flung teams,
-more getting work done.
+- **Easily extensible and maintainable:** Cloud Service Broker uses [Brokerpak](https://github.com/pivotal/cloud-service-broker/blob/master/docs/brokerpak-intro.md) to expose services. As long as your target public cloud has a [Terraform provider](https://www.terraform.io/docs/providers/index.html), services can be provisioned via a common interface using standard cf CLI commands.
 - **One common broker for all brokered services:** <%= vars.product_short %> decouples the service
 broker functionality from the catalog of services that it exposes.
 - **Credhub integration out-of-the-box:** CredHub encrypts and manages all the secrets associated
