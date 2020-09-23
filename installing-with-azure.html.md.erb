@@ -42,9 +42,9 @@ It also describes how to select networks for <%= vars.product_short %>.
 
     | Field | Instructions |
     |-------|----------------|
-    | Place singleton jobs in | Select the AZ in which the <%= vars.product_short %> broker VM runs. The broker runs as a singleton job. |
-    | Balance other jobs in | Select the AZs in which other jobs can run |
-    | Network | Select a subnet for the <%= vars.product_short %> broker. This is typically the same subnet that includes the <%= vars.app_runtime_abbr %> or <%= vars.app_runtime_full %> component VMs. |
+    | Place singleton jobs in | Select the AZ in which the broker VM for <%= vars.product_short %> runs. The broker runs as a singleton job. |
+    | Balance other jobs in | Select the AZs in which other jobs can run. |
+    | Network | Select a subnet for the <%= vars.product_short %> broker. This is typically the same subnet that includes the component VMs for <%= vars.app_runtime_full %> (<%= vars.app_runtime_abbr %>). |
 
 1. Click **Save**.
 
@@ -62,12 +62,12 @@ To configure Azure credentials:
 
     | Field | Instructions |
     |-------|--------------|
-    | Subscription ID | Azure subscription ID |
-    | Tenant ID | Azure tenant ID |
-    | Client ID | Azure client ID |
-    | Client Secret | Azure client secret |
-    | Default Resource Group | Default resource group for Azure resources |
-    | Location | Default Azure location for resources |
+    | Subscription ID | Enter the Azure subscription ID |
+    | Tenant ID | Enter the Azure tenant ID |
+    | Client ID | Enter the Azure client ID |
+    | Client Secret | Enter the Azure client secret |
+    | Default Resource Group | Enter the default resource group for Azure resources |
+    | Location | Enter the default Azure location for resources |
     | Disable Automatic Service Registration | Select to disable automatic service registration |
 
 1. Click **Save**.
@@ -84,8 +84,11 @@ an SQL database which the broker requires in order to store its state.
 
 1. Click **Save**.
 
-1. Return to the <%= vars.ops_manager %> Installation Dashboard and click **Apply changes** to
-install <%= vars.product_short %> tile.
+1. Return to the <%= vars.ops_manager %> Installation Dashboard
+
+1. Click **Review Pending Changes**.
+
+1. Click **Apply changes** to install the <%= vars.product_short %> tile.
 
 <%# If needed, include additional configuration information below.
 For example, maybe there are configuration options not required for installation but which could be
@@ -105,14 +108,17 @@ This section describes how to configure services and service plans offered by th
 An example is provided, using the smallest possible size, within each service.
 
 1. Click the already-installed <%= vars.product_short %> for Azure tile in your
-<%= vars.ops_manager %> Tile Dashboard.
+<%= vars.ops_manager %> tile Dashboard.
 
-1. Find the service you want to make available in the left hand navigation under the "Settings" tab.
+1. Find the service you want to make available in the left hand navigation under
+the **Settings** tab.
 
-1.  Enter additional plans as additional JSON objects within the provided field.
+1. Enter additional plans as additional JSON objects within the provided field.
 
-1. Save.
+1. Click **Save**.
 
-1. Apply changes.
+1. Return to the <%= vars.ops_manager %> Installation Dashboard and click **Review Pending Changes**.
+
+1. Click **Apply changes**.
 
 1. Review your Cloud Foundry Marketplace to see the new plan sizes.

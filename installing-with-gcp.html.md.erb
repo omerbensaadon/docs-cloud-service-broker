@@ -1,5 +1,5 @@
 ---
-title: Installing and Configuring Cloud Service Broker
+title: Installing and Configuring Cloud Service Broker on GCP
 owner: Partners
 ---
 
@@ -8,7 +8,7 @@ owner: Partners
 This topic describes how to install and configure <%= vars.product_short %>.
 
 
-## <a id='install'></a> Install and Configure <%= vars.product_short %>
+## <a id='install'></a> Install and Configure <%= vars.product_short %> on GCP
 
 To install the <%= vars.product_short %> file on the <%= vars.ops_manager %> Installation Dashboard:
 
@@ -36,9 +36,9 @@ To configure AZs and networks for <%= vars.product_short %>:
 
     | Field | Instructions |
     |-------|----------------|
-    | Place singleton jobs in | Select the AZ in which the <%= vars.product_short %> broker VM runs. The broker runs as a singleton job. |
-    | Balance other jobs in | Select the AZs in which other jobs can run |
-    | Network | Select a subnet for the <%= vars.product_short %> broker. This is typically the same subnet that includes the <%= vars.app_runtime_abbr %> or <%= vars.app_runtime_full %> component VMs. |
+    | Place singleton jobs in | Select the AZ in which the broker VM for <%= vars.product_short %> runs. The broker runs as a singleton job. |
+    | Balance other jobs in | Select the AZs in which other jobs can run. |
+    | Network | Select a subnet for the <%= vars.product_short %> broker. This is typically the same subnet that includes the component VMs for <%= vars.app_runtime_full %> (<%= vars.app_runtime_abbr %>). |
 
 1. Click **Save**.
 
