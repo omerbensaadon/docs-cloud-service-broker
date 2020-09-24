@@ -5,7 +5,9 @@ owner: Partners
 
 <strong><%= modified_date %></strong>
 
-**If this product is in beta, keep and edit the warning note below.**
+This documentation describes the <%= vars.product_full %>.
+
+<%# If this product is in beta, keep and edit the warning note below. %>
 <p class="note warning">
   <strong>Warning:</strong> The <%= vars.product_full %> tile is currently in beta and is intended
   for evaluation and test purposes only.
@@ -25,7 +27,6 @@ Make sure to overview the features of the integration.
 Don't focus only on the overview of your product that is being integrated.
 See below for an example. %>
 
-This documentation describes the <%= vars.product_full %>.
 The <%= vars.product_full %> enables platform operators to easily expose services to their developers
 from any public cloud with a Terraform provider.
 <%= vars.product_short %> is thoroughly extensible, and can expose new services or public clouds
@@ -45,8 +46,8 @@ We cannot accept a list of the key features of your product that we are integrat
 <%= vars.product_short %> includes the following key features:
 
 - **Easily extensible and maintainable:** <%= vars.product_short %> uses Brokerpak to expose
-services. If your target public cloud has a Terraform provider, services can be provisioned
-through a common interface using standard Cloud Foundry CLI commands.
+services. If your target public cloud has a Terraform provider, you can provision services
+through a common interface using standard Cloud Foundry CLI (cf CLI) commands.
 For more information, see
 [Brokerpak](https://github.com/pivotal/cloud-service-broker/blob/master/docs/brokerpak-intro.md)
 in GitHub and the [Terraform documentation](https://www.terraform.io/docs/providers/index.html).
@@ -115,7 +116,7 @@ A specific requirement might be something like, "Packaging Dependencies for Offl
 
 + Access to the console <%# What console? CSB console? %> on Amazon Web Services (AWS), Azure, or
 Google Cloud Platform (GCP).
-+ <%= vars.app_runtime_abbr %> installed on your platform of choice.
++ <%= vars.app_runtime_full %> (<%= vars.app_runtime_abbr %>) installed on your platform of choice.
 
 
 ## <a id="limitations"></a> Limitations
