@@ -1,5 +1,5 @@
 ---
-title: Service Plans Reference
+title: Service Plan Reference
 owner: Cloud Service Broker
 ---
 
@@ -78,7 +78,9 @@ Otherwise Azure will<%# Avoid |will|: present tense is preferred. %> refuse the 
 
 An operator will<%# Avoid |will|: present tense is preferred. %> likely configure *server_credentials* for developers to use.
 
-See [configuration documentation](./configuration.md) and [Azure installation documentation](azure-installation.md) for reference.
+<%# See [configuration documentation](./configuration.md) and
+[Azure installation documentation](azure-installation.md) for reference.
+-- Need proper link for configuration.md and azure-installation.md %>
 
 To globally configure *server_credential*, include the following in the configuration file for the broker:
 
@@ -182,8 +184,9 @@ The following parameters may<%# |can| usually works better. Use |might| to conve
 
 An operator will<%# Avoid |will|: present tense is preferred. %> likely configure *server_credential_pairs* for developers to use.
 
-See [configuration documentation](./configuration.md)
-and [Azure installation documentation](azure-installation.md) for reference.
+<%# See [configuration documentation](./configuration.md) and
+[Azure installation documentation](azure-installation.md) for reference.
+-- Need proper link for configuration.md and azure-installation.md %>
 
 To globally configure *server_credential_pairs*, include the following in the configuration file for the broker:
 
@@ -393,7 +396,8 @@ The following options may<%# |can| usually works better. Use |might| to convey p
 
 #### Azure Notes
 
-Except as noted below, configuration is generally the same as [Azure SQL](./mssql-plans-and-config.md)
+Except as noted below, configuration is generally the same as
+<%# [Azure SQL](./mssql-plans-and-config.md). -- Need proper link %>
 
 ##### Azure specific config parameters
 
@@ -402,7 +406,7 @@ Except as noted below, configuration is generally the same as [Azure SQL](./mssq
 | instance_name  |string| service instance name | csb-azsql-*instance_id* |
 | resource_group |string| resource group for instance<%# |for example| is preferred. %> | rg-*instance_name* |
 | location  |string|Azure location to deploy service instance | westus |
-| failover_location |string|Azure location for failover instance | [default regional pair]([failover_region](https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions#azure-regional-pairs))<%# The link name must be |Microsoft documentation|. %>|
+| failover_location |string| Azure location for failover instance | [default regional pair] ([failover_region](https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions#azure-regional-pairs))<%# The link name must be |Microsoft documentation|. %>|
 | read_write_endpoint_failover_policy | string | Read/Write failover policy - `Automatic` or `Manual` | `Automatic` |
 | failover_grace_minutes | number | grace period in minutes before failover with data loss is attempted | 60 |
 | azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
