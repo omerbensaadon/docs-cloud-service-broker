@@ -406,7 +406,7 @@ Except as noted below, configuration is generally the same as
 | instance_name  |string| service instance name | csb-azsql-*instance_id* |
 | resource_group |string| resource group for instance<%# |for example| is preferred. %> | rg-*instance_name* |
 | location  |string|Azure location to deploy service instance | westus |
-| failover_location |string| Azure location for failover instance | [default regional pair] ([failover_region](https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions#azure-regional-pairs))<%# The link name must be |Microsoft documentation|. %>|
+| failover_location |string| Azure location for failover instance | DEFAULT-REGIONAL-PAIR, see the [Microsoft Documentation](https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions#azure-regional-pairs) |
 | read_write_endpoint_failover_policy | string | Read/Write failover policy - `Automatic` or `Manual` | `Automatic` |
 | failover_grace_minutes | number | grace period in minutes before failover with data loss is attempted | 60 |
 | azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
