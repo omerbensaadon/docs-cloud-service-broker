@@ -5,38 +5,70 @@ owner: Cloud Service Broker
 
 <strong><%= modified_date %></strong>
 
-This topic describes the process for CSB subsuming control over an existing MSSQL
-database instance that was created by the Microsoft Azure Service Broker (MASB).
-No data migration is necessary, the broker just takes over the bind, unbind and destroy lifecycle.
+This topic describes moving an MSSQL database instance
+from the Microsoft Azure Service Broker for VMware Tanzu tile
+to the Cloud Service Broker on Azure tile.
 
-## <a id='overview'></a> Overview
+This process of moving control of an instance from the control of one broker tile
+to another is called _subsuming_ the instance.
 
-The basic steps to subsume control of an existing MSSQL database instance are:
+## <a id='about'></a> About Subsuming MSSQL Database Instance
 
-1. `cf create-service csb-masb-mssql-db-subsume current <new service instance> -c '{...}'` to import the current state of the service instance.
-2. `cf unbind-service <existing app> <masb service instance>` to disconnect the app from the MASB service binding.
-3. `cf bind-service <existing app> <new service instance>` to bind the app to the new service instance.
-4. `cf purge-service-instance <masb service instance>` to make CF forget about the MASB managed service instance. *If you `cf delete-service <masb service instance>`, MASB will delete the Azure MSSQL resource! Don't do this!*
+Because the Microsoft Azure Service (MAS) Broker for VMware Tanzu tile
+is going out of support, it is important to move MSSQL database instances that 
+were created by the MAS Broker over to the Cloud Service Broker.
+
+Subsuming the instance allows you to move the database from the control of one broker
+to the control of another without migrating the data.
+
+After the subsuming process, you can manage the instance and the associate MSSQL database
+just like any other service instance.
+
+For general information about the Microsoft Azure Service Broker for VMware Tanzu tile,
+see [Azure Service Broker](https://docs.pivotal.io/partners/azure-sb/index.html).
+
+## <a id='process'></a> Overview of the Process
+
+Detailed steps for subsuming are given below.
+However, the outline of the process is:
+
++ Create a new Cloud Service-brokered instance,
+  importing information about the MSSQL database.
++ Unbind apps from the old MAS-brokered instance.
++ Bind apps to the new Cloud Service-brokered instance.
++ Purge the connections between the old MAS-brokered instance and the MSSQL database.
 
 
-## Details
+##<a id="prereq"></a> Prerequisite
 
-Some details need to be provided to the `cf create-service` call so the broker
-can identify which IaaS resource to import and provide some parameters that the broker
-can't detect from the platform.
+Before you can subsume an MSSQL database instance,
+you must have the admin password for the database.
 
-### Azure MSSQL Resource ID
+Unfortunately, this password cannot be automatically discovered.
+This was probably set when the server was created.
+See [Broker Config](https://docs.pivotal.io/partners/azure-sb/installing.html#broker-config).
 
-The broker needs the Azure resource ID for the database instance.
-Issue the following commands to get this value:
+## <a id='subsume'></a> Subsume a Microsoft Azure Service Broker MSSQL Database Instance
 
-1. Get the MASB database instance details:
+To subsume control of an existing MAS-brokered MSSQL database instance to 
+the Cloud Service Broker:
 
-    ```bash
-    $ cf service <masb instance>
+1. Get the MAS-brokered database instance details by running:
+
+
+    ```
+    cf service MASB-SERVICE-INSTANCE
+    ```
+
+    Where is `MASB-SERVICE-INSTANCE` is the name of the service instance,
+    the MAS-brokered database instance.
+
+    For example:
+
+    <pre class="terminal">$ cf service masb-instance
     Showing info of service <masb instance> in org ...
 
-    name:            <masb instance>
+    name:            masb-instance
     service:         azure-sqldb
     tags:
     plan:            basic
@@ -44,60 +76,98 @@ Issue the following commands to get this value:
     documentation:
     dashboard:
 
-    Showing status of last operation from service <masb instance>...
+    Showing status of last operation from service masb-instance...
 
     status:    create succeeded
-    message:   Created logical database <database name> on logical server <server name>.
+    message:   Created logical database database-name on logical server server-name.
     started:   2020-08-20T21:06:57Z
     updated:   2020-08-20T21:08:04Z
+    </pre>
+
+
+2. Get the Azure resource ID for the database by running the following on the Azure CLI:
+
     ```
-2. Use the `az` CLI to get the Azure resource ID for the database using <database name>
-  and <server name> from the output above:
-
-    ```bash
-    $ az sql db show  --name <database name> --server <server name> --resource-group <server resource group> --query id -o tsv
+    az sql db show  --name DATABASE-NAME --server SERVER-NAME \
+    --resource-group SERVER-RESOURCE-GROUP --query id -o tsv
     ```
-    This value will be used as *azure resource id* below.
 
-### Azure MSSQL Server Administrator Password
+    Where:
+    * `DATABASE-NAME` and `SERVER-NAME` are the logical names output in the step above.
+    * `SERVER-RESOURCE-GROUP` is the
 
-The administrator password for the database cannot be automatically discovered.
-The user must provide it for the import to work.
-Get the Azure MSSQL Server administrator password.
-This was probably set when the server was created.
+    For example:
+
+    <pre class="terminal">
+    $ az sql db show  --name database-name --server server-name \
+      --resource-group server-resource-group --query id -o tsv
+    </pre>
+
+3. Create a new service instance of the Cloud Service Broker type and
+   import the current state of the service instance by running:
+
+    <code> cf create-service csb-masb-mssql-db-subsume current NEW-SERVICE-INSTANCE -c 'PASSWORD-ID'</code>
+
+    Where:
+    * `NEW-SERVICE-INSTANCE` is the name of the new service instance
+       that Cloud Service Broker creates to replace the MSAB service instance.
+    * `PASSWORD-ID` are the JSON-formatted key value pairs containing the password and
+      resource ID for the database.
+      The format is: `{"admin_password":"SERVER-ADMIN-PASSWORD", "azure_db_id", "AZURE-RESOURCE-ID"}`
+    * `SERVER-ADMIN-PASSWORD` is the admin password for the database.
+       See [Prerequisite](#prereq) above.
+    * `AZURE-RESOURCE-ID` is found in the output of step 2 above.
 
 
-## Subsume the Database Instance
-With the proper details, the database can be subsumed:
+    For example:
 
-```bash
-cf create-service csb-masb-mssql-db-subsume current <new intance name> -c '{"admin_password":"<server admin password>", "azure_db_id", "<azure resource ID>"}'
-```
+    <pre class="terminal">
+$ cf create-service csb-masb-mssql-db-subsume current secondary-db -c \
+ '{"admin_password":"PA55W0RD","azure_db_id":"/subscriptions/e53f/resourceGroups/broker/providers/Microsoft.Sql/servers/2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db"}'
+    </pre>
 
-## Unbind Application from Old Service Instance
 
-To release the MASB provided binding, unbind the app from the old service instance.
+4. Disconnect the app from the MASB service binding by running:
 
-```bash
-cf unbind-service <application> <masb instance>
-```
+    <code>cf unbind-service EXISTING-APP MASB-SERVICE-INSTANCE</code>
 
-## Bind Application to New (Subsumed) Service Instance
+    Where:
+    * `EXISTING-APP` is the app using the database.
+    * `MASB-SERVICE-INSTANCE` is the name of the service instance,
+    the MAS-brokered database instance.
 
-To create a new binding from the new service instance:
+    <pre class="terminal">
+$ cf unbind-service my-app masb-instance
+    </pre>
 
-```bash
-cf bind-service <application> <new intance name>
-```
+5. Bind the app to the new service instance by running:
 
-##  Purge Old Service Instance
+    <code>cf bind-service EXISTING-APP NEW-SERVICE-INSTANCE</code>
 
-CF will still have a record of the old service instance.
-Use `cf purge-service-instance` to purge that record.
+    Where NEW-SERVICE-INSTANCE is the name of the Cloud Service Broker service instance
+    that you created in step 3 above.
 
-*Do not use `cf delete-service` as MASB will delete the service instance that the
-CSB broker should now be in charge of!*
+    For example:
 
-```bash
-cf purge-service-instance <masb instance>
-```
+    <pre class="terminal">$cf bind-service my-app secondary-db </pre>
+
+1. Remove record of the old MAS-brokered database instance and any child objects
+   from Cloud Foundry by running:
+
+    ```
+    cf purge-service-instance MASB-SERVICE-INSTANCE
+    ```
+
+    For example:
+
+    <pre class="terminal">$ cf purge-service-instance mas-instance</pre>
+
+    <p class="note warning"><strong> Warning:</strong> Do not run <code>cf delete-service</code>
+    because then the Microsoft Azure Service Broker deletes the Azure MSSQL resource, that is, the database.
+</p>
+
+## <a id="next-steps"></a> Next Steps
+
+When all MAS-brokered service instances have been moved to Cloud Service-brokered instances,
+you can uninstall the Microsoft Azure Service Broker for VMware Tanzu tile
+from Ops Manager.
