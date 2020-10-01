@@ -106,14 +106,11 @@ the Cloud Service Broker:
 3. Create a new service instance of the Cloud Service Broker type and
    import the current state of the service instance by running:
 
-    <code> cf create-service csb-masb-mssql-db-subsume current NEW-SERVICE-INSTANCE -c 'PASSWORD-ID'</code>
+    <code> cf create-service csb-masb-mssql-db-subsume current NEW-SERVICE-INSTANCE -c '{"admin_password":"SERVER-ADMIN-PASSWORD", "azure_db_id", "AZURE-RESOURCE-ID"}'</code>
 
     Where:
     * `NEW-SERVICE-INSTANCE` is the name of the new service instance
        that Cloud Service Broker creates to replace the MSAB service instance.
-    * `PASSWORD-ID` are the JSON-formatted key value pairs containing the password and
-      resource ID for the database.
-      The format is: `{"admin_password":"SERVER-ADMIN-PASSWORD", "azure_db_id", "AZURE-RESOURCE-ID"}`
     * `SERVER-ADMIN-PASSWORD` is the admin password for the database.
        See [Prerequisite](#prereq) above.
     * `AZURE-RESOURCE-ID` is found in the output of step 2 above.
@@ -144,7 +141,7 @@ $ cf unbind-service my-app masb-instance
 
     <code>cf bind-service EXISTING-APP NEW-SERVICE-INSTANCE</code>
 
-    Where NEW-SERVICE-INSTANCE is the name of the Cloud Service Broker service instance
+    Where `NEW-SERVICE-INSTANCE` is the name of the Cloud Service Broker service instance
     that you created in step 3 above.
 
     For example:
