@@ -12,7 +12,8 @@ Then, if necessary, immediately cherry-pick/copy any changes that you want to pu
 
 | Branch Name| Use for… |
 |------------| ---------|
-| master     | 0.1 (staged here: http://docs-pcf-staging.cfapps.io/cloud-service-broker/0-n/
+| master     | 0.1 (staged here: http://docs-pcf-staging.cfapps.io/cloud-service-broker/0-n/ |
+| GCP-AWS-docs | This branch contains the installing-with-gcp.html.md.erb and installing-with-aws.html.md.erb topics. We are keeping these topics for when CSB supports these IaaSes |
 
 
 
