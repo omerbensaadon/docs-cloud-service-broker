@@ -9,7 +9,7 @@ This topic describes moving an MSSQL database instance
 from the Microsoft Azure Service Broker for VMware Tanzu tile
 to the Cloud Service Broker on Azure tile.
 
-This process of moving control of an instance from the control of one broker tile
+This process of moving control of an instance from one broker tile
 to another is called _subsuming_ the instance.
 
 ## <a id='about'></a> About Subsuming MSSQL Database Instance
@@ -21,7 +21,7 @@ were created by the MAS Broker over to the Cloud Service Broker.
 Subsuming the instance allows you to move the database from the control of one broker
 to the control of another without migrating the data.
 
-After the subsuming process, you can manage the instance and the associate MSSQL database
+After the subsuming process, you can manage the instance and the associated MSSQL database
 just like any other service instance.
 
 For general information about the Microsoft Azure Service Broker for VMware Tanzu tile,
@@ -44,9 +44,13 @@ However, the outline of the process is:
 Before you can subsume an MSSQL database instance,
 you must have the admin password for the database.
 
-Unfortunately, this password cannot be automatically discovered.
-This was probably set when the server was created.
-See [Broker Config](https://docs.pivotal.io/partners/azure-sb/installing.html#broker-config).
+This password cannot be automatically discovered.
+It was probably set when the server was created.
+
+The database username _is_ automatically discovered,
+so ensure you use the password that matches the database user that was specified during setup.
+See [Broker Config](https://docs.pivotal.io/partners/azure-sb/installing.html#broker-config),
+in _Installing and Configuring Microsoft Azure Service Broker_.
 
 ## <a id='subsume'></a> Subsume a Microsoft Azure Service Broker MSSQL Database Instance
 
@@ -106,8 +110,8 @@ the Cloud Service Broker:
       --resource-group azure-service-broker --query id -o tsv
     </pre>
 
-3. Create a new service instance of the Cloud Service Broker type and
-   import the current state of the service instance by running:
+3. Create a new MSSQL service instance using Cloud Service Broker and
+   import the existing MSSQL resource by including the metadata as shown:
 
     <code> cf create-service csb-masb-mssql-db-subsume current NEW-SERVICE-INSTANCE -c '{"admin_password":"SERVER-ADMIN-PASSWORD", "azure_db_id", "AZURE-RESOURCE-ID"}'</code>
 
@@ -123,7 +127,7 @@ the Cloud Service Broker:
 
     <pre class="terminal">
 $ cf create-service csb-masb-mssql-db-subsume current secondary-db -c \
- '{"admin_password":"PA55W0RD","azure_db_id":"/subscriptions/e53f/resourceGroups/broker/providers/Microsoft.Sql/servers/2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db"}'
+ '{"admin_password":"PA55W0RD","azure_db_id":"/subscriptions/e7c0ac8a-0416-11eb-ae0e-3bbe060ffff9/resourceGroups/broker/providers/Microsoft.Sql/servers/masb-test-server/databases/test-db"}'
     </pre>
 
 
@@ -151,6 +155,9 @@ $ cf unbind-service my-app masb-instance
 
     <pre class="terminal">$cf bind-service my-app secondary-db </pre>
 
+    Because Cloud Service Broker creates new credentials at bind time,
+    this creates new binding credentials for the app.
+
 1. Remove record of the old MAS-brokered database instance and any child objects
    from Cloud Foundry by running:
 
@@ -160,7 +167,7 @@ $ cf unbind-service my-app masb-instance
 
     For example:
 
-    <pre class="terminal">$ cf purge-service-instance mas-instance</pre>
+    <pre class="terminal">$ cf purge-service-instance masb-instance</pre>
 
     <p class="note warning"><strong> Warning:</strong> Do not run <code>cf delete-service</code>
     because then the Microsoft Azure Service Broker deletes the Azure MSSQL resource, that is, the database.
@@ -168,6 +175,6 @@ $ cf unbind-service my-app masb-instance
 
 ## <a id="next-steps"></a> Next Steps
 
-When all MAS-brokered service instances have been moved to Cloud Service-brokered instances,
+When all MAS-brokered service instances for all apps have been moved to Cloud Service-brokered instances,
 you can uninstall the Microsoft Azure Service Broker for VMware Tanzu tile
 from Ops Manager.
