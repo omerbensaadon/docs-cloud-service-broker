@@ -15,7 +15,7 @@ to another is called _subsuming_ the instance.
 ## <a id='about'></a> About Subsuming MSSQL Database Instance
 
 Because the Microsoft Azure Service (MAS) Broker for VMware Tanzu tile
-is going out of support, it is important to move MSSQL database instances that 
+is going out of support, it is important to move MSSQL database instances that
 were created by the MAS Broker over to the Cloud Service Broker.
 
 Subsuming the instance allows you to move the database from the control of one broker
@@ -43,14 +43,17 @@ However, the outline of the process is:
 
 Before you can subsume an MSSQL database instance,
 you must have the admin password for the database.
+This password cannot be automatically discovered.
+It was probably set when the server was created.
 
-Unfortunately, this password cannot be automatically discovered.
-This was probably set when the server was created.
-See [Broker Config](https://docs.pivotal.io/partners/azure-sb/installing.html#broker-config).
+The database username _is_ automatically discovered,
+so ensure you use the password that matches the database user that was specified during setup.
+See [Broker Config](https://docs.pivotal.io/partners/azure-sb/installing.html#broker-config),
+in _Installing and Configuring Microsoft Azure Service Broker_.
 
 ## <a id='subsume'></a> Subsume a Microsoft Azure Service Broker MSSQL Database Instance
 
-To subsume control of an existing MAS-brokered MSSQL database instance to 
+To subsume control of an existing MAS-brokered MSSQL database instance to
 the Cloud Service Broker:
 
 1. Get the MAS-brokered database instance details by running:
@@ -129,7 +132,7 @@ $ cf create-service csb-masb-mssql-db-subsume current secondary-db -c \
 
 
 4. Disconnect the app from the MASB service binding by running:
-    
+
     ```
     cf unbind-service EXISTING-APP MASB-SERVICE-INSTANCE
     ```
