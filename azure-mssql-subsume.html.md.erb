@@ -59,7 +59,6 @@ the Cloud Service Broker:
 
 1. Get the MAS-brokered database instance details by running:
 
-
     ```
     cf service MASB-SERVICE-INSTANCE
     ```
@@ -113,10 +112,12 @@ the Cloud Service Broker:
 3. Create a new MSSQL service instance using Cloud Service Broker and
    import the existing MSSQL resource by including the metadata as shown:
 
-    <code> cf create-service csb-masb-mssql-db-subsume current NEW-SERVICE-INSTANCE -c '{"admin_password":"SERVER-ADMIN-PASSWORD", "azure_db_id", "AZURE-RESOURCE-ID"}'</code>
+    ```
+    cf create-service csb-masb-mssql-db-subsume current NEW-SERVICE-INSTANCE -c '{"admin_password":"SERVER-ADMIN-PASSWORD", "azure_db_id", "AZURE-RESOURCE-ID"}'
+    ```
 
     Where:
-    * `NEW-SERVICE-INSTANCE` is the name of the new service instance
+    * `NEW-SERVICE-INSTANCE` is a name you choose for the new service instance
        that Cloud Service Broker creates to replace the MSAB service instance.
     * `SERVER-ADMIN-PASSWORD` is the admin password for the database.
        See [Prerequisite](#prereq) above.
@@ -132,8 +133,10 @@ $ cf create-service csb-masb-mssql-db-subsume current secondary-db -c \
 
 
 4. Disconnect the app from the MASB service binding by running:
-
-    <code>cf unbind-service EXISTING-APP MASB-SERVICE-INSTANCE</code>
+    
+    ```
+    cf unbind-service EXISTING-APP MASB-SERVICE-INSTANCE
+    ```
 
     Where:
     * `EXISTING-APP` is the app using the database.
@@ -146,7 +149,9 @@ $ cf unbind-service my-app masb-instance
 
 5. Bind the app to the new service instance by running:
 
-    <code>cf bind-service EXISTING-APP NEW-SERVICE-INSTANCE</code>
+    ```
+    cf bind-service EXISTING-APP NEW-SERVICE-INSTANCE
+    ```
 
     Where `NEW-SERVICE-INSTANCE` is the name of the Cloud Service Broker service instance
     that you created in step 3 above.
