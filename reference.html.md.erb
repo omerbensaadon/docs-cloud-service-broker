@@ -5,61 +5,69 @@ owner: Cloud Service Broker
 
 <strong><%= modified_date %></strong>
 
-This topic provides reference information for configuring services.
+This topic provides reference information about the plans and configuration
+parameters used for configuring services.
 
-## <a id="azure-mssql-db"></a>Azure SQL (MSSQL) Database Plans and Configuration
+<%# Is there a logical order for the sections in this topic? Which will is the most generic? Which will be most used? %>
+## <a id="azure-mssql"></a> Azure SQL (MSSQL)
 
-### Applies to service *csb-azure-mssql-db*<%# Make this header an anchor unless the subnav is unusually long. %>
+This section applies to the csb-azure-mssql service.
+This section lists default plans and configuration options for Azure SQL on Azure.
 
-*csb-azure-mssql-db* manages Azure SQL databases on pre-configured database servers on Azure.
+### <a id="azure-mssql-plans"></a> Plans
 
-### Plans<%# Make this header an anchor unless the subnav is unusually long. %>
+The table below lists the plans for the csb-azure-mssql service:
 
-| Plan       | CPUs | Maximumum Storage Size |
+| Plan       | CPUs | Storage Size |
 |------------|------|--------------|
-|small       | 2    | 50&nbsp;GB         |
-|medium      | 8    | 200&nbsp;GB        |
-|large       | 32   | 500&nbsp;GB       |
-|extra-large | 80   | 1&nbsp;TB          |
+| small       | 2    | 50&nbsp;GB        |
+| medium      | 8    | 200&nbsp;GB       |
+| large       | 32   | 500&nbsp;GB       |
+| extra-large | 64   | 1&nbsp;TB         |
 
-### Plan Configuration Parameters<%# Make this header an anchor unless the subnav is unusually long. %>
+### Configuration Options<%# Make this header an anchor unless the subnav is unusually long. %>
 
 The following plan parameters can be<%# Consider switching to active voice. %> configured.
 
-| Parameter Name | Values              | Default |
-|-------------|------------------------|---------|
-| max_storage_gb  |                    |  50      |
-| cores       | 1&ndash;64, multiple of 2    | 2       |
+| Option Name | Values              | Default |
+|-------------|---------------------|---------|
+| max_storage_gb  |            | 50      |
+| cores       | 1&ndash;64, multiple of 2 | 2       |
 
 
 ### Provision Parameters<%# Make this header an anchor unless the subnav is unusually long. %>
 
-The following parameters may<%# |can| usually works better. Use |might| to convey possibility. %> be configured during service provisioning (`cf create-service csb-azure-mssql-db ... -c '{...}'`)
+The following parameters may<%# |can| usually works better. Use |might| to convey possibility. %>
+be configured during service provisioning (`cf create-service csb-azure-mssql ... -c '{...}'`)
 
-| Parameter Name | Type | Description | Default |
-|----------------|------|-------------|---------|
-| db_name | string | database name | csb-fog-db-*instance_id* |
-| server  | string | server name from *server_credentials* on which to create the database | |
-| server_credentials | JSON | list of server credentials on which databases can be<%# Consider switching to active voice. %> created, *server* must match one of *name*. Format: `{ "name1": { "server_name":"...", "server_resource_group":"...", "admin_username":"...", "admin_password":"..."}, "name2":{"server_name":..., ...}...}`
+| Parameter Name | Type | Description | Default  |
+|----------------|------|-------------|----------|
+| instance_name  |string| service instance name | csb-azsql-*instance_id* |
+| resource_group |string| resource group for instance<%# |for example| is preferred. %> | rg-*instance_name* |
+| db_name        |string| database name | csb-db |
+| location       |string| Azure region to deploy service instance | westus |
 | azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
 | azure_subscription_id | string | ID of Azure subscription for instance<%# |for example| is preferred. %> | config file value `azure.subscription_id` |
 | azure_client_id | string | ID of Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_id` |
 | azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_secret` |
 | sku_name | string | Azure sku (typically, tier [GP_S,GP,BC,HS] + family [Gen4,Gen5] + cores, e.g. <%# |For example| is preferred. %>G<%# Write all ordered steps as numbers. %>P_S_Gen4_1, GP_Gen5_8, see [vCore](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases) and [DTU](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases))<%# The link name must be |Microsoft documentation|. %> Will be computed from cores if empty. `az sql db list-editions -l <location> -o table` will<%# Avoid |will|: present tense is preferred. %> show all valid values. | |
+| authorized_network | string | The Azure subnet ID (long form) that the instance is connected to via<%# |through|, |using| and |by means of| are preferred. %> a service endpoint. The subnet must have the `Microsoft.sql` service enabled. | |
 | skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
+
+Note: Currently Azure SQL is not available in all regions. The enum in the YML lists all the valid regions as of 2/12/2020
 
 #### Azure Notes
 
 Azure SQL instances are
-[vCore model](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal)<%# The link name must be |Microsoft documentation|. %>
-and Gen5 hardware generation
+[vCore model](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal)
+<%# The link name must be |Microsoft documentation|. %> and Gen5 hardware generation
 unless overridden by `sku_name` parameter.
 
 CPU/memory size mapped into
 [Azure sku's](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases)
 <%# The link name must be |Microsoft documentation|. %> as follows:
 
-#### Core to sku mapping
+##### Core to sku mapping
 
 | Cores | Sku |
 |-------|-----|
@@ -71,18 +79,126 @@ CPU/memory size mapped into
 | 32 | GP_Gen5_32 |
 | 80 | GP_Gen5_80 |
 
-Note: in order for `cf update-service -p <new plan>` to work, the sku's must be the same family (GP_S, GP, or HS.)
-Otherwise Azure will<%# Avoid |will|: present tense is preferred. %> refuse the update request.
+Note: in order for `cf update-service -p <new plan>` to work, the sku's must be
+the same family (GP_S, GP, or HS.) Otherwise Azure will<%# Avoid |will|: present tense is preferred. %>
+refuse the update request.
 
-### Configuring Global Defaults<%# Make this header an anchor unless the subnav is unusually long. %>
+### Binding Credentials<%# Make this header an anchor unless the subnav is unusually long. %>
 
-An operator will<%# Avoid |will|: present tense is preferred. %> likely configure *server_credentials* for developers to use.
+The binding credentials for Azure SQL have the following shape:
+
+```json
+{
+    "name" : "database name",
+    "hostname" : "database server host",
+    "port" : "database server port",
+    "username" : "authentication user name",
+    "password" : "authentication password",
+    "uri" : "database connection URI",
+    "jdbcUrl" : "jdbc format connection URI",
+    "sqldbName" : "database name",
+    "sqlServerName" : "server name",
+    "sqlServerFullyQualifiedDomainName" : "server fqdn",
+    "databaseLogin" : "authentication user name",
+    "databaseLoginPassword" : "authentication password"
+}
+```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
+
+## <a id="azure-mssql-db"></a>Azure SQL (MSSQL) Database
+
+This section applies to the service csb-azure-mssql-db.
+The csb-azure-mssql-db servicde manages Azure SQL databases on pre-configured
+database servers on Azure.
+
+### <a id="azure-mssql-db-plans"></a> Plans
+
+The table below lists the plans for the csb-azure-mssql-db service:
+
+| Plan       | CPUs | Maximumum Storage Size |
+|------------|------|--------------|
+|small       | 2    | 50&nbsp;GB         |
+|medium      | 8    | 200&nbsp;GB        |
+|large       | 32   | 500&nbsp;GB       |
+|extra-large | 80   | 1&nbsp;TB          |
+
+### <a id="azure-mssql-db-plans-config"></a> Plan Configuration Parameters
+
+You can configure the following plan parameters:
+
+| Parameter Name | Values              | Default |
+|-------------|------------------------|---------|
+| max_storage_gb  |                    |  50      |
+| cores       | 1&ndash;64, multiple of 2    | 2       |
+
+
+### <a id="azure-mssql-db-provision"></a> Provision Parameters
+
+You can provision a service by running:
+
+```
+cf create-service csb-azure-mssql-db ... -c '{...}'
+```
+<%# Could this be moved to a generic section about provisioning a service?
+Should the ... be replaced by a placeholder?
+Should you use the parameters in the -c flag?
+Can we have an example? %>
+
+You can configure the following parameters when provisioning a csb-azure-mssql-db service:
+
+| Parameter Name | Type | Description | Default |
+|----------------|------|-------------|---------|
+| `db_name` | string | The database name | `csb-fog-db-INSTANCE-ID` <%# I assumed that *instance_id* was a place holder. Is this correct? %> |
+| `server`  | string | The name of the server on which to create the database. The server name is from `server_credentials`. <%# Clarification needed %> | |
+| `server_credentials` | JSON | A list of server credentials on which databases can be created, *server* must match one of *name*. <%# Clarification needed %>  Format: `{ "NAME-1": { "server_name":"...", "server_resource_group":"...", "admin_username":"...", "admin_password":"..."}, "NAME-2":{"server_name":..., ...}...}`
+| `azure_tenant_id` | string | The ID of the Azure tenant for the service instance. | Config file value `azure.tenant_id` <%# Which config file? %> |
+| `azure_subscription_id` | string | The ID of the Azure subscription for the service instance. | Config file value `azure.subscription_id` <%# Which config file? %> |
+| `azure_client_id` | string | The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %> | Config file value `azure.client_id` <%# Which config file? %> |
+| `azure_client_secret` | string | The secret (password) for the Azure service principal to authenticate for instance creation. | Config file value `azure.client_secret` <%# Which config file? %> |
+| `sku_name` | string | The Azure stock-keeping unit (SKU). This is usually formatted as `TIER_FAMILY_NUMBER-OF-CORES`. Where: <ul><li>Examples of `TIER` are `GP_S`, `GP`, `BC`, and `HS`</li><li>Examples of `FAMILY` are `Gen4` and `Gen5`</li></ul> Example SKUs are, `GP_S_Gen4_1`, `GP_Gen5_8`. Will be computed from cores if empty. <%# Clarification needed %> Run `az sql db list-editions -l LOCATION -o table` to show all valid values. <%# Clarification needed %> For more information about the the vCore purchasing model, see the [Microsoft documentation](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases). For more information about the the DTU purchasing model, see the [Microsoft documentation](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases).  | |
+| `skip_provider_registration` | boolean | Set to `true` to skip automatic Azure provider registration. Set if the service principal being used does not have the rights to register providers. | `false` |
+
+<p class="note">
+  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
+  hardware generation unless you override this default using the <code>sku_name</code> parameter.
+  For more information about the vCore model, see the
+  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
+</p>
+
+For the CPU/memory size mapped onto Azure SKUs, see the
+[Microsoft documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases).
+
+#### Core to SKU Mapping
+
+The table below shows the mapping of number of cores to the corresponding SKU:
+
+| Cores | SKU |
+|-------|-----|
+| 1  | GP_Gen5_1 |
+| 2  | GP_Gen5_2 |
+| 4  | GP_Gen5_4 |
+| 8  | GP_Gen5_8  |
+| 16 | GP_Gen5_16 |
+| 32 | GP_Gen5_32 |
+| 80 | GP_Gen5_80 |
+<%# Is this table necessary? Can we get this information from the link above? %>
+
+<p class="note">
+  <strong>Note:</strong> For the command <code>cf update-service -p PLAN-NAME</code> to work,
+  the SKUs must be the same family
+  <%# Clarification needed. SKUs for which things? Are these the only Compatible families? %>
+  (<code>GP_S</code>, <code>GP</code>, or <code>HS</code>),
+  otherwise Azure refuses the update request.
+</p> <%# would this note be better in the sku_name row of the table? %>
+
+### <a id="azure-mssql-db-global-defaults"></a> Configure Global Defaults
+
+You might want to configure `server_credentials` for developers to use.
 
 <%# See [configuration documentation](./configuration.md) and
 [Azure installation documentation](azure-installation.md) for reference.
--- Need proper link for configuration.md and azure-installation.md %>
+-- Need proper link for configuration.md and azure-installation.md and further clarification. %>
 
-To globally configure *server_credential*, include the following in the configuration file for the broker:
+To globally configure `server_credentials`, include the following in the configuration file for the broker: <%# Where is this config file? %>
 
 ```yaml
 service:
@@ -103,15 +219,160 @@ service:
         }
       }'
 ```
+<%# Should there be placeholders where ... is %>
 
-A developer could create a new failover group database on *server1* like this:
-```bash
-cf create-service csb-azure-mssql-db medium medium-sql -c '{"server":"server1"}'
+Developers can create a new failover group database on `server1` by running, for example:
+
+<pre class="terminal">cf create-service csb-azure-mssql-db medium medium-sql -c '{"server":"server1"}'</pre>
+<%# Is there a better place for this? %>
+
+### <a id="azure-mssql-db-binding-creds"></a> Binding Credentials
+
+The format for binding credentials for an Azure SQL database is as follows:
+
+```json
+{
+    "name" : "DATABASE-NAME",
+    "hostname" : "DATABASE-SERVER-HOST",
+    "port" : "DATABASE-SERVER-PORT",
+    "username" : "AUTHENTICATION-USERNAME",
+    "password" : "AUTHENTICATION-PASSWORD",
+    "uri" : "DATABASE-CONNECTION-URI",
+    "jdbcUrl" : "JDBC-FORMAT-CONNECTION-URI",
+    "sqldbName" : "DATABASE-NAME",
+    "sqlServerName" : "SERVER-NAME",
+    "sqlServerFullyQualifiedDomainName" : "SERVER-FQDN",
+    "databaseLogin" : "AUTHENTICATION-USERNAME",
+    "databaseLoginPassword" : "AUTHENTICATION-PASSWORD"
+}
 ```
+<%# Does this need the placeholders explained? %>
+
+## <a id="azure-mssql-server"></a> Azure SQL (MSSQL) Server
+
+This section applies to the csb-azure-mssql-server service.
+The csb-azure-mssql-server service manages stand alone Azure SQL server service instances on Azure.
+No databases are created or managed.
+
+### <a id="azure-mssql-server-plans"></a> Plans
+
+The only plan is `standard`.
+
+### Provision Parameters<%# Make this header an anchor unless the subnav is unusually long. %>
+
+ The following parameters may<%# |can| usually works better. Use |might| to convey possibility. %> be configured during service provisioning (`cf create-service csb-azure-mssql-server standard ... -c '{...}'`)
+
+| Parameter Name | Type | Description | Default |
+|----------------|------|-------------|---------|
+| instance_name | string | instance name for server | csb-azsql-svr-*instance_id* |
+| resource_group | string | resource group for the server | rg-*instance_name* |
+| admin_username | string | admin username for server | randomly generated string |
+| admin_password | string | admin password for server | randomly generated string |
+| location | string | Azure location to create server | westus |
+| azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
+| azure_subscription_id | string | ID of Azure subscription for instance<%# |for example| is preferred. %> | config file value `azure.subscription_id` |
+| azure_client_id | string | ID of Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_id` |
+| azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_secret` |
+| authorized_network | string | The Azure subnet ID (long form) that the instance is connected to via<%# |through|, |using| and |by means of| are preferred. %> a service endpoint. The subnet must have the `Microsoft.sql` service enabled. | |
+| skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
 
 ### Binding Credentials<%# Make this header an anchor unless the subnav is unusually long. %>
 
-The binding credentials for Azure SQL database have the following shape:
+The binding credentials for Azure SQL Failover Group have the following shape:
+
+```json
+{
+    "hostname" : "database server host",
+    "port" : "database server port",
+    "username" : "authentication user name",
+    "password" : "authentication password",
+    "sqlServerName" : "server name",
+    "sqldbResourceGroup" : "resource group for server",
+    "sqlServerFullyQualifiedDomainName" : "server fqdn",
+    "databaseLogin" : "authentication user name",
+    "databaseLoginPassword" : "authentication password"
+}
+```
+
+## <a id="azure-mssql-fog"></a> Azure SQL (MSSQL) Failover Group
+
+This section applies to the csb-azure-mssql-failover-group service.
+This section lists the default plans and configuration options for Azure SQL Failover Group on Azure.
+
+### <a id="azure-mssql-fog-plans"></a> Plans
+
+The table below lists the plans for the csb-azure-mssql-failover-group service:
+
+| Plan       | CPUs | Storage Size |
+|------------|------|--------------|
+| small       | 2    | 50&nbsp;GB       |
+| medium      | 8    | 200&nbsp;GB       |
+| large       | 32   | 500&nbsp;GB       |
+
+### Configuration Options<%# Make this header an anchor unless the subnav is unusually long. %>
+
+The following options may<%# |can| usually works better. Use |might| to convey possibility. %> be configured.
+
+| Option Name | Values              | Default |
+|-------------|---------------------|---------|
+| max_storage_gb  |             | 50      |
+| cores       | 1&ndash;64, multiple of 2 | 2       |
+
+#### Azure Notes
+
+Except as noted below, configuration is generally the same as
+<%# [Azure SQL](./mssql-plans-and-config.md). -- Need proper link %>
+
+##### Azure specific config parameters
+
+| Parameter | Type | Description |Default |
+|-----------|--------|------------|--------|
+| instance_name  |string| service instance name | csb-azsql-*instance_id* |
+| resource_group |string| resource group for instance<%# |for example| is preferred. %> | rg-*instance_name* |
+| location  |string|Azure location to deploy service instance | westus |
+| failover_location |string| Azure location for failover instance | `DEFAULT-REGIONAL-PAIR`, see the [Microsoft Documentation](https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions#azure-regional-pairs) |
+| read_write_endpoint_failover_policy | string | Read/Write failover policy - `Automatic` or `Manual` | `Automatic` |
+| failover_grace_minutes | number | grace period in minutes before failover with data loss is attempted | 60 |
+| azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
+| azure_subscription_id | string | ID of Azure subscription for instance<%# |for example| is preferred. %> | config file value `azure.subscription_id` |
+| azure_client_id | string | ID of Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_id` |
+| azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_secret` |
+| sku_name | string | Azure sku (typically, tier [GP_S,GP,BC,HS] + family [Gen4,Gen5] + cores, e.g. <%# |For example| is preferred. %>G<%# Write all ordered steps as numbers. %>P_S_Gen4_1, GP_Gen5_8, see [vCore](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases) and [DTU](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases))<%# The link name must be |Microsoft documentation|. %> Will be computed from cores if empty. `az sql db list-editions -l <location> -o table` will<%# Avoid |will|: present tense is preferred. %> show all valid values. | |
+| authorized_network | string | The Azure subnet ID (long form) that the instance is connected to via<%# |through|, |using| and |by means of| are preferred. %> a service endpoint. The subnet must have the `Microsoft.sql` service enabled. | |
+| skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
+
+Note: Currently Azure SQL is not available in all regions.
+The enum in the YML lists all the valid regions as of 2/12/2020
+
+### Azure Notes<%# Make this header an anchor unless the subnav is unusually long. %>
+
+Azure SQL instances are
+[vCore model](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal)
+<%# The link name must be |Microsoft documentation|. %> and Gen5 hardware generation
+unless overridden by `sku_name` parameter.
+
+CPU/memory size mapped into
+[Azure sku's](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases)
+<%# The link name must be |Microsoft documentation|. %> as follows:
+
+##### Core to sku mapping
+
+| Cores | Sku |
+|-------|-----|
+| 1  | GP_Gen5_1 |
+| 2  | GP_Gen5_2 |
+| 4  | GP_Gen5_4 |
+| 8  | GP_Gen5_8  |
+| 16 | GP_Gen5_16 |
+| 32 | GP_Gen5_32 |
+| 80 | GP_Gen5_80 |
+
+Note: in order for `cf update-service -p <new plan>` to work, the sku's must be
+the same family (GP_S, GP, or HS.) Otherwise Azure will<%# Avoid |will|: present tense is preferred. %> refuse the update request.
+
+## Binding Credentials<%# Make this header an anchor unless the subnav is unusually long. %>
+
+The binding credentials for Azure SQL Failover Group have the following shape:
 
 ```json
 {
@@ -128,19 +389,75 @@ The binding credentials for Azure SQL database have the following shape:
     "databaseLogin" : "authentication user name",
     "databaseLoginPassword" : "authentication password"
 }
+```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
+
+### Notes on the Secondary DB<%# |database| is preferred. %> created by FOG<%# Make this header an anchor unless the subnav is unusually long. %>
+
+Because the secondary (failover) database is implicitly created when the failover
+group is created, the broker doesn't<%# Do not use contractions. %> currently gain any control over that db instance.
+This will<%# Avoid |will|: present tense is preferred. %> manifest itself when a `cf update` is executed.
+Changes to SKU, etc won't<%# Do not use contractions. %> get propagated to the secondary database.
+The current workaround is to subsume control of the secondary database instance that can then be managed with `cf`
+
+#### Steps to gain control of secondary database instance
+
+The status output from `cf service <fog instance>` has the information needed to subsume
+  control over the secondary DB<%# |database| is preferred. %>:
+
+```bash
+$ cf service example-fog
+Showing info of service example-fog in org pivotal / space ernie as admin...
+
+name:            example-fog
+service:         csb-azure-mssql-failover-group
+tags:
+plan:            small
+description:     Manages auto failover group for managed Azure SQL on the Azure Platform
+documentation:   https://docs.microsoft.com/en-us/azure/sql-database/sql-database-auto-failover-group/
+dashboard:
+
+Showing status of last operation from service example-fog...
+
+status:    create succeeded
+message:   created failover group csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143 (id:
+           /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary/failoverGroups/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143), primary db csb-db (id:
+           /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary/databases/csb-db) on server csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary (id:
+           /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary), secondary db csb-db (id:
+           /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db) on server csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary (id:
+           /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary) URL:
+           https://portal.azure.com/#@29248f74-371f-4db2-9a50-c62a6877a0c1/resource/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary/failoverGroup
+started:   2020-09-21T18:43:51Z
+updated:   2020-09-21T18:49:04Z
+
+There are no bound apps for this service.
+```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
+
+The secondary db id is the required piece of information to subsume control of the db instance.
+
+```bash
+$ cf create-service csb-masb-mssql-db-subsume current secondary-db -c '{"azure_db_id":"/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db"}'
+Creating service instance secondary-db in org pivotal / space ernie as admin...
+OK
+
+Create in progress. Use 'cf services' or 'cf service secondary-db' to check operation status.
+
+Attention: The plan `current` of service `csb-masb-mssql-db-subsume` is not free.  The instance `secondary-db` will incur a cost.  Contact your administrator if you think this is in error.
 ```
 
-## <a id="azure-mssql-fog-preconfig"></a> Preconfigured Server Pairs for Azure SQL (MSSQL) Failover Groups: Plans and Configuration
-
-### Applies to service *csb-azure-mssql-db-failover-group*<%# Make this header an anchor unless the subnav is unusually long. %>
-
-This section details the service which manages Azure SQL Failover Group databases
-on pre-configured server pairs on Azure.
-i.e. If the customer already has a Failover Group database server pre-configured,
-they should use this service instead of the more general Azure SQL Failover Group service
+The secondary db is now under `cf` control and `cf update` may
+<%# |can| usually works better. Use |might| to convey possibility. %> be used to modify its configuration.
 
 
-### Plans<%# Make this header an anchor unless the subnav is unusually long. %>
+## <a id="azure-mssql-fog-preconfig"></a> Pre-configured Server Pairs for Azure SQL (MSSQL) Failover Groups
+
+This section applies to the csb-azure-mssql-db-failover-group service, which manages
+Azure SQL Failover Group databases on pre-configured server pairs on Azure.
+If the customer already has a failover group database server pre-configured,
+they should use this service instead of the more general Azure SQL Failover Group service.
+
+### <a id="azure-mssql-fog-preconfig-plans"></a> Plans
+
+The table below lists the plans for the csb-azure-mssql-db-failover-group service:
 
 | Plan       | CPUs | Storage Size |
 |------------|------|--------------|
@@ -149,8 +466,8 @@ they should use this service instead of the more general Azure SQL Failover Grou
 |large       | 32   | 500&nbsp;GB        |
 |existing    | n/a  | n/a          |
 
-The `existing` plan connects to an existing failover group database to allow apps
-(typically in a second foundation) to bind to the database.
+The `existing` plan connects to an existing failover group database to allow apps,
+typically in a second foundation, to bind to the database.
 
 ### Plan Configuration Parameters<%# Make this header an anchor unless the subnav is unusually long. %>
 
@@ -338,17 +655,18 @@ Attention: The plan `current` of service `csb-masb-mssql-db-subsume` is not free
 The secondary database is now under `cf` control and `cf update` might be used to modify its configuration.
 
 
-##<a id="azure-mssql-fog-runner"></a> Azure SQL Failover Group Failover Runner
+## <a id="azure-mssql-fog-runner"></a> Azure SQL Failover Group Failover Runner
 
-### Applies to *csb-azure-mssql-fog-run-failover* service<%# Make this header an anchor unless the subnav is unusually long. %>
+This section applies to the csb-azure-mssql-fog-run-failover service.
 
-The run failover service is a pseudo service that upon provisioning will
-<%# Avoid |will|: present tense is preferred. %> cause a fail over group secondary server to become the primary.
-Upon de-provisioning, the failover is undone and the original primary server once again becomes the primary.
+The csb-azure-mssql-fog-run-failover service is a pseudo-service that upon
+provisioning causes a failover group secondary server to become the primary.
+Upon de-provisioning, the failover is undone and the original primary server
+once again becomes the primary.
 
-### Plans<%# Make this header an anchor unless the subnav is unusually long. %>
+### <a id="azure-mssql-fog-runner-plans"></a> Plans
 
-The only plan is *standard*.
+The only plan is `standard`.
 
 ### Provision Parameters<%# Make this header an anchor unless the subnav is unusually long. %>
 
@@ -371,405 +689,25 @@ The following parameters may be configured during service provisioning
 There are no binding credentials for this service.
 
 
-## <a id="azure-mssql-fog"></a> Azure SQL (MSSQL) Failover Group Plans and Configuration
 
-### Applies to service *csb-azure-mssql-failover-group*<%# Make this header an anchor unless the subnav is unusually long. %>
 
-These are the default plans and configuration options for Azure SQL Failover Group on Azure.
 
-### Plans<%# Make this header an anchor unless the subnav is unusually long. %>
 
-| Plan       | CPUs | Storage Size |
-|------------|------|--------------|
-| small       | 2    | 50&nbsp;GB         |
-| medium      | 8    | 200&nbsp;GB        |
-| large       | 32   | 500&nbsp;GB       |
 
-### Configuration Options<%# Make this header an anchor unless the subnav is unusually long. %>
+## <a id="azure-postgresql"></a> Azure PostgreSQL
 
-The following options may<%# |can| usually works better. Use |might| to convey possibility. %> be configured.
+This section applies to the csb-azure-postgresql service.
+This section lists the default plans and configuration options for PostgreSQL on Azure.
 
-| Option Name | Values              | Default |
-|-------------|---------------------|---------|
-| max_storage_gb  |             | 50      |
-| cores       | 1&ndash;64, multiple of 2 | 2       |
+### <a id="azure-postgresql-plans"></a> Plans
 
-#### Azure Notes
-
-Except as noted below, configuration is generally the same as
-<%# [Azure SQL](./mssql-plans-and-config.md). -- Need proper link %>
-
-##### Azure specific config parameters
-
-| Parameter | Type | Description |Default |
-|-----------|--------|------------|--------|
-| instance_name  |string| service instance name | csb-azsql-*instance_id* |
-| resource_group |string| resource group for instance<%# |for example| is preferred. %> | rg-*instance_name* |
-| location  |string|Azure location to deploy service instance | westus |
-| failover_location |string| Azure location for failover instance | `DEFAULT-REGIONAL-PAIR`, see the [Microsoft Documentation](https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions#azure-regional-pairs) |
-| read_write_endpoint_failover_policy | string | Read/Write failover policy - `Automatic` or `Manual` | `Automatic` |
-| failover_grace_minutes | number | grace period in minutes before failover with data loss is attempted | 60 |
-| azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
-| azure_subscription_id | string | ID of Azure subscription for instance<%# |for example| is preferred. %> | config file value `azure.subscription_id` |
-| azure_client_id | string | ID of Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_id` |
-| azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_secret` |
-| sku_name | string | Azure sku (typically, tier [GP_S,GP,BC,HS] + family [Gen4,Gen5] + cores, e.g. <%# |For example| is preferred. %>G<%# Write all ordered steps as numbers. %>P_S_Gen4_1, GP_Gen5_8, see [vCore](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases) and [DTU](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases))<%# The link name must be |Microsoft documentation|. %> Will be computed from cores if empty. `az sql db list-editions -l <location> -o table` will<%# Avoid |will|: present tense is preferred. %> show all valid values. | |
-| authorized_network | string | The Azure subnet ID (long form) that the instance is connected to via<%# |through|, |using| and |by means of| are preferred. %> a service endpoint. The subnet must have the `Microsoft.sql` service enabled. | |
-| skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
-
-Note: Currently Azure SQL is not available in all regions.
-The enum in the YML lists all the valid regions as of 2/12/2020
-
-### Azure Notes<%# Make this header an anchor unless the subnav is unusually long. %>
-
-Azure SQL instances are
-[vCore model](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal)
-<%# The link name must be |Microsoft documentation|. %> and Gen5 hardware generation
-unless overridden by `sku_name` parameter.
-
-CPU/memory size mapped into
-[Azure sku's](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases)
-<%# The link name must be |Microsoft documentation|. %> as follows:
-
-##### Core to sku mapping
-
-| Cores | Sku |
-|-------|-----|
-| 1  | GP_Gen5_1 |
-| 2  | GP_Gen5_2 |
-| 4  | GP_Gen5_4 |
-| 8  | GP_Gen5_8  |
-| 16 | GP_Gen5_16 |
-| 32 | GP_Gen5_32 |
-| 80 | GP_Gen5_80 |
-
-Note: in order for `cf update-service -p <new plan>` to work, the sku's must be
-the same family (GP_S, GP, or HS.) Otherwise Azure will<%# Avoid |will|: present tense is preferred. %> refuse the update request.
-
-## Binding Credentials<%# Make this header an anchor unless the subnav is unusually long. %>
-
-The binding credentials for Azure SQL Failover Group have the following shape:
-
-```json
-{
-    "name" : "database name",
-    "hostname" : "database server host",
-    "port" : "database server port",
-    "username" : "authentication user name",
-    "password" : "authentication password",
-    "uri" : "database connection URI",
-    "jdbcUrl" : "jdbc format connection URI",
-    "sqldbName" : "database name",
-    "sqlServerName" : "server name",
-    "sqlServerFullyQualifiedDomainName" : "server fqdn",
-    "databaseLogin" : "authentication user name",
-    "databaseLoginPassword" : "authentication password"
-}
-```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
-
-### Notes on the Secondary DB<%# |database| is preferred. %> created by FOG<%# Make this header an anchor unless the subnav is unusually long. %>
-
-Because the secondary (failover) database is implicitly created when the failover
-group is created, the broker doesn't<%# Do not use contractions. %> currently gain any control over that db instance.
-This will<%# Avoid |will|: present tense is preferred. %> manifest itself when a `cf update` is executed.
-Changes to SKU, etc won't<%# Do not use contractions. %> get propagated to the secondary database.
-The current workaround is to subsume control of the secondary database instance that can then be managed with `cf`
-
-#### Steps to gain control of secondary database instance
-
-The status output from `cf service <fog instance>` has the information needed to subsume
-  control over the secondary DB<%# |database| is preferred. %>:
-
-```bash
-$ cf service example-fog
-Showing info of service example-fog in org pivotal / space ernie as admin...
-
-name:            example-fog
-service:         csb-azure-mssql-failover-group
-tags:
-plan:            small
-description:     Manages auto failover group for managed Azure SQL on the Azure Platform
-documentation:   https://docs.microsoft.com/en-us/azure/sql-database/sql-database-auto-failover-group/
-dashboard:
-
-Showing status of last operation from service example-fog...
-
-status:    create succeeded
-message:   created failover group csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143 (id:
-           /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary/failoverGroups/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143), primary db csb-db (id:
-           /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary/databases/csb-db) on server csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary (id:
-           /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary), secondary db csb-db (id:
-           /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db) on server csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary (id:
-           /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary) URL:
-           https://portal.azure.com/#@29248f74-371f-4db2-9a50-c62a6877a0c1/resource/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary/failoverGroup
-started:   2020-09-21T18:43:51Z
-updated:   2020-09-21T18:49:04Z
-
-There are no bound apps for this service.
-```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
-
-The secondary db id is the required piece of information to subsume control of the db instance.
-
-```bash
-$ cf create-service csb-masb-mssql-db-subsume current secondary-db -c '{"azure_db_id":"/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db"}'
-Creating service instance secondary-db in org pivotal / space ernie as admin...
-OK
-
-Create in progress. Use 'cf services' or 'cf service secondary-db' to check operation status.
-
-Attention: The plan `current` of service `csb-masb-mssql-db-subsume` is not free.  The instance `secondary-db` will incur a cost.  Contact your administrator if you think this is in error.
-```
-
-The secondary db is now under `cf` control and `cf update` may
-<%# |can| usually works better. Use |might| to convey possibility. %> be used to modify its configuration.
-
-
-## <a id="azure-mssql-server"></a> Azure SQL (MSSQL) Server Plans and Configuration
-
-### Applies to service *csb-azure-mssql-server*<%# Make this header an anchor unless the subnav is unusually long. %>
-
-*csb-azure-mssql-server* manages stand alone Azure SQL server instances on Azure. No databases are created or managed.
-
-### Plans<%# Make this header an anchor unless the subnav is unusually long. %>
-
-The only plan is *standard*.
-
-### Provision Parameters<%# Make this header an anchor unless the subnav is unusually long. %>
-
- The following parameters may<%# |can| usually works better. Use |might| to convey possibility. %> be configured during service provisioning (`cf create-service csb-azure-mssql-server standard ... -c '{...}'`)
-
-| Parameter Name | Type | Description | Default |
-|----------------|------|-------------|---------|
-| instance_name | string | instance name for server | csb-azsql-svr-*instance_id* |
-| resource_group | string | resource group for the server | rg-*instance_name* |
-| admin_username | string | admin username for server | randomly generated string |
-| admin_password | string | admin password for server | randomly generated string |
-| location | string | Azure location to create server | westus |
-| azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
-| azure_subscription_id | string | ID of Azure subscription for instance<%# |for example| is preferred. %> | config file value `azure.subscription_id` |
-| azure_client_id | string | ID of Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_id` |
-| azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_secret` |
-| authorized_network | string | The Azure subnet ID (long form) that the instance is connected to via<%# |through|, |using| and |by means of| are preferred. %> a service endpoint. The subnet must have the `Microsoft.sql` service enabled. | |
-| skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
-
-### Binding Credentials<%# Make this header an anchor unless the subnav is unusually long. %>
-
-The binding credentials for Azure SQL Failover Group have the following shape:
-
-```json
-{
-    "hostname" : "database server host",
-    "port" : "database server port",
-    "username" : "authentication user name",
-    "password" : "authentication password",
-    "sqlServerName" : "server name",
-    "sqldbResourceGroup" : "resource group for server",
-    "sqlServerFullyQualifiedDomainName" : "server fqdn",
-    "databaseLogin" : "authentication user name",
-    "databaseLoginPassword" : "authentication password"
-}
-```
-
-## <a id="azure-mssql"></a> Azure SQL (MSSQL) Plans and Configuration
-
-### Applies to service *csb-azure-mssql*<%# Make this header an anchor unless the subnav is unusually long. %>
-
-These are the default plans and configuration options for Azure SQL on Azure.
-
-### Plans<%# Make this header an anchor unless the subnav is unusually long. %>
-
-| Plan       | CPUs | Storage Size |
-|------------|------|--------------|
-| small       | 2    | 50GB<%# |&nbsp;GB| is preferred. %>         |
-| medium      | 8    | 200GB<%# |&nbsp;GB| is preferred. %>        |
-| large       | 32   | 500GB<%# |&nbsp;GB| is preferred. %>        |
-| extra-large | 64   | 1TB          |
-
-### Configuration Options<%# Make this header an anchor unless the subnav is unusually long. %>
-
-The following plan parameters can be<%# Consider switching to active voice. %> configured.
-
-| Option Name | Values              | Default |
-|-------------|---------------------|---------|
-| max_storage_gb  |            | 50      |
-| cores       | 1-&ndash;64, multiple of 2 | 2       |
-
-
-### Provision Parameters<%# Make this header an anchor unless the subnav is unusually long. %>
-
-The following parameters may<%# |can| usually works better. Use |might| to convey possibility. %>
-be configured during service provisioning (`cf create-service csb-azure-mssql ... -c '{...}'`)
-
-| Parameter Name | Type | Description | Default  |
-|----------------|------|-------------|----------|
-| instance_name  |string| service instance name | csb-azsql-*instance_id* |
-| resource_group |string| resource group for instance<%# |for example| is preferred. %> | rg-*instance_name* |
-| db_name        |string| database name | csb-db |
-| location       |string| Azure region to deploy service instance | westus |
-| azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
-| azure_subscription_id | string | ID of Azure subscription for instance<%# |for example| is preferred. %> | config file value `azure.subscription_id` |
-| azure_client_id | string | ID of Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_id` |
-| azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_secret` |
-| sku_name | string | Azure sku (typically, tier [GP_S,GP,BC,HS] + family [Gen4,Gen5] + cores, e.g. <%# |For example| is preferred. %>G<%# Write all ordered steps as numbers. %>P_S_Gen4_1, GP_Gen5_8, see [vCore](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases) and [DTU](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases))<%# The link name must be |Microsoft documentation|. %> Will be computed from cores if empty. `az sql db list-editions -l <location> -o table` will<%# Avoid |will|: present tense is preferred. %> show all valid values. | |
-| authorized_network | string | The Azure subnet ID (long form) that the instance is connected to via<%# |through|, |using| and |by means of| are preferred. %> a service endpoint. The subnet must have the `Microsoft.sql` service enabled. | |
-| skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
-
-Note: Currently Azure SQL is not available in all regions. The enum in the YML lists all the valid regions as of 2/12/2020
-
-#### Azure Notes
-
-Azure SQL instances are
-[vCore model](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal)
-<%# The link name must be |Microsoft documentation|. %> and Gen5 hardware generation
-unless overridden by `sku_name` parameter.
-
-CPU/memory size mapped into
-[Azure sku's](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases)
-<%# The link name must be |Microsoft documentation|. %> as follows:
-
-##### Core to sku mapping
-
-| Cores | Sku |
-|-------|-----|
-| 1  | GP_Gen5_1 |
-| 2  | GP_Gen5_2 |
-| 4  | GP_Gen5_4 |
-| 8  | GP_Gen5_8  |
-| 16 | GP_Gen5_16 |
-| 32 | GP_Gen5_32 |
-| 80 | GP_Gen5_80 |
-
-Note: in order for `cf update-service -p <new plan>` to work, the sku's must be
-the same family (GP_S, GP, or HS.) Otherwise Azure will<%# Avoid |will|: present tense is preferred. %>
-refuse the update request.
-
-### Binding Credentials<%# Make this header an anchor unless the subnav is unusually long. %>
-
-The binding credentials for Azure SQL have the following shape:
-
-```json
-{
-    "name" : "database name",
-    "hostname" : "database server host",
-    "port" : "database server port",
-    "username" : "authentication user name",
-    "password" : "authentication password",
-    "uri" : "database connection URI",
-    "jdbcUrl" : "jdbc format connection URI",
-    "sqldbName" : "database name",
-    "sqlServerName" : "server name",
-    "sqlServerFullyQualifiedDomainName" : "server fqdn",
-    "databaseLogin" : "authentication user name",
-    "databaseLoginPassword" : "authentication password"
-}
-```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
-
-##<a id="azure-mssql"></a> Azure SQL (MSSQL) Plans and Configuration
-
-### Applies to service *csb-azure-mssql*<%# Make this header an anchor unless the subnav is unusually long. %>
-
-These are the default plans and configuration options for Azure SQL on Azure.
-
-### Plans<%# Make this header an anchor unless the subnav is unusually long. %>
-
-| Plan       | CPUs | Storage Size |
-|------------|------|--------------|
-| small       | 2    | 50&nbsp;GB        |
-| medium      | 8    | 200&nbsp;GB       |
-| large       | 32   | 500&nbsp;GB       |
-| extra-large | 64   | 1&nbsp;TB          |
-
-### Configuration Options<%# Make this header an anchor unless the subnav is unusually long. %>
-
-The following plan parameters can be<%# Consider switching to active voice. %> configured.
-
-| Option Name | Values              | Default |
-|-------------|---------------------|---------|
-| max_storage_gb  |            | 50      |
-| cores       | 1-&ndash;64, multiple of 2 | 2       |
-
-
-### Provision Parameters<%# Make this header an anchor unless the subnav is unusually long. %>
-
-The following parameters may<%# |can| usually works better. Use |might| to convey possibility. %> be configured during service
-provisioning (`cf create-service csb-azure-mssql ... -c '{...}'`)
-
-| Parameter Name | Type | Description | Default  |
-|----------------|------|-------------|----------|
-| instance_name  |string| service instance name | csb-azsql-*instance_id* |
-| resource_group |string| resource group for instance<%# |for example| is preferred. %> | rg-*instance_name* |
-| db_name        |string| database name | csb-db |
-| location       |string| Azure region to deploy service instance | westus |
-| azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
-| azure_subscription_id | string | ID of Azure subscription for instance<%# |for example| is preferred. %> | config file value `azure.subscription_id` |
-| azure_client_id | string | ID of Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_id` |
-| azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_secret` |
-| sku_name | string | Azure sku (typically, tier [GP_S,GP,BC,HS] + family [Gen4,Gen5] + cores, e.g. <%# |For example| is preferred. %>G<%# Write all ordered steps as numbers. %>P_S_Gen4_1, GP_Gen5_8, see [vCore](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases) and [DTU](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases))<%# The link name must be |Microsoft documentation|. %> Will be computed from cores if empty. `az sql db list-editions -l <location> -o table` will<%# Avoid |will|: present tense is preferred. %> show all valid values. | |
-| authorized_network | string | The Azure subnet ID (long form) that the instance is connected to via<%# |through|, |using| and |by means of| are preferred. %> a service endpoint. The subnet must have the `Microsoft.sql` service enabled. | |
-| skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
-
-Note: Currently Azure SQL is not available in all regions. The enum in the YML lists all the valid regions as of 2/12/2020
-
-#### Azure Notes
-
-Azure SQL instances are
-[vCore model](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal)
-<%# The link name must be |Microsoft documentation|. %> and Gen5 hardware generation
-unless overridden by `sku_name` parameter.
-
-CPU/memory size mapped into
-[Azure sku's](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases)
-<%# The link name must be |Microsoft documentation|. %> as follows:
-
-##### Core to sku mapping
-
-| Cores | Sku |
-|-------|-----|
-| 1  | GP_Gen5_1 |
-| 2  | GP_Gen5_2 |
-| 4  | GP_Gen5_4 |
-| 8  | GP_Gen5_8  |
-| 16 | GP_Gen5_16 |
-| 32 | GP_Gen5_32 |
-| 80 | GP_Gen5_80 |
-
-> Note in order for `cf update-service -p <new plan>` to work, the sku's must be the same family (GP_S, GP, or HS.) Otherwise Azure will<%# Avoid |will|: present tense is preferred. %> refuse the update request.
-
-### Binding Credentials<%# Make this header an anchor unless the subnav is unusually long. %>
-
-The binding credentials for Azure SQL have the following shape:
-
-```json
-{
-    "name" : "database name",
-    "hostname" : "database server host",
-    "port" : "database server port",
-    "username" : "authentication user name",
-    "password" : "authentication password",
-    "uri" : "database connection URI",
-    "jdbcUrl" : "jdbc format connection URI",
-    "sqldbName" : "database name",
-    "sqlServerName" : "server name",
-    "sqlServerFullyQualifiedDomainName" : "server fqdn",
-    "databaseLogin" : "authentication user name",
-    "databaseLoginPassword" : "authentication password"
-}
-```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
-
-
-## <a id="azure-postgresql"></a> Azure PostgreS<%# Use <%= vars.product_short %>QL Plans and Configuration
-
-### Applies to service *csb-azure-postgresql*<%# Make this header an anchor unless the subnav is unusually long. %>
-These are the default plans and configuration options for PostgreSQL on Azure
-
-### Plans<%# Make this header an anchor unless the subnav is unusually long. %>
+The table below lists the plans for the csb-azure-postgresql service:
 
 | Plan | Version | CPUs | Memory Size | Disk Size |
 |------|---------|------|-------------|-----------|
-|small | 11      | 2    | min<%# |minimum| is preferred. %> 4GB<%# |&nbsp;GB| is preferred. %>     | 5GB<%# |&nbsp;GB| is preferred. %>       |
-|medium| 11      | 4    | min<%# |minimum| is preferred. %> 8GB<%# |&nbsp;GB| is preferred. %>     | 10GB<%# |&nbsp;GB| is preferred. %>      |
-|large | 11      | 8    | min<%# |minimum| is preferred. %> 16GB<%# |&nbsp;GB| is preferred. %>    | 20GB<%# |&nbsp;GB| is preferred. %>      |
-
+|small | 11      | 2    | minimum 4&nbsp;GB    | 5&nbsp;GB       |
+|medium| 11      | 4    | minimum 8&nbsp;GB    | 10&nbsp;GB      |
+|large | 11      | 8    | minimum 16&nbsp;GB   | 20&nbsp;GB     |
 
 ### Configuration Options<%# Make this header an anchor unless the subnav is unusually long. %>
 
@@ -856,11 +794,13 @@ The binding credentials for PostgreSQL have the following shape:
 ```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
 
 
-## <a id="azure-storage-account"></a> Azure Storage Account Plans and Configuration
+## <a id="azure-storage-account"></a> Azure Storage Account
 
-This section details the different plans and configurations for Azure Storage Account
+This section details the different plans and configurations for Azure Storage Account.
 
-### Plans<%# Make this header an anchor unless the subnav is unusually long. %>
+### <a id="azure-storage-account-plans"></a> Plans
+
+The table below lists the plans for Azure Storage Account:
 
 | Plan | Description |
 |------|-------------|
