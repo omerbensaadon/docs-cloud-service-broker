@@ -453,6 +453,7 @@ To subsume control over the secondary database: <%# Procedure needs improvement 
     cf service FOG-INSTANCE
     ```
 
+    For example:
     <pre class="terminal">$ cf service example-fog
     Showing info of service example-fog in org pivotal / space ernie as admin...
 
@@ -680,6 +681,7 @@ To subsume control over the secondary database: <%# Procedure needs improvement 
     cf service FOG-INSTANCE
     ```
 
+    For example:
     <pre class="terminal">$ cf service example-fog
     Showing info of service example-fog in org pivotal / space ernie as admin...
 
@@ -882,7 +884,7 @@ above, when provisioning a csb-azure-postgresql service:
   <%# The enum in the YAML lists all the valid regions as of 2/12/2020. --  Which YAML? %>
 </p>
 
-### <a id="azure-mssql-binding-creds"></a> Binding Credentials
+### <a id="azure-postgresql-binding-creds"></a> Binding Credentials
 
 The format for binding credentials for PostgreSQL is as follows:
 
@@ -949,6 +951,6 @@ The format for binding credentials for Azure Storage Account is as follows:
 {
     "storage_account_name" : "STORAGE-ACCOUNT-NAME",
     "primary_access_key" : "PRIMARY-ACCESS-KEY",
-    "secondary_access_key" : "SECONDARY-ACCESS-KEY",
+    "secondary_access_key" : "SECONDARY-ACCESS-KEY"
 }
 ```
