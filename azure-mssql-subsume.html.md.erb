@@ -7,7 +7,7 @@ owner: Cloud Service Broker
 
 This topic describes moving an MSSQL database instance
 from the Microsoft Azure Service Broker for VMware Tanzu tile
-to the Cloud Service Broker on Azure tile.
+to the <%= vars.product_short %> on Azure tile.
 
 This process of moving control of an instance from one broker tile
 to another is called _subsuming_ the instance.
@@ -15,8 +15,8 @@ to another is called _subsuming_ the instance.
 ## <a id='about'></a> About Subsuming MSSQL Database Instance
 
 Because the Microsoft Azure Service (MAS) Broker for VMware Tanzu tile
-is going out of support, it is important to move MSSQL database instances that 
-were created by the MAS Broker over to the Cloud Service Broker.
+is going out of support, it is important to move MSSQL database instances that
+were created by the MAS Broker over to the <%= vars.product_short %>.
 
 Subsuming the instance allows you to move the database from the control of one broker
 to the control of another without migrating the data.
@@ -53,8 +53,8 @@ in _Installing and Configuring Microsoft Azure Service Broker_.
 
 ## <a id='subsume'></a> Subsume a Microsoft Azure Service Broker MSSQL Database Instance
 
-To subsume control of an existing MAS-brokered MSSQL database instance to 
-the Cloud Service Broker:
+To subsume control of an existing MAS-brokered MSSQL database instance to
+the <%= vars.product_short %>:
 
 1. Get the MAS-brokered database instance details by running:
 
@@ -108,7 +108,7 @@ the Cloud Service Broker:
       --resource-group azure-service-broker --query id -o tsv
     </pre>
 
-3. Create a new MSSQL service instance using Cloud Service Broker and
+3. Create a new MSSQL service instance using <%= vars.product_short %> and
    import the existing MSSQL resource by including the metadata as shown:
 
     ```
@@ -117,7 +117,7 @@ the Cloud Service Broker:
 
     Where:
     * `NEW-SERVICE-INSTANCE` is a name you choose for the new service instance
-       that Cloud Service Broker creates to replace the MSAB service instance.
+       that <%= vars.product_short %> creates to replace the MSAB service instance.
     * `SERVER-ADMIN-PASSWORD` is the admin password for the database.
        See [Prerequisite](#prereq) above.
     * `AZURE-RESOURCE-ID` is found in the output of step 2 above.
@@ -132,13 +132,13 @@ $ cf create-service csb-masb-mssql-db-subsume current secondary-db -c \
 
 
 4. Disconnect the app from the MASB service binding by running:
-    
+
     ```
-    cf unbind-service EXISTING-APP MASB-SERVICE-INSTANCE
+    cf unbind-service APP-NAME MASB-SERVICE-INSTANCE
     ```
 
     Where:
-    * `EXISTING-APP` is the app using the database.
+    * `APP-NAME` is the app using the database.
     * `MASB-SERVICE-INSTANCE` is the name of the service instance,
     the MAS-brokered database instance.
 
@@ -149,10 +149,10 @@ $ cf unbind-service my-app masb-instance
 5. Bind the app to the new service instance by running:
 
     ```
-    cf bind-service EXISTING-APP NEW-SERVICE-INSTANCE
+    cf bind-service APP-NAME NEW-SERVICE-INSTANCE
     ```
 
-    Where `NEW-SERVICE-INSTANCE` is the name of the Cloud Service Broker service instance
+    Where `NEW-SERVICE-INSTANCE` is the name of the <%= vars.product_short %> service instance
     that you created in step 3 above.
 
     For example:
@@ -181,4 +181,4 @@ $ cf unbind-service my-app masb-instance
 
 When all MAS-brokered service instances for all apps have been moved to Cloud Service-brokered instances,
 you can uninstall the Microsoft Azure Service Broker for VMware Tanzu tile
-from Ops Manager.
+from <%= vars.ops_manager %>.
