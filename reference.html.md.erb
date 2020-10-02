@@ -9,7 +9,8 @@ This topic provides reference information about the plans and configuration
 parameters used for configuring services.
 
 
-<%# Is there a logical order for the sections in this topic? Which will is the most generic? Which will be most used? %>
+<%# Is there a logical order for the sections in this topic?
+Which will is the most generic? Which will be most used? %>
 ## <a id="azure-mssql"></a> Azure SQL (MSSQL)
 
 This section applies to the csb-azure-mssql service.
@@ -49,19 +50,104 @@ Can we have an example? %>
 
 The table below lists the parameters you can configure when provisioning a csb-azure-mssql service:
 
-| Parameter Name | Type | Description | Default  |
-|----------------|------|-------------|----------|
-| instance_name  |string| service instance name | csb-azsql-INSTANCE-ID |
-| resource_group |string| resource group for instance | rg-INSTANCE-NAME|
-| db_name        |string| database name | csb-db |
-| location       |string| Azure region to deploy service instance | westus |
-| azure_tenant_id | string | ID of Azure tenant for instance | config file value `azure.tenant_id` |
-| azure_subscription_id | string | ID of Azure subscription for instance | config file value `azure.subscription_id` |
-| azure_client_id | string | ID of Azure service principal to authenticate for instance creation | config file value `azure.client_id` |
-| azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance creation | config file value `azure.client_secret` |
-| sku_name | string | Azure sku (typically, tier [GP_S,GP,BC,HS] + family [Gen4,Gen5] + cores, e.g. GP_S_Gen4_1, GP_Gen5_8, see [vCore](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases) and [DTU](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases))Will be computed from cores if empty. `az sql db list-editions -l LOCATION -o table` will show all valid values. | |
-| authorized_network | string | The Azure subnet ID (long form) that the instance is connected to through a service endpoint. The subnet must have the `Microsoft.sql` service enabled. | |
-| skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
+<style>
+main table {
+  table-layout: fixed;
+}
+</style>
+
+<table>
+  <thead>
+    <tr>
+      <th width="20%">Parameter</th>
+      <th width="10%">Type</th>
+      <th width="50%">Description</th>
+      <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>instance_name</code></td>
+    <td>string</td>
+    <td>The name of the service instance.</td>
+    <td><code>csb-azsql-INSTANCE-ID</code> <%# I assumed that *instance_id* is a placeholder. Is that correct? Also see other tables %></td>
+  </tr>
+  <tr>
+    <td><code>resource_group</code></td>
+    <td>string</td>
+    <td>The Azure resource group in which to create the instance.</td>
+    <td><code>rg-INSTANCE-NAME</code> <%# I assumed that *instance_name* is a placeholder. Is that correct? %></td>
+  </tr>
+  <tr>
+    <td><code>db_name</code></td>
+    <td>string</td>
+    <td>The name of the database.</td>
+    <td><code>csb-db</code></td>
+  </tr>
+  <tr>
+    <td><code>location</code></td>
+    <td>string</td>
+    <td>The Azure region in which to deploy the service instance.</td>
+    <td><code>westus</code></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>Config file value: <code>azure.tenant_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>Config file value: <code>azure.subscription_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
+    <td>Config file value: <code>azure.client_id</code> <%# Which config file? %></td>
+  </tr>
+    <tr>
+      <td><code>azure_client_secret</code></td>
+      <td>string</td>
+      <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+      <td>Config file value: <code>azure.client_secret</code> <%# Which config file? %></td>
+    </tr>
+  <tr>
+    <td><code>sku_name</code></td>
+    <td>string</td>
+    <td>
+      The Azure stock-keeping unit (SKU). This is usually formatted as <code>TIER_FAMILY_NUMBER-OF-CORES</code>. Where:
+      <ul>
+        <li>Examples of <code>TIER</code> are <code>GP_S</code>, <code>GP</code>, <code>BC</code>, and <code>HS</code></li>
+        <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+      </ul>
+      Example SKUs are <code>GP_S_Gen4_1</code> and <code>GP_Gen5_8</code>.<br>
+      This is computed from cores if empty. <%# Clarification needed. Link to core mapping below? %>
+      To show all valid values, run: <pre><code>az sql db list-editions -l LOCATION -o table</code></pre> <%# Clarification needed %>
+      For information about the the vCore purchasing model, see the
+      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.
+      For information about the the DTU purchasing model, see the
+      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>authorized_network</code></td>
+    <td>string</td>
+    <td>The Azure subnet ID, in long form, that the instance is connected to through a service endpoint.
+    The subnet must have the <code>Microsoft.sql</code> service enabled.</td>
+    <td></td>
+  </tr>
+  <tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
 
 <p class="note">
   <strong>Note:</strong> Currently Azure SQL is not available in all regions.
@@ -165,17 +251,87 @@ Can we have an example? %>
 
 The table below lists the parameters you can configure when provisioning a csb-azure-mssql-db service:
 
-| Parameter Name | Type | Description | Default |
-|----------------|------|-------------|---------|
-| `db_name` | string | The database name | `csb-fog-db-INSTANCE-ID` <%# I assumed that *instance_id* was a place holder. Is this correct? %> |
-| `server`  | string | The name of the server on which to create the database. The server name is from `server_credentials`. <%# Clarification needed %> | |
-| `server_credentials` | JSON | A list of server credentials on which databases can be created, *server* must match one of *name*. <%# Clarification needed %>  Format: <pre><code>{ "NAME-1": { "server_name":"...", "server_resource_group":"...", "admin_username":"...", "admin_password":"..."}, "NAME-2":{"server_name":..., ...}...}</code></pre>
-| `azure_tenant_id` | string | The ID of the Azure tenant for the service instance. | Config file value `azure.tenant_id` <%# Which config file? %> |
-| `azure_subscription_id` | string | The ID of the Azure subscription for the service instance. | Config file value `azure.subscription_id` <%# Which config file? %> |
-| `azure_client_id` | string | The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %> | Config file value `azure.client_id` <%# Which config file? %> |
-| `azure_client_secret` | string | The secret (password) for the Azure service principal to authenticate for instance creation. | Config file value `azure.client_secret` <%# Which config file? %> |
-| `sku_name` | string | The Azure stock-keeping unit (SKU). This is usually formatted as `TIER_FAMILY_NUMBER-OF-CORES`. Where: <ul><li>Examples of `TIER` are `GP_S`, `GP`, `BC`, and `HS`</li><li>Examples of `FAMILY` are `Gen4` and `Gen5`</li></ul> Example SKUs are, `GP_S_Gen4_1`, `GP_Gen5_8`. Will be computed from cores if empty. <%# Clarification needed %> Run `az sql db list-editions -l LOCATION -o table` to show all valid values. <%# Clarification needed %> For more information about the the vCore purchasing model, see the [Microsoft documentation](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases). For more information about the the DTU purchasing model, see the [Microsoft documentation](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases).  | |
-| `skip_provider_registration` | boolean | Set to `true` to skip automatic Azure provider registration. Set if the service principal being used does not have the rights to register providers. | `false` |
+<table>
+  <thead>
+    <tr>
+      <th width="20%">Parameter</th>
+      <th width="10%">Type</th>
+      <th width="50%">Description</th>
+      <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>db_name</code></td>
+    <td>string</td>
+    <td>The name of the database.</td>
+    <td><code>csb-fog-db-INSTANCE-ID</code> <%# I assumed that *instance_id* was a place holder. Is this correct? %></td>
+  </tr>
+  <tr>
+    <td><code>server</code></td>
+    <td>string</td>
+    <td>The name of the server on which to create the database.
+    The server name is from <code>server_credentials</code>. <%# Clarification needed %></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>server_credentials</code></td>
+    <td>JSON</td>
+    <td>A list of server credentials on which databases can be created, <code>server</code>
+    must match one of <code>name</code>. <%# Clarification needed %>
+    Format: <pre class="terminal"><code>{ "NAME-1": { "server_name":"...", "server_resource_group":"...", "admin_username":"...", "admin_password":"..."}, "NAME-2":{"server_name":..., ...}...}</code></pre></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>Config file value: <code>azure.tenant_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>Config file value: <code>azure.subscription_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
+    <td>Config file value: <code>azure.client_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>Config file value: <code>azure.client_secret</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>sku_name</code></td>
+    <td>string</td>
+    <td>
+      The Azure stock-keeping unit (SKU). This is usually formatted as <code>TIER_FAMILY_NUMBER-OF-CORES</code>. Where:
+      <ul>
+        <li>Examples of <code>TIER</code> are <code>GP_S</code>, <code>GP</code>, <code>BC</code>, and <code>HS</code></li>
+        <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+      </ul>
+      Example SKUs are <code>GP_S_Gen4_1</code> and <code>GP_Gen5_8</code>.<br>
+      This is computed from cores if empty. <%# Clarification needed. Link to core mapping below? %>
+      To show all valid values, run: <pre><code>az sql db list-editions -l LOCATION -o table</code></pre> <%# Clarification needed %>
+      For information about the the vCore purchasing model, see the
+      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.
+      For information about the the DTU purchasing model, see the
+      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
 
 <p class="note">
   <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
@@ -294,19 +450,84 @@ Can we have an example? %>
 
 The table below lists the parameters you can configure when provisioning a csb-azure-mssql-server service:
 
-| Parameter Name | Type | Description | Default |
-|----------------|------|-------------|---------|
-| `instance_name` | string | instance name for server | `csb-azsql-svr-INSTANCE-ID` |
-| `resource_group` | string | resource group for the server | `rg-INSTANCE-NAME` |
-| `admin_username` | string | admin username for server | randomly generated string |
-| `admin_password` | string | admin password for server | randomly generated string |
-| `location` | string | Azure location to create server | `westus` |
-| `azure_tenant_id` | string | ID of Azure tenant for instance | Config file value: `azure.tenant_id` |
-| `azure_subscription_id` | string | ID of Azure subscription for instance | Config file value: `azure.subscription_id` |
-| `azure_client_id` | string | ID of Azure service principal to authenticate for instance creation | Config file value: `azure.client_id` |
-| `azure_client_secret` | string | Secret (password) for Azure service principal to authenticate for instance creation | Config file value: `azure.client_secret` |
-| `authorized_network` | string | The Azure subnet ID (long form) that the instance is connected to through a service endpoint. The subnet must have the `Microsoft.sql` service enabled. | |
-| `skip_provider_registration` | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
+<table>
+  <thead>
+    <tr>
+      <th width="20%">Parameter</th>
+      <th width="10%">Type</th>
+      <th width="50%">Description</th>
+      <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>instance_name</code></td>
+    <td>string</td>
+    <td>The name of the service instance for the server.</td>
+    <td><code>csb-azsql-svr-INSTANCE-ID</code></td>
+  </tr>
+  <tr>
+    <td><code>resource_group</code></td>
+    <td>string</td>
+    <td>The Azure resource group in which to create the instance.</td>
+    <td><code>rg-INSTANCE-NAME</code></td>
+  </tr>
+  <tr>
+    <td><code>admin_username</code></td>
+    <td>string</td>
+    <td>The admin username for the server.</td>
+    <td>A randomly generated string.</td>
+  </tr>
+  <tr>
+    <td><code>admin_password</code></td>
+    <td>string</td>
+    <td>The admin password for the server.</td>
+    <td>A randomly generated string.</td>
+  </tr>
+  <tr>
+    <td><code>location</code></td>
+    <td>string</td>
+    <td>The Azure location in which to create the server.</td>
+    <td><code>westus</code></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>Config file value: <code>azure.tenant_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>Config file value: <code>azure.subscription_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
+    <td>Config file value: <code>azure.client_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>Config file value: <code>azure.client_secret</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>authorized_network</code></td>
+    <td>string</td>
+    <td>The Azure subnet ID, in long form, that the instance is connected to through a service endpoint.
+    The subnet must have the <code>Microsoft.sql</code> service enabled.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
 
 ### <a id="azure-mssql-server-binding-creds"></a> Binding Credentials
 
@@ -359,21 +580,109 @@ Except as noted below, the configuration is generally the same as for [Azure SQL
 
 The table below lists the parameters you can configure when provisioning a csb-azure-mssql-failover-group service:
 
-| Parameter | Type | Description |Default |
-|-----------|--------|------------|--------|
-| instance_name  |string| service instance name | csb-azsql-*instance_id* |
-| resource_group |string| resource group for instance<%# |for example| is preferred. %> | rg-*instance_name* |
-| location  |string|Azure location to deploy service instance | westus |
-| failover_location |string| Azure location for failover instance | `DEFAULT-REGIONAL-PAIR`, see the [Microsoft Documentation](https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions#azure-regional-pairs) |
-| read_write_endpoint_failover_policy | string | Read/Write failover policy - `Automatic` or `Manual` | `Automatic` |
-| failover_grace_minutes | number | grace period in minutes before failover with data loss is attempted | 60 |
-| azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
-| azure_subscription_id | string | ID of Azure subscription for instance<%# |for example| is preferred. %> | config file value `azure.subscription_id` |
-| azure_client_id | string | ID of Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_id` |
-| azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_secret` |
-| sku_name | string | Azure sku (typically, tier [GP_S,GP,BC,HS] + family [Gen4,Gen5] + cores, e.g. <%# |For example| is preferred. %>G<%# Write all ordered steps as numbers. %>P_S_Gen4_1, GP_Gen5_8, see [vCore](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases) and [DTU](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases))<%# The link name must be |Microsoft documentation|. %> Will be computed from cores if empty. `az sql db list-editions -l <location> -o table` will<%# Avoid |will|: present tense is preferred. %> show all valid values. | |
-| authorized_network | string | The Azure subnet ID (long form) that the instance is connected to via<%# |through|, |using| and |by means of| are preferred. %> a service endpoint. The subnet must have the `Microsoft.sql` service enabled. | |
-| skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
+<table>
+  <thead>
+    <tr>
+      <th width="20%">Parameter</th>
+      <th width="10%">Type</th>
+      <th width="50%">Description</th>
+      <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>instance_name</code></td>
+    <td>string</td>
+    <td>The name of the service instance.</td>
+    <td><code>csb-azsql-INSTANCE-ID</code></td>
+  </tr>
+  <tr>
+    <td><code>resource_group</code></td>
+    <td>string</td>
+    <td>The Azure resource group in which to create the instance.</td>
+    <td><code>rg-INSTANCE-NAME</code></td>
+  </tr>
+  <tr>
+    <td><code>location</code></td>
+    <td>string</td>
+    <td>The Azure region in which to deploy the service instance.</td>
+    <td><code>westus</code></td>
+  </tr>
+  <tr>
+    <td><code>failover_location</code></td>
+    <td>string</td>
+    <td>The Azure region for the failover instance.</td>
+    <td><code>DEFAULT-REGIONAL-PAIR</code>. For information about regional pairs, see the <a href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions#azure-regional-pairs">Microsoft Documentation</a></td>
+  </tr>
+  <tr>
+    <td><code>read_write_endpoint_failover_policy</code></td>
+    <td>string</td>
+    <td>The Read/Write failover policy. The options are <code>Automatic</code> or <code>Manual</code></td>.
+    <td><code>Automatic</code></td>
+  </tr>
+  <tr>
+    <td><code>failover_grace_minutes</code></td>
+    <td>number</td>
+    <td>The grace period in minutes before failover with data loss is attempted.</td>
+    <td><code>60</code></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>Config file value: <code>azure.tenant_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>Config file value: <code>azure.subscription_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
+    <td>Config file value: <code>azure.client_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>Config file value: <code>azure.client_secret</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>sku_name</code></td>
+    <td>string</td>
+    <td>
+      The Azure stock-keeping unit (SKU). This is usually formatted as <code>TIER_FAMILY_NUMBER-OF-CORES</code>. Where:
+      <ul>
+        <li>Examples of <code>TIER</code> are <code>GP_S</code>, <code>GP</code>, <code>BC</code>, and <code>HS</code></li>
+        <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+      </ul>
+      Example SKUs are <code>GP_S_Gen4_1</code> and <code>GP_Gen5_8</code>.<br>
+      This is computed from cores if empty. <%# Clarification needed. Link to core mapping below? %>
+      To show all valid values, run: <pre><code>az sql db list-editions -l LOCATION -o table</code></pre> <%# Clarification needed %>
+      For information about the the vCore purchasing model, see the
+      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.
+      For information about the the DTU purchasing model, see the
+      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>authorized_network</code></td>
+    <td>string</td>
+    <td>The Azure subnet ID, in long form, that the instance is connected to through a service endpoint.
+    The subnet must have the <code>Microsoft.sql</code> service enabled.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
 
 <p class="note">
   <strong>Note:</strong> Currently Azure SQL is not available in all regions.
@@ -543,20 +852,103 @@ Can we have an example? %>
 
 The table below lists the parameters you can configure when provisioning a csb-azure-mssql-db-failover-group service:
 
-| Parameter Name | Type | Description | Default |
-|----------------|------|-------------|---------|
-| instance_name | string | instance name for failover group | csb-azsql-fog-*instance_id* |
-| db_name | string | database name | csb-fog-db-*instance_id* |
-| server_pair | string | server pair from *server_credential_pairs* on which to create failover DB<%# |database| is preferred. %> | |
-| server_credential_pairs | JSON | list of server pairs on which failover DB<%# |database| is preferred. %>'s can be<%# Consider switching to active voice. %> created, *server_pair* must match one of *name*. Format: `{ "name": { "admin_username":"...", "admin_password":"...", "primary":{"server_name":"...", "resource_group":..."}, "secondary":{"server_name":"...", "resource_group":..."}, ...}`| |
-| read_write_endpoint_failover_policy | string | Read/Write failover policy - `Automatic` or `Manual` | `Automatic` |
-| failover_grace_minutes | number | grace period in minutes before failover with data loss is attempted | 60 |
-| azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
-| azure_subscription_id | string | ID of Azure subscription for instance<%# |for example| is preferred. %> | config file value `azure.subscription_id` |
-| azure_client_id | string | ID of Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_id` |
-| azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_secret` |
-| sku_name | string | Azure sku (typically, tier [GP_S,GP,BC,HS] + family [Gen4,Gen5] + cores, e.g. <%# |For example| is preferred. %>G<%# Write all ordered steps as numbers. %>P_S_Gen4_1, GP_Gen5_8, see [vCore](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases) and [DTU](https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases))<%# The link name must be |Microsoft documentation|. %> Will be computed from cores if empty. `az sql db list-editions -l <location> -o table` will<%# Avoid |will|: present tense is preferred. %> show all valid values. | |
-| skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
+<table>
+  <thead>
+    <tr>
+    <th width="20%">Parameter</th>
+    <th width="10%">Type</th>
+    <th width="50%">Description</th>
+    <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>instance_name</code></td>
+    <td>string</td>
+    <td>The name of the failover group service instance.</td>
+    <td><code>csb-azsql-fog-INSTANCE-ID</code></td>
+  </tr>
+  <tr>
+    <td><code>db_name</code></td>
+    <td>string</td>
+    <td>The name of the database.</td>
+    <td><code>csb-fog-db-INSTANCE-ID</code></td>
+  </tr>
+  <tr>
+    <td><code>server_pair</code></td>
+    <td>string</td>
+    <td>The server pair from <code>server_credential_pairs</code> on which to create the failover database.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>server_credential_pairs</code></td>
+    <td>JSON</td>
+    <td>A list of server pairs on which failover databases can be created, <code>server_pair</code> must match one of <code>name</code>.
+    Format: <pre class="terminal"><code>{ "name": { "admin_username":"...", "admin_password":"...", "primary":{"server_name":"...", "resource_group":..."}, "secondary":{"server_name":"...", "resource_group":..."}, ...}</code></pre></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>read_write_endpoint_failover_policy</code></td>
+    <td>string</td>
+    <td>The Read/Write failover policy. The options are <code>Automatic</code> or <code>Manual</code></td>.
+    <td><code>Automatic</code></td>
+  </tr>
+  <tr>
+    <td><code>failover_grace_minutes</code></td>
+    <td>number</td>
+    <td>The grace period in minutes before failover with data loss is attempted.</td>
+    <td><code>60</code></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>Config file value: <code>azure.tenant_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>Config file value: <code>azure.subscription_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
+    <td>Config file value: <code>azure.client_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>Config file value: <code>azure.client_secret</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>sku_name</code></td>
+    <td>string</td>
+    <td>
+      The Azure stock-keeping unit (SKU). This is usually formatted as <code>TIER_FAMILY_NUMBER-OF-CORES</code>. Where:
+      <ul>
+        <li>Examples of <code>TIER</code> are <code>GP_S</code>, <code>GP</code>, <code>BC</code>, and <code>HS</code></li>
+        <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+      </ul>
+      Example SKUs are <code>GP_S_Gen4_1</code> and <code>GP_Gen5_8</code>.<br>
+      This is computed from cores if empty. <%# Clarification needed. Link to core mapping below? %>
+      To show all valid values, run: <pre><code>az sql db list-editions -l LOCATION -o table</code></pre> <%# Clarification needed %>
+      For information about the the vCore purchasing model, see the
+      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.
+      For information about the the DTU purchasing model, see the
+      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
 
 <p class="note">
   <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
@@ -754,16 +1146,66 @@ Can we have an example? %>
 
 The table below lists the parameters you can configure when provisioning a csb-azure-mssql-fog-run-failover service:
 
-| Parameter Name | Type | Description | Default |
-|----------------|------|-------------|---------|
-| fog_instance_name | string | instance name for failover group to target |
-| server_pair_name | string | server pair from *server_pairs* |
-| server_pairs | JSON | list of failover group server pairs, *server_pair* must match one of *name*. Format: `{ "name": { "primary":{"server_name":"...", "resource_group":..."}, "secondary":{"server_name":"...", "resource_group":..."}, ...}` |
-| azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
-| azure_subscription_id | string | ID of Azure subscription for instance<%# |for example| is preferred. %> | config file value `azure.subscription_id` |
-| azure_client_id | string | ID of Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_id` |
-| azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_secret` |
-| skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
+<table>
+  <thead>
+    <tr>
+    <th width="20%">Parameter</th>
+    <th width="10%">Type</th>
+    <th width="50%">Description</th>
+    <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>fog_instance_name</code></td>
+    <td>string</td>
+    <td>The name of the service instance for the failover group to target.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>server_pair_name</code></td>
+    <td>string</td>
+    <td>The server pair from <code>server_pairs</code>.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>server_pairs</code></td>
+    <td>JSON</td>
+    <td>A list of failover group server pairs, <code>server_pair</code> must match one of <code>name</code>.
+    Format: <pre class="terminal"><code>{ "name": { "primary":{"server_name":"...", "resource_group":..."}, "secondary":{"server_name":"...", "resource_group":..."}, ...}</code></pre></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>Config file value: <code>azure.tenant_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>Config file value: <code>azure.subscription_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
+    <td>Config file value: <code>azure.client_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>Config file value: <code>azure.client_secret</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
 
 ### <a id="azure-mssql-fog-runner-binding-creds"></a> Binding Credentials
 
@@ -827,14 +1269,14 @@ For more information about the pricing tiers in Azure Database for PostgreSQL, s
   otherwise Azure refuses the update request.
 </p> <%# would this note be better in the sku_name row of the table? %>
 
-#### Storage
+#### <a id="azure-postgresql-storage"></a>Storage
 
 Storage auto grow is enabled on Azure.
 For more information about storage auto grow, see the
 [Microsoft documentation](https://docs.microsoft.com/en-us/azure/postgresql/concepts-pricing-tiers#storage-auto-grow)
 Initial storage sizes are per plan.
 
-#### Core to SKU Mapping
+#### <a id="azure-postgresql-sku-map"></a> Core to SKU Mapping
 
 The table below shows the mapping of number of cores to the corresponding SKU:
 
@@ -865,19 +1307,98 @@ The table below lists the parameters you can configure, as well as those in
 [Platform Specific Configuration Parameters](#azure-postgresql-platform-provision)
 above, when provisioning a csb-azure-postgresql service:
 
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| instance_name | string | name of Azure instance to create | csb-mysql-*instance_id* |
-| location  | string |Azure location to deploy service instance | westus |
-| resource_group | string |The Azure resource group in which to create the instance | rg-*instance_name* |
-| azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
-| azure_subscription_id | string | ID of Azure subscription for instance<%# |for example| is preferred. %> | config file value `azure.subscription_id` |
-| azure_client_id | string | ID of Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_id` |
-| azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_secret` |
-| authorized_network  | string | Subnet ID (the long version) of the VNET/Subnet that is attached to this instance to allow remote access. By default no VNETs are allowed access. ||
-| sku_name | string |[Azure sku](https://docs.microsoft.com/en-us/azure/mysql/concepts-pricing-tiers) (typically, tier [`B`,`GP`,`MO`] + family [`Gen4`,`Gen5`] + *cores*, e.g. `B_Gen4_1`, `GP_Gen5_8`)<%# The link name must be |Microsoft documentation|. %> *overrides* `cores` conversion into sku per table above
-| use_tls | boolean |Use TLS for DB<%# |database| is preferred. %> connections | `true` |
-| skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
+<table>
+  <thead>
+    <tr>
+    <th width="20%">Parameter</th>
+    <th width="10%">Type</th>
+    <th width="50%">Description</th>
+    <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>instance_name</code></td>
+    <td>string</td>
+    <td>The name of the Azure instance to create.</td>
+    <td><code>csb-mysql-INSTANCE-ID</code></td>
+  </tr>
+  <tr>
+    <td><code>location</code></td>
+    <td>string</td>
+    <td>The Azure region in which to deploy the service instance.</td>
+    <td><code>westus</code></td>
+  </tr>
+  <tr>
+    <td><code>resource_group</code></td>
+    <td>string</td>
+    <td>The Azure resource group in which to create the instance.</td>
+    <td><code>rg-INSTANCE-NAME</code></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>Config file value: <code>azure.tenant_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>Config file value: <code>azure.subscription_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
+    <td>Config file value: <code>azure.client_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>Config file value: <code>azure.client_secret</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>authorized_network</code></td>
+    <td>string</td>
+    <td>
+      The subnet ID, in long form, of the Azure Virtual Network (VNet) or subnet
+      that is attached to this instance to allow remote access.
+      By default no VNets are allowed access.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>sku_name</code></td>
+    <td>string</td>
+    <td>
+      The Azure stock-keeping unit (SKU). This is usually formatted as <code>TIER_FAMILY_NUMBER-OF-CORES</code>. Where:
+      <ul>
+        <li>Examples of <code>TIER</code> are <code>B</code>, <code>GP</code>, and <code>MO</code></li>
+        <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+      </ul>
+      Example SKUs are <code>B_Gen4_1</code> and <code>GP_Gen5_8</code>.
+      This overrides the number of <code>cores</code>
+      conversion into SKU per the table in <a href="#azure-postgresql-sku-map">Core to SKU Mapping</a> above. <%# Clarification needed %>
+      For more information about Azure SKUs, see the
+      <a href="https://docs.microsoft.com/en-us/azure/mysql/concepts-pricing-tiers">Microsoft documentation</a>.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>use_tls</code></td>
+    <td>boolean</td>
+    <td>Use TLS for database connections.</td>
+    <td><code>true</code></td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
 
 <p class="note">
   <strong>Note:</strong> Currently MySQL is not available in all regions. <%# Should this say PostgreSQL? %>
@@ -929,19 +1450,86 @@ Can we have an example? %>
 
 The table below lists the parameters you can configure when provisioning a csb-azure-storage-account service:
 
-| Parameter | Type | Description | Default |
-|-----------|------|------|---------|
-| storage_account_type | string | Account type - `BlobStorage`, `BlockBlobStorage`, `FileStorage`, `Storage`, `StorageV2` | `StorageV2` |
-| tier | string | Storage tier to use - `Standard`, `Premium` | `Standard` |
-| replication_type | string | Replication type - `LRS`, `GRS`, `RAGRS`, `ZRS` | `LRS` |
-| location  | Azure location to deploy service instance | westus |
-| resource_group | The Azure resource group in which to create the instance | rg-*account_name* (account_name is always generated) |
-| azure_tenant_id | string | ID of Azure tenant for instance<%# |for example| is preferred. %> | config file value `azure.tenant_id` |
-| azure_subscription_id | string | ID of Azure subscription for instance<%# |for example| is preferred. %> | config file value `azure.subscription_id` |
-| azure_client_id | string | ID of Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_id` |
-| azure_client_secret | string | Secret (password) for Azure service principal to authenticate for instance<%# |for example| is preferred. %> creation | config file value `azure.client_secret` |
-| skip_provider_registration | boolean | `true` to skip automatic Azure provider registration, set if service principal being used does not have rights to register providers | `false` |
-| authorized_networks | list (string) | A list of resource ids for subnets of the Azure Vnet authorized | `[]`
+<table>
+  <thead>
+    <tr>
+      <th width="20%">Parameter</th>
+      <th width="10%">Type</th>
+      <th width="50%">Description</th>
+      <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>storage_account_type</code></td>
+    <td>string</td>
+    <td>
+      The account type - <code>BlobStorage</code>, <code>BlockBlobStorage</code>,
+      <code>FileStorage</code>, <code>Storage</code>, or <code>StorageV2</code>.
+    </td>
+    <td><code>StorageV2</code></td>
+  </tr>
+  <tr>
+    <td><code>tier</code></td>
+    <td>string</td>
+    <td>The storage tier to use - <code>Standard</code> or <code>Premium</code>.</td>
+    <td><code>Standard</code></td>
+  </tr>
+  <tr>
+    <td><code>replication_type</code></td>
+    <td>string</td>
+    <td>The replication type - <code>LRS</code>, <code>GRS</code>, <code>RAGRS</code>, or <code>ZRS</code>.</td>
+    <td><code>LRS</code></td>
+  </tr>
+  <tr>
+    <td><code>location</code></td>
+    <td>string</td>
+    <td>The Azure region in which to deploy the service instance.</td>
+    <td><code>westus</code></td>
+  </tr>
+  <tr>
+    <td><code>resource_group</code></td>
+    <td>string</td>
+    <td>The Azure resource group in which to create the instance.</td>
+    <td><code>rg-ACCOUNT-NAME</code> (<code>ACCOUNT-NAME</code> is always generated)</td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>Config file value: <code>azure.tenant_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>Config file value: <code>azure.subscription_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
+    <td>Config file value: <code>azure.client_id</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>Config file value: <code>azure.client_secret</code> <%# Which config file? %></td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+  <tr>
+    <td><code>authorized_networks</code></td>
+    <td>list (string)</td>
+    <td>A list of resource IDs for subnets of the authorized Azure Vnet.</td>
+    <td><code>[]</code></td>
+  </tr>
+</table>
 
 ### <a id="azure-storage-account-binding-creds"></a> Binding Credentials
 
