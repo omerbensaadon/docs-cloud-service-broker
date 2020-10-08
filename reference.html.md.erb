@@ -42,10 +42,62 @@ The table below lists the plan parameters you can configure:
 
 | Option Name | Values              | Default |
 |-------------|---------------------|---------|
-| max_storage_gb  |            | 50      |
-| cores       | 1&ndash;64, multiple of 2 | 2       |
+| max\_storage\_gb  |            | 50      |
+| cores       | 1&ndash;64, multiples of 2 | 2       |
 
-### <a id="azure-mssql-provision"></a> Provision Parameters
+#### <a id="azure-mssql-skus"></a> SKUs
+
+SKUs are usually formatted as <code>TIER\_FAMILY\_NUMBER-OF-CORES</code>. Where:
+<ul>
+  <li>Examples of <code>TIER</code> are <code>GP\_S</code>, <code>GP</code>, and <code>HS</code></li>
+  <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+</ul>
+Example SKUs are <code>GP\_S\_Gen4\_1</code> and <code>GP\_Gen5\_8</code>.
+
+If you do not define a SKU using the <code>sku_name</code> parameter, the SKU is
+computed from the number of cores in your plan.
+See [Plans](#azure-mssql-db-plans) above.
+
+For a list of all valid SKUs, run:
+
+<pre><code>az sql db list-editions -l LOCATION -o table</code></pre>
+
+The table below shows the mapping of number of cores to the corresponding  Azure
+stock-keeping unit (SKU):
+
+| Cores | SKU |
+|-------|-----|
+| 1  | GP\_Gen5\_1 |
+| 2  | GP\_Gen5\_2 |
+| 4  | GP\_Gen5\_4 |
+| 8  | GP\_Gen5\_8  |
+| 16 | GP\_Gen5\_16 |
+| 32 | GP\_Gen5\_32 |
+| 80 | GP\_Gen5\_80 |
+<%# Is this table necessary? Can we get this information from the links below? %>
+
+For the CPU/memory size mapped onto Azure SKUs, see the
+[Microsoft documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases).<br>
+For information about the the vCore purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.<br>
+For information about the the DTU purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+
+<p class="note">
+  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
+  hardware generation unless you override this default using the <code>sku_name</code> parameter.
+  For more information about the vCore model, see the
+  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
+</p>
+
+<p class="note">
+  <strong>Note:</strong> When updating a service instance, the SKU for the updated
+  service instance must remain in the same family (<code>GP_S</code>, <code>GP</code>, or <code>HS</code>).
+  <%# Should this say tier or family? GP_S is a tier. Can you only use the tiers listed here? %>
+  If you update to a different family, Azure refuses the update request.
+</p>
+
+### <a id="azure-mssql-parameters"></a> Configuration Parameters
 
 You can provision a service by running:
 
@@ -104,49 +156,45 @@ main table {
   <tr>
     <td><code>location</code></td>
     <td>string</td>
-    <td>The Azure region in which to deploy the service instance.</td>
+    <td>
+      The Azure region in which to deploy the service instance.
+      <p class="note">
+        <strong>Note:</strong> Currently Azure SQL is not available in all regions.
+        If you configure a region that is unavailable, <%= vars.product_short %> fails.
+      </p>
+    </td>
     <td><code>westus</code></td>
   </tr>
   <tr>
     <td><code>azure_tenant_id</code></td>
     <td>string</td>
     <td>The ID of the Azure tenant for the service instance.</td>
-    <td>Config file value: <code>azure.tenant_id</code> <%# Which config file? %></td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in Ops Manager.</td>
   </tr>
   <tr>
     <td><code>azure_subscription_id</code></td>
     <td>string</td>
     <td>The ID of the Azure subscription for the service instance.</td>
-    <td>Config file value: <code>azure.subscription_id</code> <%# Which config file? %></td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in Ops Manager.</td>
   </tr>
   <tr>
     <td><code>azure_client_id</code></td>
     <td>string</td>
-    <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
-    <td>Config file value: <code>azure.client_id</code> <%# Which config file? %></td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in Ops Manager.</td>
   </tr>
     <tr>
       <td><code>azure_client_secret</code></td>
       <td>string</td>
       <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
-      <td>Config file value: <code>azure.client_secret</code> <%# Which config file? %></td>
+      <td>The value the operator entered for <strong>Client Secret</strong> in Ops Manager.</td>
     </tr>
   <tr>
     <td><code>sku_name</code></td>
     <td>string</td>
     <td>
-      The Azure stock-keeping unit (SKU). This is usually formatted as <code>TIER_FAMILY_NUMBER-OF-CORES</code>. Where:
-      <ul>
-        <li>Examples of <code>TIER</code> are <code>GP_S</code>, <code>GP</code>, <code>BC</code>, and <code>HS</code></li>
-        <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
-      </ul>
-      Example SKUs are <code>GP_S_Gen4_1</code> and <code>GP_Gen5_8</code>.<br>
-      This is computed from cores if empty. <%# Clarification needed. Link to core mapping below? %>
-      To show all valid values, run: <pre><code>az sql db list-editions -l LOCATION -o table</code></pre> <%# Clarification needed %>
-      For information about the the vCore purchasing model, see the
-      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.
-      For information about the the DTU purchasing model, see the
-      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+      The Azure stock-keeping unit (SKU).
+      For more information about configuring this parameter, see <a href="#azure-mssql-skus">SKUs</a> above.
     </td>
     <td></td>
   </tr>
@@ -167,45 +215,8 @@ main table {
   </tr>
 </table>
 
-<p class="note">
-  <strong>Note:</strong> Currently Azure SQL is not available in all regions.
-  <%# The enum in the YAML lists all the valid regions as of 2/12/2020. --  Which YAML? %>
-</p>
-
-<p class="note">
-  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
-  hardware generation unless you override this default using the <code>sku_name</code> parameter.
-  For more information about the vCore model, see the
-  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
-</p>
-
-For the CPU/memory size mapped onto Azure SKUs, see the
-[Microsoft documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases).
-
-#### Core to SKU Mapping
-
-The table below shows the mapping of number of cores to the corresponding SKU:
-
-| Cores | SKU |
-|-------|-----|
-| 1  | GP_Gen5_1 |
-| 2  | GP_Gen5_2 |
-| 4  | GP_Gen5_4 |
-| 8  | GP_Gen5_8  |
-| 16 | GP_Gen5_16 |
-| 32 | GP_Gen5_32 |
-| 80 | GP_Gen5_80 |
-<%# Is this table necessary? Can we get this information from the link above? %>
-
-<p class="note">
-  <strong>Note:</strong> For the command <code>cf update-service -p PLAN-NAME</code> to work,
-  the SKUs must be the same family
-  <%# Clarification needed. SKUs for which things? Are these the only Compatible families? %>
-  (<code>GP_S</code>, <code>GP</code>, or <code>HS</code>),
-  otherwise Azure refuses the update request.
-</p> <%# would this note be better in the sku_name row of the table? %>
-
 ### <a id="azure-mssql-binding-creds"></a> Binding Credentials
+<%# Who is this section for? Developers or Operators? When should it be used? See also similar sections below. %>
 
 The format for binding credentials for Azure SQL is as follows:
 
@@ -251,11 +262,61 @@ The table below lists the plan parameters you can configure:
 
 | Parameter Name | Values              | Default |
 |-------------|------------------------|---------|
-| max_storage_gb  |                    |  50      |
-| cores       | 1&ndash;64, multiple of 2    | 2       |
+| max\_storage\_gb  |                    |  50      |
+| cores       | 1&ndash;64, multiples of 2    | 2       |
 
+#### <a id="azure-mssql-db-skus"></a> SKUs
 
-### <a id="azure-mssql-db-provision"></a> Provision Parameters
+SKUs are usually formatted as <code>TIER\_FAMILY\_NUMBER-OF-CORES</code>. Where:
+<ul>
+  <li>Examples of <code>TIER</code> are <code>GP\_S</code>, <code>GP</code>, and <code>HS</code></li>
+  <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+</ul>
+Example SKUs are <code>GP\_S\_Gen4\_1</code> and <code>GP\_Gen5\_8</code>.
+
+If you do not define a SKU using the <code>sku_name</code> parameter, the SKU is
+computed from the number of cores in your plan.
+See [Plans](#azure-mssql-db-plans) above.
+
+For a list of all valid SKUs, run:
+
+<pre><code>az sql db list-editions -l LOCATION -o table</code></pre>
+
+The table below shows the mapping of number of cores to the corresponding SKU:
+
+| Cores | SKU |
+|-------|-----|
+| 1  | GP\_Gen5\_1 |
+| 2  | GP\_Gen5\_2 |
+| 4  | GP\_Gen5\_4 |
+| 8  | GP\_Gen5\_8  |
+| 16 | GP\_Gen5\_16 |
+| 32 | GP\_Gen5\_32 |
+| 80 | GP\_Gen5\_80 |
+<%# Is this table necessary? Can we get this information from the links below? %>
+
+For the CPU/memory size mapped onto Azure SKUs, see the
+[Microsoft documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases).<br>
+For information about the the vCore purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.<br>
+For information about the the DTU purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+
+<p class="note">
+  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
+  hardware generation unless you override this default using the <code>sku_name</code> parameter.
+  For more information about the vCore model, see the
+  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
+</p>
+
+<p class="note">
+  <strong>Note:</strong> When updating a service instance, the SKU for the updated
+  service instance must remain in the same family (<code>GP_S</code>, <code>GP</code>, or <code>HS</code>).
+  <%# Should this say tier or family? GP_S is a tier. Can you only use the tiers listed here? %>
+  If you update to a different family, Azure refuses the update request.
+</p>
+
+### <a id="azure-mssql-db-parameters"></a> Configuration Parameters
 
 You can provision a service by running:
 
@@ -335,18 +396,8 @@ provisioning a csb-azure-mssql-db service:
     <td><code>sku_name</code></td>
     <td>string</td>
     <td>
-      The Azure stock-keeping unit (SKU). This is usually formatted as <code>TIER_FAMILY_NUMBER-OF-CORES</code>. Where:
-      <ul>
-        <li>Examples of <code>TIER</code> are <code>GP_S</code>, <code>GP</code>, <code>BC</code>, and <code>HS</code></li>
-        <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
-      </ul>
-      Example SKUs are <code>GP_S_Gen4_1</code> and <code>GP_Gen5_8</code>.<br>
-      This is computed from cores if empty. <%# Clarification needed. Link to core mapping below? %>
-      To show all valid values, run: <pre><code>az sql db list-editions -l LOCATION -o table</code></pre> <%# Clarification needed %>
-      For information about the the vCore purchasing model, see the
-      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.
-      For information about the the DTU purchasing model, see the
-      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+      The Azure stock-keeping unit (SKU).
+      For more information about configuring this parameter, see <a href="#azure-mssql-db-skus">SKUs</a> above.
     </td>
     <td></td>
   </tr>
@@ -358,39 +409,6 @@ provisioning a csb-azure-mssql-db service:
     <td><code>false</code></td>
   </tr>
 </table>
-
-<p class="note">
-  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
-  hardware generation unless you override this default using the <code>sku_name</code> parameter.
-  For more information about the vCore model, see the
-  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
-</p>
-
-For the CPU/memory size mapped onto Azure SKUs, see the
-[Microsoft documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases).
-
-#### Core to SKU Mapping
-
-The table below shows the mapping of number of cores to the corresponding SKU:
-
-| Cores | SKU |
-|-------|-----|
-| 1  | GP_Gen5_1 |
-| 2  | GP_Gen5_2 |
-| 4  | GP_Gen5_4 |
-| 8  | GP_Gen5_8  |
-| 16 | GP_Gen5_16 |
-| 32 | GP_Gen5_32 |
-| 80 | GP_Gen5_80 |
-<%# Is this table necessary? Can we get this information from the link above? %>
-
-<p class="note">
-  <strong>Note:</strong> For the command <code>cf update-service -p PLAN-NAME</code> to work,
-  the SKUs must be the same family
-  <%# Clarification needed. SKUs for which things? Are these the only Compatible families? %>
-  (<code>GP_S</code>, <code>GP</code>, or <code>HS</code>),
-  otherwise Azure refuses the update request.
-</p> <%# would this note be better in the sku_name row of the table? %>
 
 ### <a id="azure-mssql-db-global-defaults"></a> Configure Global Defaults
 <%# Who is this section for? Developers or Operators? When should it be used? See also similar sections below. %>
@@ -607,11 +625,64 @@ The table below lists the options you can configure:
 | max_storage_gb  |             | 50      |
 | cores       | 1&ndash;64, multiple of 2 | 2       |
 
+
+#### <a id="azure-mssql-fog-sku"></a> SKUs
+
+SKUs are usually formatted as <code>TIER\_FAMILY\_NUMBER-OF-CORES</code>. Where:
+<ul>
+  <li>Examples of <code>TIER</code> are <code>GP\_S</code>, <code>GP</code>, and <code>HS</code></li>
+  <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+</ul>
+Example SKUs are <code>GP\_S\_Gen4\_1</code> and <code>GP\_Gen5\_8</code>.
+
+If you do not define a SKU using the <code>sku_name</code> parameter, the SKU is
+computed from the number of cores in your plan.
+See [Plans](#azure-mssql-fog-plans) above.
+
+For a list of all valid SKUs, run:
+
+<pre><code>az sql db list-editions -l LOCATION -o table</code></pre>
+
+The table below shows the mapping of number of cores to the corresponding SKU:
+
+| Cores | SKU |
+|-------|-----|
+| 1  | GP\_Gen5\_1 |
+| 2  | GP\_Gen5\_2 |
+| 4  | GP\_Gen5\_4 |
+| 8  | GP\_Gen5\_8  |
+| 16 | GP\_Gen5\_16 |
+| 32 | GP\_Gen5\_32 |
+| 80 | GP\_Gen5\_80 |
+<%# Is this table necessary? Can we get this information from the links below? %>
+
+For the CPU/memory size mapped onto Azure SKUs, see the
+[Microsoft documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases).<br>
+For information about the the vCore purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.<br>
+For information about the the DTU purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+
+<p class="note">
+  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
+  hardware generation unless you override this default using the <code>sku_name</code> parameter.
+  For more information about the vCore model, see the
+  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
+</p>
+
+<p class="note">
+  <strong>Note:</strong> When updating a service instance, the SKU for the updated
+  service instance must remain in the same family (<code>GP_S</code>, <code>GP</code>, or <code>HS</code>).
+  <%# Should this say tier or family? GP_S is a tier. Can you only use the tiers listed here? %>
+  If you update to a different family, Azure refuses the update request.
+</p>
+
+### <a id="azure-mssql-fog-parameters"></a> Configuration Parameters
+
 Except as noted below, the configuration is generally the same as for [Azure SQL](#azure-mssql) above. <%# Which cofiguration is this referring to? %>
 
-### <a id="azure-mssql-fog-provision"></a> Provision Parameters
-
-The table below lists the parameters you can configure when provisioning a csb-azure-mssql-failover-group service:
+The table below lists the parameters you can configure, using the `-c` flag, when
+provisioning a csb-azure-mssql-failover-group service:
 
 <table>
   <thead>
@@ -668,42 +739,32 @@ The table below lists the parameters you can configure when provisioning a csb-a
     <td><code>azure_tenant_id</code></td>
     <td>string</td>
     <td>The ID of the Azure tenant for the service instance.</td>
-    <td>Config file value: <code>azure.tenant_id</code> <%# Which config file? %></td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in Ops Manager.</td>
   </tr>
   <tr>
     <td><code>azure_subscription_id</code></td>
     <td>string</td>
     <td>The ID of the Azure subscription for the service instance.</td>
-    <td>Config file value: <code>azure.subscription_id</code> <%# Which config file? %></td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in Ops Manager.</td>
   </tr>
   <tr>
     <td><code>azure_client_id</code></td>
     <td>string</td>
-    <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
-    <td>Config file value: <code>azure.client_id</code> <%# Which config file? %></td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in Ops Manager.</td>
   </tr>
   <tr>
     <td><code>azure_client_secret</code></td>
     <td>string</td>
     <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
-    <td>Config file value: <code>azure.client_secret</code> <%# Which config file? %></td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in Ops Manager.</td>
   </tr>
   <tr>
     <td><code>sku_name</code></td>
     <td>string</td>
     <td>
-      The Azure stock-keeping unit (SKU). This is usually formatted as <code>TIER_FAMILY_NUMBER-OF-CORES</code>. Where:
-      <ul>
-        <li>Examples of <code>TIER</code> are <code>GP_S</code>, <code>GP</code>, <code>BC</code>, and <code>HS</code></li>
-        <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
-      </ul>
-      Example SKUs are <code>GP_S_Gen4_1</code> and <code>GP_Gen5_8</code>.<br>
-      This is computed from cores if empty. <%# Clarification needed. Link to core mapping below? %>
-      To show all valid values, run: <pre><code>az sql db list-editions -l LOCATION -o table</code></pre> <%# Clarification needed %>
-      For information about the the vCore purchasing model, see the
-      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.
-      For information about the the DTU purchasing model, see the
-      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+      The Azure stock-keeping unit (SKU).
+      For more information about configuring this parameter, see <a href="#azure-mssql-fog-skus">SKUs</a> above.
     </td>
     <td></td>
   </tr>
@@ -722,44 +783,6 @@ The table below lists the parameters you can configure when provisioning a csb-a
     <td><code>false</code></td>
   </tr>
 </table>
-
-<p class="note">
-  <strong>Note:</strong> Currently Azure SQL is not available in all regions.
-  <%# The enum in the YAML lists all the valid regions as of 2/12/2020. --  Which YAML? %>
-</p>
-
-<p class="note">
-  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
-  hardware generation unless you override this default using the <code>sku_name</code> parameter.
-  For more information about the vCore model, see the
-  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
-</p>
-
-For the CPU/memory size mapped onto Azure SKUs, see the
-[Microsoft documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases).
-
-#### Core to SKU Mapping
-
-The table below shows the mapping of number of cores to the corresponding SKU:
-
-| Cores | SKU |
-|-------|-----|
-| 1  | GP_Gen5_1 |
-| 2  | GP_Gen5_2 |
-| 4  | GP_Gen5_4 |
-| 8  | GP_Gen5_8  |
-| 16 | GP_Gen5_16 |
-| 32 | GP_Gen5_32 |
-| 80 | GP_Gen5_80 |
-<%# Is this table necessary? Can we get this information from the link above? %>
-
-<p class="note">
-  <strong>Note:</strong> For the command <code>cf update-service -p PLAN-NAME</code> to work,
-  the SKUs must be the same family
-  <%# Clarification needed. SKUs for which things? Are these the only Compatible families? %>
-  (<code>GP_S</code>, <code>GP</code>, or <code>HS</code>),
-  otherwise Azure refuses the update request.
-</p> <%# would this note be better in the sku_name row of the table? %>
 
 ### <a id="azure-mssql-fog-binding-creds"></a> Binding Credentials
 
@@ -889,7 +912,51 @@ The table below lists the plan parameters you can configure:
 | max_storage_gb  |             | 50      |
 | cores       | 1&ndash;64, multiple of 2 | 2       |
 
-### <a id="azure-mssql-fog-preconfig-provision"></a> Provision Parameters
+### <a id="azure-mssql-fog-preconfig-sku"></a> SKU
+
+SKUs are usually formatted as <code>TIER\_FAMILY\_NUMBER-OF-CORES</code>. Where:
+<ul>
+  <li>Examples of <code>TIER</code> are <code>GP\_S</code>, <code>GP</code>, and <code>HS</code></li>
+  <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+</ul>
+Example SKUs are <code>GP\_S\_Gen4\_1</code> and <code>GP\_Gen5\_8</code>.
+
+If you do not define a SKU using the <code>sku_name</code> parameter, the SKU is
+computed from the number of cores in your plan.
+See [Plans](#azure-mssql-fog-preconfig-plans) above.
+
+For a list of all valid SKUs, run:
+
+<pre><code>az sql db list-editions -l LOCATION -o table</code></pre>
+
+The table below shows the mapping of number of cores to the corresponding SKU:
+
+| Cores | SKU |
+|-------|-----|
+| 1  | GP\_Gen5\_1 |
+| 2  | GP\_Gen5\_2 |
+| 4  | GP\_Gen5\_4 |
+| 8  | GP\_Gen5\_8  |
+| 16 | GP\_Gen5\_16 |
+| 32 | GP\_Gen5\_32 |
+| 80 | GP\_Gen5\_80 |
+<%# Is this table necessary? Can we get this information from the links below? %>
+
+For the CPU/memory size mapped onto Azure SKUs, see the
+[Microsoft documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases).<br>
+For information about the the vCore purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.<br>
+For information about the the DTU purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+
+<p class="note">
+  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
+  hardware generation unless you override this default using the <code>sku_name</code> parameter.
+  For more information about the vCore model, see the
+  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
+</p>
+
+### <a id="azure-mssql-fog-preconfig-parameters"></a> Configuration Parameters
 
 You can provision a service by running:
 
@@ -963,42 +1030,32 @@ provisioning a csb-azure-mssql-db-failover-group service:
     <td><code>azure_tenant_id</code></td>
     <td>string</td>
     <td>The ID of the Azure tenant for the service instance.</td>
-    <td>Config file value: <code>azure.tenant_id</code> <%# Which config file? %></td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in Ops Manager.</td>
   </tr>
   <tr>
     <td><code>azure_subscription_id</code></td>
     <td>string</td>
     <td>The ID of the Azure subscription for the service instance.</td>
-    <td>Config file value: <code>azure.subscription_id</code> <%# Which config file? %></td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in Ops Manager.</td>
   </tr>
   <tr>
     <td><code>azure_client_id</code></td>
     <td>string</td>
-    <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
-    <td>Config file value: <code>azure.client_id</code> <%# Which config file? %></td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in Ops Manager.</td>
   </tr>
   <tr>
     <td><code>azure_client_secret</code></td>
     <td>string</td>
     <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
-    <td>Config file value: <code>azure.client_secret</code> <%# Which config file? %></td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in Ops Manager.</td>
   </tr>
   <tr>
     <td><code>sku_name</code></td>
     <td>string</td>
     <td>
-      The Azure stock-keeping unit (SKU). This is usually formatted as <code>TIER_FAMILY_NUMBER-OF-CORES</code>. Where:
-      <ul>
-        <li>Examples of <code>TIER</code> are <code>GP_S</code>, <code>GP</code>, <code>BC</code>, and <code>HS</code></li>
-        <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
-      </ul>
-      Example SKUs are <code>GP_S_Gen4_1</code> and <code>GP_Gen5_8</code>.<br>
-      This is computed from cores if empty. <%# Clarification needed. Link to core mapping below? %>
-      To show all valid values, run: <pre><code>az sql db list-editions -l LOCATION -o table</code></pre> <%# Clarification needed %>
-      For information about the the vCore purchasing model, see the
-      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.
-      For information about the the DTU purchasing model, see the
-      <a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+      The Azure stock-keeping unit (SKU).
+      For more information about configuring this parameter, see <a href="#azure-mssql-fog-preconfig-skus">SKUs</a> above.
     </td>
     <td></td>
   </tr>
@@ -1010,31 +1067,6 @@ provisioning a csb-azure-mssql-db-failover-group service:
     <td><code>false</code></td>
   </tr>
 </table>
-
-<p class="note">
-  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
-  hardware generation unless you override this default using the <code>sku_name</code> parameter.
-  For more information about the vCore model, see the
-  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
-</p>
-
-For the CPU/memory size mapped onto Azure SKUs, see the
-[Microsoft documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vcore-resource-limits-single-databases).
-
-#### Core to SKU Mapping
-
-The table below shows the mapping of number of cores to the corresponding SKU:
-
-| Cores | SKU |
-|-------|-----|
-| 1  | GP_Gen5_1 |
-| 2  | GP_Gen5_2 |
-| 4  | GP_Gen5_4 |
-| 8  | GP_Gen5_8  |
-| 16 | GP_Gen5_16 |
-| 32 | GP_Gen5_32 |
-| 80 | GP_Gen5_80 |
-<%# Is this table necessary? Can we get this information from the link above? %>
 
 ### <a id="azure-mssql-fog-preconfig-global-defaults"></a> Configure Global Defaults
 
