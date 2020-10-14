@@ -37,6 +37,7 @@ The table below lists the plans for the csb-azure-mssql service:
 | extra-large | 64   | 1&nbsp;TB         |
 
 ### <a id="azure-mssql-plans-config"></a> Plan Configuration Parameters
+
 <%# What are these and when/how do you configure these? %>
 
 The table below lists the plan parameters you can configure:
@@ -168,25 +169,25 @@ main table {
     <td><code>azure_tenant_id</code></td>
     <td>string</td>
     <td>The ID of the Azure tenant for the service instance.</td>
-    <td>The value the operator entered for <strong>Tenant ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_subscription_id</code></td>
     <td>string</td>
     <td>The ID of the Azure subscription for the service instance.</td>
-    <td>The value the operator entered for <strong>Subscription ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_id</code></td>
     <td>string</td>
     <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
     <tr>
       <td><code>azure_client_secret</code></td>
       <td>string</td>
       <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
-      <td>The value the operator entered for <strong>Client Secret</strong> in Ops Manager.</td>
+      <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
     </tr>
   <tr>
     <td><code>sku_name</code></td>
@@ -215,6 +216,7 @@ main table {
 </table>
 
 ### <a id="azure-mssql-binding-creds"></a> Binding Credentials
+
 <%# Who is this section for? Developers or Operators? When should it be used? See also similar sections below. %>
 
 The format for binding credentials for Azure SQL is as follows:
@@ -234,8 +236,7 @@ The format for binding credentials for Azure SQL is as follows:
     "databaseLogin" : "AUTHENTICATION-USERNAME",
     "databaseLoginPassword" : "AUTHENTICATION-PASSWORD"
 }
-```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
-
+```
 
 
 ## <a id="azure-mssql-db"></a>Azure SQL (MSSQL) Database
@@ -369,25 +370,25 @@ provisioning a csb-azure-mssql-db service:
     <td><code>azure_tenant_id</code></td>
     <td>string</td>
     <td>The ID of the Azure tenant for the service instance.</td>
-    <td>The value the operator entered for <strong>Tenant ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_subscription_id</code></td>
     <td>string</td>
     <td>The ID of the Azure subscription for the service instance.</td>
-    <td>The value the operator entered for <strong>Subscription ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_id</code></td>
     <td>string</td>
     <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
-    <td>The value the operator entered for <strong>Client ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_secret</code></td>
     <td>string</td>
     <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client Secret</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>sku_name</code></td>
@@ -408,15 +409,17 @@ provisioning a csb-azure-mssql-db service:
 </table>
 
 ### <a id="azure-mssql-db-global-defaults"></a> Configure Global Defaults
+
 <%# Who is this section for? Developers or Operators? When should it be used? See also similar sections below. %>
 
-Operators will likely configure `server_credentials` for developers to use.
+Operators usually configure `server_credentials` for developers to use.
 
 <%# See [configuration documentation](./configuration.md) and
 [Azure installation documentation](azure-installation.md) for reference.
 -- Need proper link for configuration.md and azure-installation.md and further clarification. %>
 
-To globally configure `server_credentials`, include the following in the configuration file for the broker:
+To globally configure `server_credentials`, include the following in the configuration file for the
+broker:
 <%# Where is this config file? How to do this? %>
 
 ```yaml
@@ -541,25 +544,25 @@ provisioning a csb-azure-mssql-server service:
     <td><code>azure_tenant_id</code></td>
     <td>string</td>
     <td>The ID of the Azure tenant for the service instance.</td>
-    <td>The value the operator entered for <strong>Tenant ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_subscription_id</code></td>
     <td>string</td>
     <td>The ID of the Azure subscription for the service instance.</td>
-    <td>The value the operator entered for <strong>Subscription ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_id</code></td>
     <td>string</td>
     <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_secret</code></td>
     <td>string</td>
     <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client Secret</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>authorized_network</code></td>
@@ -583,7 +586,7 @@ The format for binding credentials for Azure SQL Server is as follows:
 
 ```json
 {
-    "hostname" : "DATABASE-SERVER-HOST",
+    "hostname" : "DATABASE-SERVER-HOST<%# |BOSH-DIRECTOR-IP| is preferred. %>",
     "port" : "DATABASE-SERVER-PORT",
     "username" : "AUTHENTICATION-USERNAME",
     "password" : "AUTHENTICATION-PASSWORD",
@@ -614,6 +617,7 @@ The table below lists the plans for the csb-azure-mssql-failover-group service:
 | large       | 32   | 500&nbsp;GB       |
 
 ### <a id="azure-mssql-fog-config-options"></a> Configuration Options
+
 <%# Any reason this section is called Configuration Options and not Plan Configuration parameters
 like in the other services? Which is the better name? See also PostgreSQL section below. %>
 
@@ -676,7 +680,7 @@ For information about the the DTU purchasing model, see the
 
 ### <a id="azure-mssql-fog-parameters"></a> Configuration Parameters
 
-Except as noted below, the configuration is generally the same as for [Azure SQL](#azure-mssql) above. <%# Which cofiguration is this referring to? %>
+Except as noted below, the configuration is generally the same as for [Azure SQL](#azure-mssql) above. <%# Which configuration is this referring to? %>
 
 The table below lists the parameters you can configure, using the `-c` flag, when
 provisioning a csb-azure-mssql-failover-group service:
@@ -736,25 +740,25 @@ provisioning a csb-azure-mssql-failover-group service:
     <td><code>azure_tenant_id</code></td>
     <td>string</td>
     <td>The ID of the Azure tenant for the service instance.</td>
-    <td>The value the operator entered for <strong>Tenant ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_subscription_id</code></td>
     <td>string</td>
     <td>The ID of the Azure subscription for the service instance.</td>
-    <td>The value the operator entered for <strong>Subscription ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_id</code></td>
     <td>string</td>
     <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_secret</code></td>
     <td>string</td>
     <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client Secret</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>sku_name</code></td>
@@ -800,7 +804,7 @@ The format for binding credentials for Azure SQL Failover Group is as follows:
     "databaseLogin" : "AUTHENTICATION-USERNAME",
     "databaseLoginPassword" : "AUTHENTICATION-PASSWORD"
 }
-```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
+```
 
 ### <a id="azure-mssql-fog-secondry-db"></a> About the Secondary Database Created by the Failover Group
 
@@ -815,7 +819,7 @@ that can then be managed with the cf CLI.
 
 To subsume control over the secondary database:
 
-1. Retrieve the secondary database ID from the output of the following command:
+1. Retrieve the secondary database ID from the output of the following command<%# Replace with just |run:| %>:
 
     ```
     cf service FOG-INSTANCE
@@ -830,7 +834,7 @@ To subsume control over the secondary database:
     tags:
     plan:            small
     description:     Manages auto failover group for managed Azure SQL on the Azure Platform
-    documentation:   https://docs.microsoft.com/en-us/azure/sql-database/sql-database-auto-failover-group/
+    documentation:   https<span>:</span>//docs.microsoft.com/en-us/azure/sql-database/sql-database-auto-failover-group/
     dashboard:
 
     Showing status of last operation from service example-fog...
@@ -856,7 +860,7 @@ To subsume control over the secondary database:
 1. Subsume control of the database instance by running:
 
     ```
-    cf create-service csb-masb-mssql-db-subsume PLAN-NAME SERVICE-INSTANCE-NAME -c '{"azure_db_id":"DATABASE-ID"}' <%# SI name of secondry db %>
+    cf create-service csb-masb-mssql-db-subsume PLAN-NAME SERVICE-INSTANCE-NAME -c '{"azure_db_id":"DATABASE-ID"}' <%# SI name of secondary db %>
     ```
     Where:
     `PLAN-NAME` is the plan you want for your secondary database instance <%# Should this be the same plan as the primary? %>
@@ -864,8 +868,9 @@ To subsume control over the secondary database:
     `DATABASE-ID` is the database ID you recorded in the step above
 
     For example:
+
     <pre class="terminal">
-    $ cf create-service csb-masb-mssql-db-subsume current secondary-db -c '{"azure_db_id":"/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db"}' <%# SI name of secondry db %>
+    $ cf create-service csb-masb-mssql-db-subsume current secondary-db -c '{"azure_db_id":"/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db"}' <%# SI name of secondary db %>
     Creating service instance secondary-db in org pivotal / space ernie as admin...
     OK
 
@@ -1025,25 +1030,25 @@ provisioning a csb-azure-mssql-db-failover-group service:
     <td><code>azure_tenant_id</code></td>
     <td>string</td>
     <td>The ID of the Azure tenant for the service instance.</td>
-    <td>The value the operator entered for <strong>Tenant ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_subscription_id</code></td>
     <td>string</td>
     <td>The ID of the Azure subscription for the service instance.</td>
-    <td>The value the operator entered for <strong>Subscription ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_id</code></td>
     <td>string</td>
     <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_secret</code></td>
     <td>string</td>
     <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client Secret</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>sku_name</code></td>
@@ -1065,7 +1070,7 @@ provisioning a csb-azure-mssql-db-failover-group service:
 
 ### <a id="azure-mssql-fog-preconfig-global-defaults"></a> Configure Global Defaults
 
-Operators will likely configure `server_credentials_pairs` for developers to use.
+Operators usually configure `server_credentials_pairs` for developers to use.
 
 <%# See [configuration documentation](./configuration.md) and
 [Azure installation documentation](azure-installation.md) for reference.
@@ -1140,7 +1145,7 @@ The format for binding credentials for Azure SQL Failover Group is as follows:
     "databaseLogin" : "AUTHENTICATION-USERNAME",
     "databaseLoginPassword" : "AUTHENTICATION-PASSWORD"
 }
-```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
+```
 
 ### <a id="azure-mssql-fog-preconfig-secondry-db"></a> About the Secondary Database Created by the Failover Group
 
@@ -1155,7 +1160,7 @@ that can then be managed with the cf CLI.
 
 To subsume control over the secondary database:
 
-1. Retrieve the secondary database ID from the output of the following command:
+1. Retrieve the secondary database ID from the output of the following command<%# Replace with just |run:| %>:
 
     ```
     cf service FOG-INSTANCE
@@ -1170,7 +1175,7 @@ To subsume control over the secondary database:
     tags:
     plan:            small
     description:     Manages auto failover group for managed Azure SQL on the Azure Platform
-    documentation:   https://docs.microsoft.com/en-us/azure/sql-database/sql-database-auto-failover-group/
+    documentation:   https<span>:</span>//docs.microsoft.com/en-us/azure/sql-database/sql-database-auto-failover-group/
     dashboard:
 
     Showing status of last operation from service example-fog...
@@ -1196,7 +1201,7 @@ To subsume control over the secondary database:
 1. Subsume control of the database instance by running:
 
     ```
-    cf create-service csb-masb-mssql-db-subsume PLAN-NAME SERVICE-INSTANCE-NAME -c '{"azure_db_id":"DATABASE-ID"}' <%# SI name of secondry db %>
+    cf create-service csb-masb-mssql-db-subsume PLAN-NAME SERVICE-INSTANCE-NAME -c '{"azure_db_id":"DATABASE-ID"}' <%# SI name of secondary db %>
     ```
     Where:
     `PLAN-NAME` is the plan you want for your secondary database instance <%# Should this be the same plan as the primary? %>
@@ -1243,7 +1248,7 @@ cf create-service csb-azure-mssql-fog-run-failover standard SERVICE-INSTANCE-NAM
 You can update the configuration parameters for a service instance by running:
 
 ```
-cf update-service SERVICE-INSTANCE -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+cf update-service SERVICE-INSTANCE-NAME -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
 ```
 
 The table below lists the parameters you can configure, using the `-c` flag, when
@@ -1288,25 +1293,25 @@ provisioning a csb-azure-mssql-fog-run-failover service:
     <td><code>azure_tenant_id</code></td>
     <td>string</td>
     <td>The ID of the Azure tenant for the service instance.</td>
-    <td>The value the operator entered for <strong>Tenant ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_subscription_id</code></td>
     <td>string</td>
     <td>The ID of the Azure subscription for the service instance.</td>
-    <td>The value the operator entered for <strong>Subscription ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_id</code></td>
     <td>string</td>
     <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_secret</code></td>
     <td>string</td>
     <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client Secret</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>skip_provider_registration</code></td>
@@ -1428,7 +1433,7 @@ cf create-service csb-azure-postgresql PLAN-NAME SERVICE-INSTANCE-NAME -c '{"PAR
 You can update the plan or configuration parameters for a service instance by running:
 
 ```
-cf update-service SERVICE-INSTANCE [-p NEW-PLAN] -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+cf update-service SERVICE-INSTANCE-NAME [-p NEW-PLAN] -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
 ```
 
 The table below lists the parameters you can configure, using the `-c` flag, when
@@ -1471,25 +1476,25 @@ provisioning a csb-azure-postgresql service:
     <td><code>azure_tenant_id</code></td>
     <td>string</td>
     <td>The ID of the Azure tenant for the service instance.</td>
-    <td>The value the operator entered for <strong>Tenant ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_subscription_id</code></td>
     <td>string</td>
     <td>The ID of the Azure subscription for the service instance.</td>
-    <td>The value the operator entered for <strong>Subscription ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_id</code></td>
     <td>string</td>
     <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_secret</code></td>
     <td>string</td>
     <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client Secret</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>authorized_network</code></td>
@@ -1539,8 +1544,7 @@ The format for binding credentials for PostgreSQL is as follows:
     "uri" : "DATABASE-CONNECTION-URI",
     "jdbcUrl" : "JDBC-FORMAT-CONNECTION-URI"
 }
-```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
-
+```
 
 
 ## <a id="azure-storage-account"></a> Azure Storage Account
@@ -1567,7 +1571,7 @@ cf create-service csb-azure-storage-account PLAN-NAME SERVICE-INSTANCE-NAME -c '
 You can update the configuration parameters for a service instance by running:
 
 ```
-cf update-service SERVICE-INSTANCE -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+cf update-service SERVICE-INSTANCE-NAME -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
 ```
 
 The table below lists the parameters you can configure, using the `-c` flag, when
@@ -1619,25 +1623,25 @@ provisioning a csb-azure-storage-account service:
     <td><code>azure_tenant_id</code></td>
     <td>string</td>
     <td>The ID of the Azure tenant for the service instance.</td>
-    <td>The value the operator entered for <strong>Tenant ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_subscription_id</code></td>
     <td>string</td>
     <td>The ID of the Azure subscription for the service instance.</td>
-    <td>The value the operator entered for <strong>Subscription ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_id</code></td>
     <td>string</td>
     <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client ID</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>azure_client_secret</code></td>
     <td>string</td>
     <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
-    <td>The value the operator entered for <strong>Client Secret</strong> in Ops Manager.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
   </tr>
   <tr>
     <td><code>skip_provider_registration</code></td>
