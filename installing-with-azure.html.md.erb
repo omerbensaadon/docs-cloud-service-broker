@@ -85,13 +85,15 @@ To configure <%= vars.product_short %> with a database:
 
 1. Enter the credentials for the database used to store the state of the <%= vars.product_short %>.
 
-1. Click **Save**.
+NOTE: The database is not created by the script in this step. You must provide valid connection credentials to an existing database. Validate you can login with the credentials you provide (ie: <user_name>@<host_name> for MySQL) and if the state database is not yet created, create it before applying the tile (ie: `create database <state_database>`).
 
-1. Return to the <%= vars.ops_manager %> Installation Dashboard.
+3. Click **Save**.
 
-1. Click **Review Pending Changes**.
+3. Return to the <%= vars.ops_manager %> Installation Dashboard.
 
-1. Click **Apply changes** to install the <%= vars.product_short %> tile.
+3. Click **Review Pending Changes**.
+
+3. Click **Apply changes** to install the <%= vars.product_short %> tile.
 
 <%# If needed, include additional configuration information below.
 For example, maybe there are configuration options not required for installation but which could be
