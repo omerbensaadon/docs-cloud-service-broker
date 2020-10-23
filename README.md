@@ -63,3 +63,7 @@ After this point, **master** will then be the target for the next version of the
 ## Style Guide
 
 This is a word list for terminology and word usage specific to the Cloud Service Broker for docs.
+
+|Use|Don't use|Notes|
+|---|---------|-----|
+|brokerpak|Brokerpak|All lowercase is most commonly used|
