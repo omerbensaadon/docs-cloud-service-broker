@@ -241,7 +241,7 @@ The format for binding credentials for Azure SQL is as follows:
 ## <a id="azure-mssql-db"></a>Azure SQL (MSSQL) Database
 
 This section applies to the service csb-azure-mssql-db.
-The csb-azure-mssql-db servicde manages Azure SQL databases on pre-configured
+The csb-azure-mssql-db service manages Azure SQL databases on pre-configured
 database servers on Azure.
 
 ### <a id="azure-mssql-db-plans"></a> Plans
@@ -851,7 +851,7 @@ To subsume control over the secondary database:
     <%# Where is the DB ID in this output? -- in the message section %>
     Record the line from `message` that ends with `secondary/databases/csb-db`.
     In the example above the secondary database ID is
-    `/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db`.
+    `/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db`
 
 1. Subsume control of the database instance by running:
 
@@ -1191,7 +1191,7 @@ To subsume control over the secondary database:
     <%# Where is the DB ID in this output? -- in the message section %>
     Record the line from `message` that ends with `secondary/databases/csb-db`.
     In the example above the secondary database ID is
-    `/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db`.
+    `/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db`
 
 1. Subsume control of the database instance by running:
 
@@ -1211,7 +1211,7 @@ To subsume control over the secondary database:
 
     Create in progress. Use 'cf services' or 'cf service secondary-db' to check operation status.
 
-    Attention: The plan `current` of service `csb-masb-mssql-db-subsume` is not free.  The instance `secondary-db` will incur a cost.  Contact your administrator if you think this is in error.
+    Attention: The plan 'current' of service 'csb-masb-mssql-db-subsume' is not free.  The instance 'secondary-db' will incur a cost.  Contact your administrator if you think this is in error.
     </pre>
 
 The secondary database is now under Cloud Foundry control and you can use `cf update`
@@ -1365,7 +1365,7 @@ For more information about the pricing tiers in Azure Database for PostgreSQL, s
 [Microsoft documentation](https://docs.microsoft.com/en-us/azure/postgresql/concepts-pricing-tiers)
 
 <p class="note">
-  <strong>Note:</strong>the maximum vCores is dependent on the Service Tier.
+  <strong>Note:</strong> The maximum vCores is dependent on the Service Tier.
   <code>B_</code> = Basic, <code>GP_</code> = General Purpose, and <code>MO_</code> = Memory Optimized.
   See below for details.
 </p>
