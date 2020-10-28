@@ -109,10 +109,10 @@ the <%= vars.product_short %>:
     </pre>
 
 3. Create a new MSSQL service instance using <%= vars.product_short %>  and
-   import the existing MSSQL resource by including the metadata as shown:
+   import the existing MSSQL resource by choosing the "subsume" plan and including the metadata as shown:
 
     ```
-    cf create-service csb-masb-mssql-db-subsume current NEW-SERVICE-INSTANCE -c '{"admin_password":"SERVER-ADMIN-PASSWORD", "azure_db_id", "AZURE-RESOURCE-ID"}'
+    cf create-service csb-masb-mssql-db subsume NEW-SERVICE-INSTANCE -c '{"admin_password":"SERVER-ADMIN-PASSWORD", "azure_db_id", "AZURE-RESOURCE-ID"}'
     ```
 
     Where:
