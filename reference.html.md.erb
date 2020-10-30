@@ -8,13 +8,13 @@ owner: Cloud Service Broker
 This topic provides reference information about the plans and configuration
 parameters used for configuring service instances.
 
-See the section below for your desired service:
+See the section below for the service that you want:
 
 - [Azure SQL (MSSQL)](#azure-mssql)
 - [Azure SQL (MSSQL) Database](#azure-mssql-db)
 - [Azure SQL (MSSQL) Server](#azure-mssql-server)
 - [Azure SQL (MSSQL) Failover Group](#azure-mssql-fog)
-- [Pre-configured Server Pairs for Azure SQL (MSSQL) Failover Groups](#azure-mssql-fog-preconfig)
+- [Pre-Configured Server Pairs for Azure SQL (MSSQL) Failover Groups](#azure-mssql-fog-preconfig)
 - [Azure SQL Failover Group Failover Runner](#azure-mssql-fog-runner)
 - [Azure PostgreSQL](#azure-postgresql)
 - [Azure Storage Account](#azure-storage-account)
@@ -39,7 +39,7 @@ The table below lists the plans for the csb-azure-mssql service:
 ### <a id="azure-mssql-plans-config"></a> Plan Configuration Parameters
 <%# What are these and when/how do you configure these? %>
 
-The table below lists the plan parameters you can configure:
+The table below lists the plan parameters that you can configure:
 
 | Option Name | Values              | Default |
 |-------------|---------------------|---------|
@@ -115,7 +115,7 @@ Should you use the parameters listed below in the -c flag? -- YES
 Can we have an example? -- $ cf create-service csb-azure-mssql small my-instance -c '{"sku_name": "GP_Gen4_1"}
 See also similar sections below. %>
 
-The table below lists the parameters you can configure, using the `-c` flag, when
+The table below lists the parameters that you can configure, using the `-c` flag, when
 provisioning a csb-azure-mssql service:
 <%# This table is for developers. It gives the params that they can put in the -c flag. See also similar sections below. %>
 
@@ -257,7 +257,7 @@ The table below lists the plans for the csb-azure-mssql-db service:
 
 ### <a id="azure-mssql-db-plans-config"></a> Plan Configuration Parameters
 
-The table below lists the plan parameters you can configure:
+The table below lists the plan parameters that you can configure:
 
 | Parameter Name | Values              | Default |
 |-------------|------------------------|---------|
@@ -327,7 +327,7 @@ You can update the plan or configuration parameters for a service instance by ru
 cf update-service SERVICE-INSTANCE [-p NEW-PLAN] -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
 ```
 
-The table below lists the parameters you can configure, using the `-c` flag, when
+The table below lists the parameters that you can configure, using the `-c` flag, when
 provisioning a csb-azure-mssql-db service:
 
 <table>
@@ -493,7 +493,7 @@ You can update the configuration parameters for a service instance by running:
 cf update-service SERVICE-INSTANCE -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
 ```
 
-The table below lists the parameters you can configure, using the `-c` flag, when
+The table below lists the parameters that you can configure, using the `-c` flag, when
 provisioning a csb-azure-mssql-server service:
 
 <table>
@@ -678,7 +678,7 @@ For information about the the DTU purchasing model, see the
 
 Except as noted below, the configuration is generally the same as for [Azure SQL](#azure-mssql) above. <%# Which cofiguration is this referring to? %>
 
-The table below lists the parameters you can configure, using the `-c` flag, when
+The table below lists the parameters that you can configure, using the `-c` flag, when
 provisioning a csb-azure-mssql-failover-group service:
 
 <table>
@@ -879,7 +879,7 @@ to modify its configuration.
 
 
 
-## <a id="azure-mssql-fog-preconfig"></a> Pre-configured Server Pairs for Azure SQL (MSSQL) Failover Groups
+## <a id="azure-mssql-fog-preconfig"></a> Pre-Configured Server Pairs for Azure SQL (MSSQL) Failover Groups
 
 This section applies to the csb-azure-mssql-db-failover-group service, which manages
 Azure SQL Failover Group databases on pre-configured server pairs on Azure.
@@ -902,7 +902,7 @@ typically in a second foundation, to bind to the database.
 
 ### <a id="azure-mssql-fog-preconfig-plans-config"></a> Plan Configuration Parameters
 
-The table below lists the plan parameters you can configure:
+The table below lists the plan parameters that you can configure:
 
 | Parameter Name | Values           | Default |
 |-------------|---------------------|---------|
@@ -965,7 +965,7 @@ You can update the plan or configuration parameters for a service instance by ru
 cf update-service SERVICE-INSTANCE [-p NEW-PLAN] -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
 ```
 
-The table below lists the parameters you can configure, using the `-c` flag, when
+The table below lists the parameters that you can configure, using the `-c` flag, when
 provisioning a csb-azure-mssql-db-failover-group service:
 
 <table>
@@ -1199,9 +1199,9 @@ To subsume control over the secondary database:
     cf create-service csb-masb-mssql-db-subsume PLAN-NAME SERVICE-INSTANCE-NAME -c '{"azure_db_id":"DATABASE-ID"}' <%# SI name of secondry db %>
     ```
     Where:
-    `PLAN-NAME` is the plan you want for your secondary database instance <%# Should this be the same plan as the primary? %>
-    `SERVICE-INSTANCE-NAME` is the service instance name you choose for your secondary database
-    `DATABASE-ID` is the database ID you recorded in the step above
+    + `PLAN-NAME` is the plan you want for your secondary database instance <%# Should this be the same plan as the primary? %>
+    + `SERVICE-INSTANCE-NAME` is the service instance name you choose for your secondary database
+    + `DATABASE-ID` is the database ID you recorded in the step above
 
     For example:
     <pre class="terminal">
@@ -1246,7 +1246,7 @@ You can update the configuration parameters for a service instance by running:
 cf update-service SERVICE-INSTANCE -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
 ```
 
-The table below lists the parameters you can configure, using the `-c` flag, when
+The table below lists the parameters that you can configure, using the `-c` flag, when
 provisioning a csb-azure-mssql-fog-run-failover service:
 
 <table>
@@ -1431,7 +1431,7 @@ You can update the plan or configuration parameters for a service instance by ru
 cf update-service SERVICE-INSTANCE [-p NEW-PLAN] -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
 ```
 
-The table below lists the parameters you can configure, using the `-c` flag, when
+The table below lists the parameters that you can configure, using the `-c` flag, when
 provisioning a csb-azure-postgresql service:
 
 <table>
@@ -1570,7 +1570,7 @@ You can update the configuration parameters for a service instance by running:
 cf update-service SERVICE-INSTANCE -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
 ```
 
-The table below lists the parameters you can configure, using the `-c` flag, when
+The table below lists the parameters that you can configure, using the `-c` flag, when
 provisioning a csb-azure-storage-account service:
 
 <table>
