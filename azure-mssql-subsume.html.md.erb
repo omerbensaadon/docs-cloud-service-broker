@@ -6,12 +6,14 @@ owner: Cloud Service Broker
 <strong><%= modified_date %></strong>
 
 <p class="note">
-  <strong>Note:</strong> The pattern for subsuming existing instances in v1.1.0 differs from the process detailed in v1.0.0. Please note that the "subsume" 
-plan for MSSQL only exists in v1.1.0. For customers using v1.0.0 (highly discouraged) please refer to <a href = https://docs.pivotal.io/cloud-service-broker/1-0/installing-with-azure.html> 
+  <strong>Note:</strong> The pattern for subsuming existing instances in v1.1.0 differs from the process
+  detailed in v1.0.0.
+  Please note that the "subsume" plan for MSSQL only exists in v1.1.0.
+  For customers using v1.0.0 (highly discouraged) please refer to
+  <a href = https://docs.pivotal.io/cloud-service-broker/1-0/installing-with-azure.html>
   the documentation in v1.0.0 found here. </a>
 </p>
-      
-      
+
 This topic describes moving an MSSQL database instance
 from the Microsoft Azure Service Broker for VMware Tanzu tile
 to the <%= vars.product_short %> on Azure tile.
@@ -40,11 +42,11 @@ Detailed steps for subsuming are given below.
 However, the outline of the process is:
 
 + Create a new Cloud Service-brokered instance
-+ Import information about the MSSQL database instance using the "subsume" plan in CloudFoundry Marketplace (`cf m`).
++ Import information about the MSSQL database instance using the "subsume" plan in the Cloud Foundry Marketplace (`cf m`).
 + Unbind apps from the old MAS-brokered instance.
 + Bind apps to the new <%= vars.product_short %> instance.
 + Purge the connections between the old MAS-brokered instance and the MSSQL database (**don't delete service instances**, more on that later).
-+ Restage any applications which were connected to the legacy database.
++ Restage any apps which were connected to the legacy database.
 
 
 ##<a id="prereq"></a> Prerequisite
@@ -110,8 +112,8 @@ the <%= vars.product_short %>:
       --resource-group azure-service-broker --query id -o tsv
     </pre>
 
-    The variable in the next step, `AZURE-RESOURCE-ID`, refers to the output of this command in full. An example output has been provided below 
-    
+    The variable in the next step, `AZURE-RESOURCE-ID`, refers to the output of this command in full. An example output has been provided below
+
     ```
     /subscriptions/000abc00-0000-00ab-0abc-00000000/resourceGroups/resource-group/providers/Microsoft.Sql/servers/server-name/databases/database-name
     ```
