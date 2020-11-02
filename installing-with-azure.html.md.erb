@@ -1,93 +1,133 @@
 ---
 title: Installing and Configuring Cloud Service Broker on Azure
-owner: Partners
+owner: Cloud Service Broker
 ---
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to install and configure Cloud Service Broker on Azure.
+This topic describes how to install and configure <%= vars.product_short %> on Azure.
 
-#<a id='install'></a> Install and Configure Cloud Service Broker on Azure
+## <a id="install"></a> Install <%= vars.product_short %> on Azure
 
-### Installing Cloud Service Broker on Azure tile
-This section describes how to install the Cloud Service Broker using Ops Manager Installation Dashboard.
+To install the <%= vars.product_short %> using <%= vars.ops_manager %> Installation Dashboard:
 
-1. Download the product file from [Pivotal Network](https://network.pivotal.io/products/cloud-service-broker/). Azure services are provided in the "Azure" release, demarcated as `[Version No.]-azure` (i.e. `v1.0.0-azure`)
+1. Download the product file from
+[<%= vars.product_network %>](https://network.pivotal.io/products/cloud-service-broker/).
+Azure services are provided in the `Azure` release, demarcated as `VERSION-azure`, for example,
+`v1.0.0-azure`.
 
-2. Navigate to the Ops Manager Installation Dashboard and click **Import a Product** to upload the product file.
+1. Navigate to the <%= vars.ops_manager %> Installation Dashboard and click **Import a Product** to
+upload the product file.
 
-3. Under **Import a Product**, click **+** next to the version number of Cloud Service Broker in the left sidebar. (This adds the tile to your staging area)
+1. Under **Import a Product**, click **+** next to the version number of <%= vars.product_short %>
+in the left sidebar. This adds the tile to your staging area.
 
-4. Click the newly added **Cloud Service Broker for Azure** tile.
+1. Click the newly added **Cloud Service Broker for Azure** tile.
 
-### Configuring the Cloud Service Broker on Azure tile
 
-**Configure AZs and networks**
-This section describes how to choose an AZ to run the service broker for Cloud Service Broker. It also describes how to select networks for Cloud Service Broker.
+## <a id="config-azure"></a> Configure the <%= vars.product_short %> on Azure
 
-    1. Click "Assign AZs and Networks"
+The following procedures describe configuring the panes on the <%= vars.product_short %> tile.
 
-    2. Configure the fields as follows:
-    ```
-    | Field |	Instructions |
+
+### <a id="config-azs"></a> Configure AZs and Networks
+
+This section describes how to choose an AZ to run the service broker for <%= vars.product_short %>.
+It also describes how to select networks for <%= vars.product_short %>.
+
+To configure AZs and networks: 
+
+1. Click **Assign AZs and Networks**.
+
+1. Configure the fields as follows:
+
+    | Field | Instructions |
     |-------|----------------|
-    | Place singleton jobs in  | Select the AZ in which the Cloud Service Broker broker VM runs. The broker runs as a singleton job. |
-    | Balance other jobs in | Select the AZ's in which other jobs may run |
-    | Network |	Select a subnet for the Cloud Service Broker broker. This is typically the same subnet that includes the PAS or Elastic Runtime component VMs. |
-    ```
-    3. Click Save.
+    | Place singleton jobs in | Select the AZ in which the broker VM for <%= vars.product_short %> runs. The broker runs as a singleton job. |
+    | Balance other jobs in | Select the AZs in which other jobs can run. |
+    | Network | Select a subnet for the <%= vars.product_short %> broker. This is typically the same subnet that includes the component VMs for <%= vars.app_runtime_full %> (<%= vars.app_runtime_abbr %>). |
 
-**Configure Azure Credentials**
-This section describes how to configure the Azure credentials Cloud Service Broker requires to manage service instances.
+1. Click **Save**.
+
+
+### <a id="config-creds"></a> Configure Azure Credentials
+
+This section describes how to configure the Azure credentials <%= vars.product_short %> requires to
+manage service instances.
 
 To configure Azure credentials:
 
-    1. Click "Azure Config"
+1. Click **Azure Config**.
 
-    2. Configure the fields as follows:
+1. Configure the fields as follows:
 
-    ```
     | Field | Instructions |
     |-------|--------------|
-    | Subscription Id | Azure subscription id |
-    | Tenant Id | Azure tenant id |
-    | Client Id | Azure client id |
-    | Client Secret | Azure client secret |
-    | Default Resource Group | Default resource group for Azure resources |
-    | Location | Default Azure location for resources |
+    | Subscription ID | Enter the Azure subscription ID |
+    | Tenant ID | Enter the Azure tenant ID |
+    | Client ID | Enter the Azure client ID |
+    | Client Secret | Enter the Azure client secret |
+    | Default Resource Group | Enter the default resource group for Azure resources |
+    | Location | Enter the default Azure location for resources |
     | Disable Automatic Service Registration | Select to disable automatic service registration |
-    ```
 
-    3. Hit Save
+1. Click **Save**.
 
-**Configure State DB**
-This section describes how to associate Cloud Service Broker with a structured database (ex: SQL) which the broker requires in order to store its state.
 
-    1. Click on "Service Broker Config"
+### <a id="state-db"></a>Configure a State Database
 
-    2. Enter the credentials for the database you will use to store the state of the Cloud Service Broker
+This section describes how to associate <%= vars.product_short %> with a MySQL database,
+the _state database_.
+The broker requires this database to store its state.
 
-    3. Hit Save
+**Prerequisite:** A small MySQL database to use as the state database.
 
-    4. Return to the Ops Manager Installation Dashboard and click **Apply changes** to install Cloud Service Broker tile.
+To configure <%= vars.product_short %> with a database:
 
-**If needed, include additional configuration information below. For example, maybe there are
-configuration options not required for installation but which could be useful for certain users. Typical topics include:**
-1. **Self-service**--Do you have recommendations on how to configure/design plans in the tile so that users can choose the best options for themselves?
-1. **High availability**--How do you configure/deploy X Service tile to be highly available?
+1. Click **Service Broker Config**.
 
-**Configuring Services with Cloud Service Broker**
-This section describes how to configure services and service plans offered by the Cloud Service Broker within the Cloud Foundry Marketplace on your instance of Cloud Foundry.
+1. Enter the credentials for the state database.
 
-  1. Click on the already-installed CLoud Service Broker for Azure tile in your Ops Manager Tile Dashboard
+3. Click **Save**.
 
-  2. Find the service you want to make available in the left hand navigation under the "Settings" tab
+3. Return to the <%= vars.ops_manager %> Installation Dashboard.
 
-  NOTE: Cloud Service Broker specifies new service plans via JSON. An example has been provided (using the smallest possible size) within each service.
-  3.  Enter additional plans as additional JSON objects within the provided textbox
+3. Click **Review Pending Changes**.
 
-  4. Save
+3. Click **Apply changes** to install the <%= vars.product_short %> tile.
 
-  5. Apply changes
+<%# If needed, include additional configuration information below.
+For example, maybe there are configuration options not required for installation but which could be
+useful for certain users.
+Typical topics include:**
 
-  6. Check your Cloud Foundry Marketplace to see the new plan sizes
++ **Self-service:** Do you have recommendations for how to configure/design plans in the tile so that
+users can choose the best options for themselves?
++ **High availability:** How do you configure/deploy X Service tile to be highly available? %>
+
+### <a id="services"></a> Configure Services with <%= vars.product_short %>
+
+This section describes how to configure services and service plans offered by the
+<%= vars.product_short %> within the Cloud Foundry Marketplace on your instance of Cloud Foundry.
+
+<%= vars.product_short %> specifies new service plans through JSON.
+An example is provided, using the smallest possible size, within each service.
+
+To configure services and service plans:
+
+1. Click the already-installed <%= vars.product_short %> for Azure tile in your
+<%= vars.ops_manager %> tile Dashboard.
+
+1. Find the service you want to make available in the left hand navigation under
+the **Settings** tab.
+
+1. Enter additional plans as additional JSON objects within the provided field.
+
+1. Click **Save**.
+
+1. Return to the <%= vars.ops_manager %> Installation Dashboard and click **Review Pending Changes**.
+
+1. Click **Apply changes**.
+
+1. Review your Cloud Foundry Marketplace to see the new plan sizes.
+

@@ -1,0 +1,1671 @@
+---
+title: Service Plan Reference
+owner: Cloud Service Broker
+---
+
+<strong><%= modified_date %></strong>
+
+This topic provides reference information about the plans and configuration
+parameters used for configuring service instances.
+
+See the section below for your desired service:
+
+- [Azure SQL (MSSQL)](#azure-mssql)
+- [Azure SQL (MSSQL) Database](#azure-mssql-db)
+- [Azure SQL (MSSQL) Server](#azure-mssql-server)
+- [Azure SQL (MSSQL) Failover Group](#azure-mssql-fog)
+- [Pre-configured Server Pairs for Azure SQL (MSSQL) Failover Groups](#azure-mssql-fog-preconfig)
+- [Azure SQL Failover Group Failover Runner](#azure-mssql-fog-runner)
+- [Azure PostgreSQL](#azure-postgresql)
+- [Azure Storage Account](#azure-storage-account)
+
+
+## <a id="azure-mssql"></a> Azure SQL (MSSQL)
+
+This section applies to the csb-azure-mssql service.
+This section lists default plans and configuration options for Azure SQL on Azure.
+
+### <a id="azure-mssql-plans"></a> Plans
+
+The table below lists the plans for the csb-azure-mssql service:
+
+| Plan       | CPUs | Storage Size |
+|------------|------|--------------|
+| small       | 2    | 50&nbsp;GB        |
+| medium      | 8    | 200&nbsp;GB       |
+| large       | 32   | 500&nbsp;GB       |
+| extra-large | 64   | 1&nbsp;TB         |
+
+### <a id="azure-mssql-plans-config"></a> Plan Configuration Parameters
+
+<%# What are these and when/how do you configure these? %>
+
+The table below lists the plan parameters you can configure:
+
+| Option Name | Values              | Default |
+|-------------|---------------------|---------|
+| max\_storage\_gb  |            | 50      |
+| cores       | 1&ndash;64, multiples of 2 | 2       |
+
+#### <a id="azure-mssql-skus"></a> SKUs
+
+SKUs are usually formatted as <code>TIER\_FAMILY\_NUMBER-OF-CORES</code>. Where:
+<ul>
+  <li>Examples of <code>TIER</code> are <code>GP\_S</code>, <code>GP</code>, and <code>HS</code></li>
+  <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+</ul>
+Example SKUs are <code>GP\_S\_Gen4\_1</code> and <code>GP\_Gen5\_8</code>.
+
+If you do not define a SKU using the <code>sku_name</code> parameter, the SKU is
+computed from the number of cores in your plan.
+See [Plans](#azure-mssql-db-plans) above.
+
+For a list of all valid SKUs, run:
+
+<pre><code>az sql db list-editions -l LOCATION -o table</code></pre>
+
+The table below shows the mapping of number of cores to the corresponding  Azure
+stock-keeping unit (SKU):
+
+| Cores | SKU |
+|-------|-----|
+| 1  | GP\_Gen5\_1 |
+| 2  | GP\_Gen5\_2 |
+| 4  | GP\_Gen5\_4 |
+| 8  | GP\_Gen5\_8  |
+| 16 | GP\_Gen5\_16 |
+| 32 | GP\_Gen5\_32 |
+| 80 | GP\_Gen5\_80 |
+<%# Is this table necessary? Can we get this information from the links below? %>
+
+For information about the the vCore purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.<br>
+For information about the the DTU purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+
+<p class="note">
+  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
+  hardware generation unless you override this default using the <code>sku_name</code> parameter.
+  For more information about the vCore model, see the
+  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
+</p>
+
+<p class="note">
+  <strong>Note:</strong> When updating a service instance, the SKU for the updated
+  service instance must remain in the same family (<code>GP_S</code>, <code>GP</code>, or <code>HS</code>).
+  <%# Should this say tier or family? GP_S is a tier. Can you only use the tiers listed here? %>
+  If you update to a different family, Azure refuses the update request.
+</p>
+
+### <a id="azure-mssql-parameters"></a> Configuration Parameters
+
+You can provision a service by running:
+
+```
+cf create-service csb-azure-mssql PLAN-NAME SERVICE-INSTANCE-NAME -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+You can update the plan or configuration parameters for a service instance by running:
+
+```
+cf update-service SERVICE-INSTANCE [-p NEW-PLAN] -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+<%# Could this be moved to a generic section about provisioning a service?
+Should you use the parameters listed below in the -c flag? -- YES
+Can we have an example? -- $ cf create-service csb-azure-mssql small my-instance -c '{"sku_name": "GP_Gen4_1"}
+See also similar sections below. %>
+
+The table below lists the parameters you can configure, using the `-c` flag, when
+provisioning a csb-azure-mssql service:
+<%# This table is for developers. It gives the params that they can put in the -c flag. See also similar sections below. %>
+
+<style>
+main table {
+  table-layout: fixed;
+}
+</style>
+
+<table>
+  <thead>
+    <tr>
+      <th width="20%">Parameter Name</th>
+      <th width="10%">Type</th>
+      <th width="50%">Description</th>
+      <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>instance_name</code></td>
+    <td>string</td>
+    <td>The name of the service instance.</td>
+    <td><code>csb-azsql-INSTANCE-ID</code> </td>
+  </tr>
+  <tr>
+    <td><code>resource_group</code></td>
+    <td>string</td>
+    <td>The Azure resource group in which to create the instance.</td>
+    <td><code>rg-INSTANCE-NAME</code></td>
+  </tr>
+  <tr>
+    <td><code>db_name</code></td>
+    <td>string</td>
+    <td>The name of the database.</td>
+    <td><code>csb-db</code></td>
+  </tr>
+  <tr>
+    <td><code>location</code></td>
+    <td>string</td>
+    <td>
+      The Azure region in which to deploy the service instance.
+      <p class="note">
+        <strong>Note:</strong> Currently Azure SQL is not available in all regions.
+        If you configure a region that is unavailable, <%= vars.product_short %> fails.
+      </p>
+    </td>
+    <td><code>westus</code></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+    <tr>
+      <td><code>azure_client_secret</code></td>
+      <td>string</td>
+      <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+      <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
+    </tr>
+  <tr>
+    <td><code>sku_name</code></td>
+    <td>string</td>
+    <td>
+      The Azure stock-keeping unit (SKU).
+      For more information about configuring this parameter, see <a href="#azure-mssql-skus">SKUs</a> above.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>authorized_network</code></td>
+    <td>string</td>
+    <td>The Azure subnet ID, in long form, that the instance is connected to through a service endpoint.
+    The subnet must have the <code>Microsoft.sql</code> service enabled.</td>
+    <td></td>
+  </tr>
+  <tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
+
+### <a id="azure-mssql-binding-creds"></a> Binding Credentials
+
+<%# Who is this section for? Developers or Operators? When should it be used? See also similar sections below. %>
+
+The format for binding credentials for Azure SQL is as follows:
+
+```json
+{
+    "name" : "DATABASE NAME",
+    "hostname" : "DATABASE-SERVER-HOST",
+    "port" : "DATABASE-SERVER-PORT",
+    "username" : "AUTHENTICATION-USERNAME",
+    "password" : "AUTHENTICATION-PASSWORD",
+    "uri" : "DATABASE CONNECTION-URI",
+    "jdbcUrl" : "JDBC-FORMAT-CONNECTION-URI",
+    "sqldbName" : "DATABASE-NAME",
+    "sqlServerName" : "SERVER-NAME",
+    "sqlServerFullyQualifiedDomainName" : "SERVER-FQDN",
+    "databaseLogin" : "AUTHENTICATION-USERNAME",
+    "databaseLoginPassword" : "AUTHENTICATION-PASSWORD"
+}
+```
+
+
+## <a id="azure-mssql-db"></a>Azure SQL (MSSQL) Database
+
+This section applies to the service csb-azure-mssql-db.
+The csb-azure-mssql-db service manages Azure SQL databases on pre-configured
+database servers on Azure.
+
+### <a id="azure-mssql-db-plans"></a> Plans
+
+The table below lists the plans for the csb-azure-mssql-db service:
+
+| Plan       | CPUs | Maximumum Storage Size |
+|------------|------|--------------|
+|small       | 2    | 50&nbsp;GB         |
+|medium      | 8    | 200&nbsp;GB        |
+|large       | 32   | 500&nbsp;GB       |
+|extra-large | 80   | 1&nbsp;TB          |
+
+### <a id="azure-mssql-db-plans-config"></a> Plan Configuration Parameters
+
+The table below lists the plan parameters you can configure:
+
+| Parameter Name | Values              | Default |
+|-------------|------------------------|---------|
+| max\_storage\_gb  |                    |  50      |
+| cores       | 1&ndash;64, multiples of 2    | 2       |
+
+#### <a id="azure-mssql-db-skus"></a> SKUs
+
+SKUs are usually formatted as <code>TIER\_FAMILY\_NUMBER-OF-CORES</code>. Where:
+<ul>
+  <li>Examples of <code>TIER</code> are <code>GP\_S</code>, <code>GP</code>, and <code>HS</code></li>
+  <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+</ul>
+Example SKUs are <code>GP\_S\_Gen4\_1</code> and <code>GP\_Gen5\_8</code>.
+
+If you do not define a SKU using the <code>sku_name</code> parameter, the SKU is
+computed from the number of cores in your plan.
+See [Plans](#azure-mssql-db-plans) above.
+
+For a list of all valid SKUs, run:
+
+<pre><code>az sql db list-editions -l LOCATION -o table</code></pre>
+
+The table below shows the mapping of number of cores to the corresponding SKU:
+
+| Cores | SKU |
+|-------|-----|
+| 1  | GP\_Gen5\_1 |
+| 2  | GP\_Gen5\_2 |
+| 4  | GP\_Gen5\_4 |
+| 8  | GP\_Gen5\_8  |
+| 16 | GP\_Gen5\_16 |
+| 32 | GP\_Gen5\_32 |
+| 80 | GP\_Gen5\_80 |
+<%# Is this table necessary? Can we get this information from the links below? %>
+
+For information about the the vCore purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.<br>
+For information about the the DTU purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+
+<p class="note">
+  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
+  hardware generation unless you override this default using the <code>sku_name</code> parameter.
+  For more information about the vCore model, see the
+  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
+</p>
+
+<p class="note">
+  <strong>Note:</strong> When updating a service instance, the SKU for the updated
+  service instance must remain in the same family (<code>GP_S</code>, <code>GP</code>, or <code>HS</code>).
+  <%# Should this say tier or family? GP_S is a tier. Can you only use the tiers listed here? %>
+  If you update to a different family, Azure refuses the update request.
+</p>
+
+### <a id="azure-mssql-db-parameters"></a> Configuration Parameters
+
+You can provision a service by running:
+
+```
+cf create-service csb-azure-mssql-db PLAN-NAME SERVICE-INSTANCE-NAME -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+You can update the plan or configuration parameters for a service instance by running:
+
+```
+cf update-service SERVICE-INSTANCE [-p NEW-PLAN] -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+The table below lists the parameters you can configure, using the `-c` flag, when
+provisioning a csb-azure-mssql-db service:
+
+<table>
+  <thead>
+    <tr>
+      <th width="20%">Parameter Name</th>
+      <th width="10%">Type</th>
+      <th width="50%">Description</th>
+      <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>db_name</code></td>
+    <td>string</td>
+    <td>The name of the database.</td>
+    <td><code>csb-fog-db-INSTANCE-ID</code></td>
+  </tr>
+  <tr>
+    <td><code>server</code></td>
+    <td>string</td>
+    <td>
+      The name of the server on which to create the database.
+      This must match one of the <code>SERVER</code> parameters in <code>server_credentials</code>.
+      For example, <code>SERVER-1</code> in the code snippet in the <code>server_credentials</code> row below.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>server_credentials</code></td>
+    <td>JSON</td>
+    <td>
+      A list of server credentials on which databases can be created.
+      Format: <pre><code>{ "SERVER-1": { "server_name":"...", "server_resource_group":"...", "admin_username":"...", "admin_password":"..."}, "SERVER-2":{"server_name":..., ...}...}</code></pre>
+      One of the values you use for <code>SERVER</code> must match the <code>server</code> parameter above.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation. <%# Clarification needed %></td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>sku_name</code></td>
+    <td>string</td>
+    <td>
+      The Azure stock-keeping unit (SKU).
+      For more information about configuring this parameter, see <a href="#azure-mssql-db-skus">SKUs</a> above.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
+
+### <a id="azure-mssql-db-global-defaults"></a> Configure Global Defaults
+
+<%# Who is this section for? Developers or Operators? When should it be used? See also similar sections below. %>
+
+Operators usually configure `server_credentials` for developers to use.
+
+<%# See [configuration documentation](./configuration.md) and
+[Azure installation documentation](azure-installation.md) for reference.
+-- Need proper link for configuration.md and azure-installation.md and further clarification. %>
+
+To globally configure `server_credentials`, include the following in the configuration file for the
+broker:
+<%# Where is this config file? How to do this? %>
+
+```yaml
+service:
+  csb-azure-mssql-db:
+    provision:
+      defaults: '{
+        "server_credentials": {
+          "server1": {
+            "admin_username":"ADMIN-USERNAME",
+            "admin_password":"ADMIN-PASSWORD",
+            "server_name":"SERVER_NAME",
+            "server_resource_group":"SERVER-RESOURCE-GROUP"
+          },
+          "server2": {
+            "admin_username":"ADMIN-USERNAME",
+            ...
+          }
+        }
+      }'
+```
+<%# does it matter that this file has admin_username, admin_password, server_name,
+server_resource_group in a different order to the server_credentials row of the table? %>
+
+Developers can create a new failover group database on `server1` by running, for example:
+
+<pre class="terminal">$ cf create-service csb-azure-mssql-db medium medium-sql -c '{"server":"server1"}'</pre>
+
+### <a id="azure-mssql-db-binding-creds"></a> Binding Credentials
+
+The format for binding credentials for an Azure SQL database is as follows:
+
+```json
+{
+    "name" : "DATABASE-NAME",
+    "hostname" : "DATABASE-SERVER-HOST",
+    "port" : "DATABASE-SERVER-PORT",
+    "username" : "AUTHENTICATION-USERNAME",
+    "password" : "AUTHENTICATION-PASSWORD",
+    "uri" : "DATABASE-CONNECTION-URI",
+    "jdbcUrl" : "JDBC-FORMAT-CONNECTION-URI",
+    "sqldbName" : "DATABASE-NAME",
+    "sqlServerName" : "SERVER-NAME",
+    "sqlServerFullyQualifiedDomainName" : "SERVER-FQDN",
+    "databaseLogin" : "AUTHENTICATION-USERNAME",
+    "databaseLoginPassword" : "AUTHENTICATION-PASSWORD"
+}
+```
+<%# Do we need to define placeholders here? %>
+
+
+
+## <a id="azure-mssql-server"></a> Azure SQL (MSSQL) Server
+
+This section applies to the csb-azure-mssql-server service.
+The csb-azure-mssql-server service manages stand alone Azure SQL server service instances on Azure.
+No databases are created or managed.
+
+### <a id="azure-mssql-server-plans"></a> Plans
+
+The only plan is `standard`.
+
+### <a id="azure-mssql-server-parameters"></a> Configuration Parameters
+
+You can provision a service by running:
+
+```
+cf create-service csb-azure-mssql-server standard SERVICE-INSTANCE-NAME -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+You can update the configuration parameters for a service instance by running:
+
+```
+cf update-service SERVICE-INSTANCE -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+The table below lists the parameters you can configure, using the `-c` flag, when
+provisioning a csb-azure-mssql-server service:
+
+<table>
+  <thead>
+    <tr>
+      <th width="20%">Parameter Name</th>
+      <th width="10%">Type</th>
+      <th width="50%">Description</th>
+      <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>instance_name</code></td>
+    <td>string</td>
+    <td>The name of the service instance for the server.</td>
+    <td><code>csb-azsql-svr-INSTANCE-ID</code></td>
+  </tr>
+  <tr>
+    <td><code>resource_group</code></td>
+    <td>string</td>
+    <td>The Azure resource group in which to create the instance.</td>
+    <td><code>rg-INSTANCE-NAME</code></td>
+  </tr>
+  <tr>
+    <td><code>admin_username</code></td>
+    <td>string</td>
+    <td>The admin username for the server.</td>
+    <td>A randomly generated string.</td>
+  </tr>
+  <tr>
+    <td><code>admin_password</code></td>
+    <td>string</td>
+    <td>The admin password for the server.</td>
+    <td>A randomly generated string.</td>
+  </tr>
+  <tr>
+    <td><code>location</code></td>
+    <td>string</td>
+    <td>
+      The Azure region in which to create the server. <%# Should we add the note about not being available in all regions here like in Azure SQL above? %>
+    </td>
+    <td><code>westus</code></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>authorized_network</code></td>
+    <td>string</td>
+    <td>The Azure subnet ID, in long form, that the instance is connected to through a service endpoint.
+    The subnet must have the <code>Microsoft.sql</code> service enabled.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
+
+### <a id="azure-mssql-server-binding-creds"></a> Binding Credentials
+
+The format for binding credentials for Azure SQL Server is as follows:
+
+```json
+{
+    "hostname" : "DATABASE-SERVER-HOST<%# |BOSH-DIRECTOR-IP| is preferred. %>",
+    "port" : "DATABASE-SERVER-PORT",
+    "username" : "AUTHENTICATION-USERNAME",
+    "password" : "AUTHENTICATION-PASSWORD",
+    "sqlServerName" : "SERVER-NAME",
+    "sqldbResourceGroup" : "RESOURCE-GROUP-FOR-SERVER",
+    "sqlServerFullyQualifiedDomainName" : "SERVER-FQDN",
+    "databaseLogin" : "AUTHENTICATION-USERNAME",
+    "databaseLoginPassword" : "AUTHENTICATION-PASSWORD"
+}
+```
+<%# Do we need to define the placeholders here? %>
+
+
+
+## <a id="azure-mssql-fog"></a> Azure SQL (MSSQL) Failover Group
+
+This section applies to the csb-azure-mssql-failover-group service.
+This section lists the default plans and configuration options for Azure SQL Failover Group on Azure.
+
+### <a id="azure-mssql-fog-plans"></a> Plans
+
+The table below lists the plans for the csb-azure-mssql-failover-group service:
+
+| Plan       | CPUs | Storage Size |
+|------------|------|--------------|
+| small       | 2    | 50&nbsp;GB       |
+| medium      | 8    | 200&nbsp;GB       |
+| large       | 32   | 500&nbsp;GB       |
+
+### <a id="azure-mssql-fog-config-options"></a> Configuration Options
+
+<%# Any reason this section is called Configuration Options and not Plan Configuration parameters
+like in the other services? Which is the better name? See also PostgreSQL section below. %>
+
+The table below lists the options you can configure:
+
+| Option Name | Values              | Default |
+|-------------|---------------------|---------|
+| max\_storage\_gb  |             | 50      |
+| cores       | 1&ndash;64, multiples of 2 | 2       |
+
+
+#### <a id="azure-mssql-fog-skus"></a> SKUs
+
+SKUs are usually formatted as <code>TIER\_FAMILY\_NUMBER-OF-CORES</code>. Where:
+<ul>
+  <li>Examples of <code>TIER</code> are <code>GP\_S</code>, <code>GP</code>, and <code>HS</code></li>
+  <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+</ul>
+Example SKUs are <code>GP\_S\_Gen4\_1</code> and <code>GP\_Gen5\_8</code>.
+
+If you do not define a SKU using the <code>sku_name</code> parameter, the SKU is
+computed from the number of cores in your plan.
+See [Plans](#azure-mssql-fog-plans) above.
+
+For a list of all valid SKUs, run:
+
+<pre><code>az sql db list-editions -l LOCATION -o table</code></pre>
+
+The table below shows the mapping of number of cores to the corresponding SKU:
+
+| Cores | SKU |
+|-------|-----|
+| 1  | GP\_Gen5\_1 |
+| 2  | GP\_Gen5\_2 |
+| 4  | GP\_Gen5\_4 |
+| 8  | GP\_Gen5\_8  |
+| 16 | GP\_Gen5\_16 |
+| 32 | GP\_Gen5\_32 |
+| 80 | GP\_Gen5\_80 |
+<%# Is this table necessary? Can we get this information from the links below? %>
+
+For information about the the vCore purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.<br>
+For information about the the DTU purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+
+<p class="note">
+  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
+  hardware generation unless you override this default using the <code>sku_name</code> parameter.
+  For more information about the vCore model, see the
+  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
+</p>
+
+<p class="note">
+  <strong>Note:</strong> When updating a service instance, the SKU for the updated
+  service instance must remain in the same family (<code>GP_S</code>, <code>GP</code>, or <code>HS</code>).
+  <%# Should this say tier or family? GP_S is a tier. Can you only use the tiers listed here? %>
+  If you update to a different family, Azure refuses the update request.
+</p>
+
+### <a id="azure-mssql-fog-parameters"></a> Configuration Parameters
+
+Except as noted below, the configuration is generally the same as for [Azure SQL](#azure-mssql) above. <%# Which configuration is this referring to? %>
+
+The table below lists the parameters you can configure, using the `-c` flag, when
+provisioning a csb-azure-mssql-failover-group service:
+
+<table>
+  <thead>
+    <tr>
+      <th width="20%">Parameter Name</th>
+      <th width="10%">Type</th>
+      <th width="50%">Description</th>
+      <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>instance_name</code></td>
+    <td>string</td>
+    <td>The name of the service instance.</td>
+    <td><code>csb-azsql-INSTANCE-ID</code></td>
+  </tr>
+  <tr>
+    <td><code>resource_group</code></td>
+    <td>string</td>
+    <td>The Azure resource group in which to create the instance.</td>
+    <td><code>rg-INSTANCE-NAME</code></td>
+  </tr>
+  <tr>
+    <td><code>location</code></td>
+    <td>string</td>
+    <td>
+      The Azure region in which to deploy the service instance.
+      <p class="note">
+        <strong>Note:</strong> Currently Azure SQL is not available in all regions.
+        If you configure a region that is unavailable, <%= vars.product_short %> fails.
+      </p>
+    </td>
+    <td><code>westus</code></td>
+  </tr>
+  <tr>
+    <td><code>failover_location</code></td>
+    <td>string</td>
+    <td>The Azure region for the failover instance.</td>
+    <td><code>DEFAULT-REGIONAL-PAIR</code>. For information about regional pairs, see the <a href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions#azure-regional-pairs">Microsoft Documentation</a></td>
+  </tr>
+  <tr>
+    <td><code>read_write_endpoint_failover_policy</code></td>
+    <td>string</td>
+    <td>The Read/Write failover policy. The options are <code>Automatic</code> or <code>Manual</code></td>.
+    <td><code>Automatic</code></td>
+  </tr>
+  <tr>
+    <td><code>failover_grace_minutes</code></td>
+    <td>number</td>
+    <td>The grace period in minutes before failover with data loss is attempted.</td>
+    <td><code>60</code></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>sku_name</code></td>
+    <td>string</td>
+    <td>
+      The Azure stock-keeping unit (SKU).
+      For more information about configuring this parameter, see <a href="#azure-mssql-fog-skus">SKUs</a> above.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>authorized_network</code></td>
+    <td>string</td>
+    <td>The Azure subnet ID, in long form, that the instance is connected to through a service endpoint.
+    The subnet must have the <code>Microsoft.sql</code> service enabled.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
+
+### <a id="azure-mssql-fog-binding-creds"></a> Binding Credentials
+
+The format for binding credentials for Azure SQL Failover Group is as follows:
+
+```json
+{
+    "name" : "DATABASE-NAME",
+    "hostname" : "DATABASE-SERVER-HOST",
+    "port" : "DATABASE-SERVER-PORT",
+    "username" : "AUTHENTICATION-USERNAME",
+    "password" : "AUTHENTICATION-PASSWORD",
+    "uri" : "DATABASE-CONNECTION-URI",
+    "jdbcUrl" : "JDBC-FORMAT-CONNECTION-URI",
+    "sqldbName" : "DATABASE-NAME",
+    "sqlServerName" : "SERVER-NAME",
+    "sqlServerFullyQualifiedDomainName" : "SERVER-FQDN",
+    "databaseLogin" : "AUTHENTICATION-USERNAME",
+    "databaseLoginPassword" : "AUTHENTICATION-PASSWORD"
+}
+```
+
+### <a id="azure-mssql-fog-secondry-db"></a> About the Secondary Database Created by the Failover Group
+
+Because the secondary (failover) database is implicitly created when the failover
+group is created, the broker does not currently have control over that database instance.
+This manifests itself when a `cf update` is executed on the failover group.
+Changes to the SKU and other parameters are not propagated to the secondary database.
+The current workaround is to subsume control of the secondary database instance
+that can then be managed with the cf CLI.
+
+#### <a id="azure-mssql-fog-secondry-db"></a> Gain Control of the Secondary Database Instance
+
+To subsume control over the secondary database:
+
+1. Retrieve the secondary database ID from the output of the following command<%# Replace with just |run:| %>:
+
+    ```
+    cf service FOG-INSTANCE
+    ```
+
+    For example:
+    <pre class="terminal">$ cf service example-fog
+    Showing info of service example-fog in org pivotal / space ernie as admin...
+
+    name:            example-fog
+    service:         csb-azure-mssql-failover-group
+    tags:
+    plan:            small
+    description:     Manages auto failover group for managed Azure SQL on the Azure Platform
+    documentation:   https<span>:</span>//docs.microsoft.com/en-us/azure/sql-database/sql-database-auto-failover-group/
+    dashboard:
+
+    Showing status of last operation from service example-fog...
+
+    status:    create succeeded
+    message:   created failover group csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143 (id:
+               /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary/failoverGroups/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143), primary db csb-db (id:
+               /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary/databases/csb-db) on server csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary (id:
+               /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary), secondary db csb-db (id:
+               /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db) on server csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary (id:
+               /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary) URL:
+               https<span>:</span>//portal.azure.com/#@29248f74-371f-4db2-9a50-c62a6877a0c1/resource/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary/failoverGroup
+    started:   2020-09-21T18:43:51Z
+    updated:   2020-09-21T18:49:04Z
+
+    There are no bound apps for this service.
+    </pre>
+    <%# Where is the DB ID in this output? -- in the message section %>
+    Record the line from `message` that ends with `secondary/databases/csb-db`.
+    In the example above the secondary database ID is
+    `/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db`
+
+1. Subsume control of the database instance by running:
+
+    ```
+    cf create-service csb-masb-mssql-db-subsume PLAN-NAME SERVICE-INSTANCE-NAME -c '{"azure_db_id":"DATABASE-ID"}' <%# SI name of secondary db %>
+    ```
+    Where:
+    `PLAN-NAME` is the plan you want for your secondary database instance <%# Should this be the same plan as the primary? %>
+    `SERVICE-INSTANCE-NAME` is the service instance name you choose for your secondary database
+    `DATABASE-ID` is the database ID you recorded in the step above
+
+    For example:
+
+    <pre class="terminal">
+    $ cf create-service csb-masb-mssql-db-subsume current secondary-db -c '{"azure_db_id":"/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db"}' <%# SI name of secondary db %>
+    Creating service instance secondary-db in org pivotal / space ernie as admin...
+    OK
+
+    Create in progress. Use 'cf services' or 'cf service secondary-db' to check operation status.
+
+    Attention: The plan `current` of service `csb-masb-mssql-db-subsume` is not free.  The instance `secondary-db` will incur a cost.  Contact your administrator if you think this is in error.
+    </pre>
+
+The secondary database is now under Cloud Foundry control and you can use `cf update`
+to modify its configuration.
+
+
+
+## <a id="azure-mssql-fog-preconfig"></a> Pre-configured Server Pairs for Azure SQL (MSSQL) Failover Groups
+
+This section applies to the csb-azure-mssql-db-failover-group service, which manages
+Azure SQL Failover Group databases on pre-configured server pairs on Azure.
+If you already have a failover group database server pre-configured,
+use this service instead of the more general Azure SQL Failover Group service.
+
+### <a id="azure-mssql-fog-preconfig-plans"></a> Plans
+
+The table below lists the plans for the csb-azure-mssql-db-failover-group service:
+
+| Plan       | CPUs | Storage Size |
+|------------|------|--------------|
+|small       | 2    | 50&nbsp;GB         |
+|medium      | 8    | 200&nbsp;GB        |
+|large       | 32   | 500&nbsp;GB        |
+|existing    | n/a  | n/a          |
+
+The `existing` plan connects to an existing failover group database to allow apps,
+typically in a second foundation, to bind to the database.
+
+### <a id="azure-mssql-fog-preconfig-plans-config"></a> Plan Configuration Parameters
+
+The table below lists the plan parameters you can configure:
+
+| Parameter Name | Values           | Default |
+|-------------|---------------------|---------|
+| max\_storage\_gb  |             | 50      |
+| cores       | 1&ndash;64, multiples of 2 | 2       |
+
+#### <a id="azure-mssql-fog-preconfig-skus"></a> SKU
+
+SKUs are usually formatted as <code>TIER\_FAMILY\_NUMBER-OF-CORES</code>. Where:
+<ul>
+  <li>Examples of <code>TIER</code> are <code>GP\_S</code>, <code>GP</code>, and <code>HS</code></li>
+  <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+</ul>
+Example SKUs are <code>GP\_S\_Gen4\_1</code> and <code>GP\_Gen5\_8</code>.
+
+If you do not define a SKU using the <code>sku_name</code> parameter, the SKU is
+computed from the number of cores in your plan.
+See [Plans](#azure-mssql-fog-preconfig-plans) above.
+
+For a list of all valid SKUs, run:
+
+<pre><code>az sql db list-editions -l LOCATION -o table</code></pre>
+
+The table below shows the mapping of number of cores to the corresponding SKU:
+
+| Cores | SKU |
+|-------|-----|
+| 1  | GP\_Gen5\_1 |
+| 2  | GP\_Gen5\_2 |
+| 4  | GP\_Gen5\_4 |
+| 8  | GP\_Gen5\_8  |
+| 16 | GP\_Gen5\_16 |
+| 32 | GP\_Gen5\_32 |
+| 80 | GP\_Gen5\_80 |
+<%# Is this table necessary? Can we get this information from the links below? %>
+
+For information about the the vCore purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases">Microsoft documentation</a>.<br>
+For information about the the DTU purchasing model, see the
+<a href="https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-single-databases">Microsoft documentation</a>.
+
+<p class="note">
+  <strong>Note:</strong> Azure SQL service instances use the vCore model and the Gen5
+  hardware generation unless you override this default using the <code>sku_name</code> parameter.
+  For more information about the vCore model, see the
+  <a href="https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore?tabs=azure-portal">Microsoft documentation</a>.
+</p>
+
+### <a id="azure-mssql-fog-preconfig-parameters"></a> Configuration Parameters
+
+You can provision a service by running:
+
+```
+cf create-service csb-azure-mssql-db-failover-group PLAN-NAME SERVICE-INSTANCE-NAME -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+You can update the plan or configuration parameters for a service instance by running:
+
+```
+cf update-service SERVICE-INSTANCE [-p NEW-PLAN] -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+The table below lists the parameters you can configure, using the `-c` flag, when
+provisioning a csb-azure-mssql-db-failover-group service:
+
+<table>
+  <thead>
+    <tr>
+    <th width="20%">Parameter Name</th>
+    <th width="10%">Type</th>
+    <th width="50%">Description</th>
+    <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>instance_name</code></td>
+    <td>string</td>
+    <td>The name of the failover group service instance.</td>
+    <td><code>csb-azsql-fog-INSTANCE-ID</code></td>
+  </tr>
+  <tr>
+    <td><code>db_name</code></td>
+    <td>string</td>
+    <td>The name of the database.</td>
+    <td><code>csb-fog-db-INSTANCE-ID</code></td>
+  </tr>
+  <tr>
+    <td><code>server_pair</code></td>
+    <td>string</td>
+    <td>
+      The server pair, from <code>server_credential_pairs</code> below, on which to create the failover database.
+      This must match one of the <code>PAIR</code> parameters in <code>server_credentials_pairs</code>.
+      For example, <code>PAIR-1</code> in the code snippet in the <code>server_credentials_pairs</code> row below.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>server_credential_pairs</code></td>
+    <td>JSON</td>
+    <td>
+      A list of server pairs on which failover databases can be created.
+      Format: <pre><code>{ "PAIR-1": { "admin_username":"...", "admin_password":"...", "primary":{"server_name":"...", "resource_group":"..."}, "secondary":{"server_name":"...", "resource_group":"..."}, "PAIR-2":...}</code></pre>
+      One of the values you use for <code>PAIR</code> must match the <code>server_pair</code> parameter above.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>read_write_endpoint_failover_policy</code></td>
+    <td>string</td>
+    <td>The Read/Write failover policy. The options are <code>Automatic</code> or <code>Manual</code></td>.
+    <td><code>Automatic</code></td>
+  </tr>
+  <tr>
+    <td><code>failover_grace_minutes</code></td>
+    <td>number</td>
+    <td>The grace period in minutes before failover with data loss is attempted.</td>
+    <td><code>60</code></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>sku_name</code></td>
+    <td>string</td>
+    <td>
+      The Azure stock-keeping unit (SKU).
+      For more information about configuring this parameter, see <a href="#azure-mssql-fog-preconfig-skus">SKUs</a> above.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
+
+### <a id="azure-mssql-fog-preconfig-global-defaults"></a> Configure Global Defaults
+
+Operators usually configure `server_credentials_pairs` for developers to use.
+
+<%# See [configuration documentation](./configuration.md) and
+[Azure installation documentation](azure-installation.md) for reference.
+-- Need proper link for configuration.md and azure-installation.md and further clarification. %>
+
+To globally configure `server_credential_pairs`, include the following in the
+configuration file for the broker:
+<%# Where is this config file? How to do this? %>
+
+```yaml
+service:
+  csb-azure-mssql-db-failover-group:
+    provision:
+      defaults: '{
+        "server_credential_pairs": {
+          "pair1": {
+            "admin_username":"ADMIN-USERNAME",
+            "admin_password":"ADMIN-PASSWORD",
+            "primary": {
+              "server_name":"SERVER-NAME",
+              "resource_group":"RESOURCE-GROUP"
+            },
+            "secondary": {
+              "server_name":"SERVER-NAME",
+              "resource_group":"RESOURCE-GROUP"
+            },
+          "pair2": {
+            "admin_username":"ADMIN-USERNAME",
+            ...
+          }
+        }
+      }'
+```
+
+Developers can create a new failover group database on `pair1` by running:
+
+For example:
+<pre class="terminal">$ cf create-service csb-azure-mssql-db-failover-group medium medium-fog -c '{"server_pair":"pair1"}'</pre>
+
+To allow multiple foundations to connect to a single database, for example, for
+foundations in primary and secondary failover locations, the same server credential
+pairs must be configured in each foundation.
+
+To do so, developers can:
+
+1. Create a failover group database in one foundation by running:
+
+    For example:
+    <pre class="terminal">$ cf create-service csb-azure-mssql-db-failover-group medium medium-fog -c '{"server_pair":"pair1", "instance_name":"fog-instance","db_name":"db"}'</pre>
+
+1. Connect to that database in the second foundation by running:
+
+    For example:
+    <pre class="terminal">$ cf create-service csb-azure-mssql-db-failover-group existing medium-fog -c '{"server_pair":"pair1","instance_name": "csb-failover-group-test", "db_name":"test-db"}'</pre>
+
+### <a id="azure-mssql-fog-preconfig-binding-creds"></a> Binding Credentials
+
+The format for binding credentials for Azure SQL Failover Group is as follows:
+
+```json
+{
+    "name" : "DATABASE-NAME",
+    "hostname" : "DATABASE-SERVER-HOST",
+    "port" : "DATABASE-SERVER-PORT",
+    "username" : "AUTHENTICATION-USERNAME",
+    "password" : "AUTHENTICATION-PASSWORD",
+    "uri" : "DATABASE-CONNECTION-URI",
+    "jdbcUrl" : "JDBC-FORMAT-CONNECTION-URI",
+    "sqldbName" : "DATABASE-NAME",
+    "sqlServerName" : "SERVER-NAME",
+    "sqlServerFullyQualifiedDomainName" : "SERVER-FQDN",
+    "databaseLogin" : "AUTHENTICATION-USERNAME",
+    "databaseLoginPassword" : "AUTHENTICATION-PASSWORD"
+}
+```
+
+### <a id="azure-mssql-fog-preconfig-secondry-db"></a> About the Secondary Database Created by the Failover Group
+
+Because the secondary (failover) database is implicitly created when the failover
+group is created, the broker does not currently have control over that database instance.
+This manifests itself when a `cf update` or `cf delete-service` is executed on the failover group.
+Changes to the SKU and other parameters are not propagated to the secondary database.
+The current workaround is to subsume control of the secondary database instance
+that can then be managed with the cf CLI.
+
+#### <a id="azure-mssql-fog-preconfig-secondry-db"></a> Gain Control of the Secondary Database Instance
+
+To subsume control over the secondary database:
+
+1. Retrieve the secondary database ID from the output of the following command:
+
+    ```
+    cf service FOG-INSTANCE
+    ```
+
+    For example:
+    <pre class="terminal">$ cf service example-fog
+    Showing info of service example-fog in org pivotal / space ernie as admin...
+
+    name:            example-fog
+    service:         csb-azure-mssql-failover-group
+    tags:
+    plan:            small
+    description:     Manages auto failover group for managed Azure SQL on the Azure Platform
+    documentation:   https<span>:</span>//docs.microsoft.com/en-us/azure/sql-database/sql-database-auto-failover-group/
+    dashboard:
+
+    Showing status of last operation from service example-fog...
+
+    status:    create succeeded
+    message:   created failover group csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143 (id:
+               /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary/failoverGroups/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143), primary db csb-db (id:
+               /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary/databases/csb-db) on server csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary (id:
+               /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary), secondary db csb-db (id:
+               /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db) on server csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary (id:
+               /subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary) URL:
+               https<span>:</span><//portal.azure.com/#@29248f74-371f-4db2-9a50-c62a6877a0c1/resource/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-primary/failoverGroup
+    started:   2020-09-21T18:43:51Z
+    updated:   2020-09-21T18:49:04Z
+
+    There are no bound apps for this service.
+    </pre>
+    <%# Where is the DB ID in this output? -- in the message section %>
+    Record the line from `message` that ends with `secondary/databases/csb-db`.
+    In the example above the secondary database ID is
+    `/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db`
+
+1. Subsume control of the database instance by running:
+
+    ```
+    cf create-service csb-masb-mssql-db-subsume PLAN-NAME SERVICE-INSTANCE-NAME -c '{"azure_db_id":"DATABASE-ID"}' <%# SI name of secondary db %>
+    ```
+    Where:
+    `PLAN-NAME` is the plan you want for your secondary database instance <%# Should this be the same plan as the primary? %>
+    `SERVICE-INSTANCE-NAME` is the service instance name you choose for your secondary database
+    `DATABASE-ID` is the database ID you recorded in the step above
+
+    For example:
+    <pre class="terminal">
+    $ cf create-service csb-masb-mssql-db-subsume current secondary-db -c '{"azure_db_id":"/subscriptions/899bf076-632b-4143-b015-43da8179e53f/resourceGroups/broker-cf-test/providers/Microsoft.Sql/servers/csb-azsql-fog-8fa66105-2796-4bed-a2a3-d1691fbba143-secondary/databases/csb-db"}'
+    Creating service instance secondary-db in org pivotal / space ernie as admin...
+    OK
+
+    Create in progress. Use 'cf services' or 'cf service secondary-db' to check operation status.
+
+    Attention: The plan 'current' of service 'csb-masb-mssql-db-subsume' is not free.  The instance 'secondary-db' will incur a cost.  Contact your administrator if you think this is in error.
+    </pre>
+
+The secondary database is now under Cloud Foundry control and you can use `cf update`
+to modify its configuration.
+
+
+
+## <a id="azure-mssql-fog-runner"></a> Azure SQL Failover Group Failover Runner
+
+This section applies to the csb-azure-mssql-fog-run-failover service.
+
+The csb-azure-mssql-fog-run-failover service is a pseudo-service that upon
+provisioning causes a failover group secondary server to become the primary.
+Upon de-provisioning, the failover is undone and the original primary server
+once again becomes the primary.
+
+### <a id="azure-mssql-fog-runner-plans"></a> Plans
+
+The only plan is `standard`.
+
+### <a id="azure-mssql-fog-runner-parameters"></a> Configuration Parameters
+
+You can provision a service by running:
+
+```
+cf create-service csb-azure-mssql-fog-run-failover standard SERVICE-INSTANCE-NAME -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+You can update the configuration parameters for a service instance by running:
+
+```
+cf update-service SERVICE-INSTANCE-NAME -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+The table below lists the parameters you can configure, using the `-c` flag, when
+provisioning a csb-azure-mssql-fog-run-failover service:
+
+<table>
+  <thead>
+    <tr>
+    <th width="20%">Parameter Name</th>
+    <th width="10%">Type</th>
+    <th width="50%">Description</th>
+    <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>fog_instance_name</code></td>
+    <td>string</td>
+    <td>The name of the service instance for the failover group to target.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>server_pair_name</code></td>
+    <td>string</td>
+    <td>
+      The server pair from <code>server_pairs</code> below.
+      This must match one of the <code>PAIR</code> parameters in <code>server_pairs</code>.
+      For example, <code>PAIR-1</code> in the code snippet in the <code>server_credentials_pairs</code> row below.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>server_pairs</code></td>
+    <td>JSON</td>
+    <td>
+      A list of failover group server pairs.
+      Format: <pre><code>{ "PAIR-1": { "primary":{"server_name":"...", "resource_group":..."}, "secondary":{"server_name":"...", "resource_group":..."}, "PAIR-2":...}</code></pre>
+      One of the values you use for <code>PAIR</code> must match the <code>server_pair_name</code> parameter above.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
+
+### <a id="azure-mssql-fog-runner-binding-creds"></a> Binding Credentials
+
+There are no binding credentials for this service.
+
+
+
+## <a id="azure-postgresql"></a> Azure PostgreSQL
+
+This section applies to the csb-azure-postgresql service.
+This section lists the default plans and configuration options for PostgreSQL on Azure.
+
+### <a id="azure-postgresql-plans"></a> Plans
+
+The table below lists the plans for the csb-azure-postgresql service:
+
+| Plan | Version | CPUs | Memory Size | Disk Size |
+|------|---------|------|-------------|-----------|
+|small | 11      | 2    | minimum 4&nbsp;GB    | 5&nbsp;GB       |
+|medium| 11      | 4    | minimum 8&nbsp;GB    | 10&nbsp;GB      |
+|large | 11      | 8    | minimum 16&nbsp;GB   | 20&nbsp;GB     |
+
+### <a id="azure-postgresql-config-options"></a> Configuration Options
+
+The table below lists the options you can configure across all supported platforms:
+
+| Option Name | Values | Default |
+|-------------|--------|---------|
+| postgres_version | 9.5, 9.6, 10, 11 | 11    |
+| storage_gb  | 5 - 4096| 5      |
+| cores       | 1,2,4,8,16,32,64 | 1      |
+| db_name     | | csb-db |
+
+### <a id="azure-postgresql-platform-parameters"></a> Platform Specific Configuration Parameters
+
+Notes below document platform specific information for mapping that might be required.
+
+The following table lists the CPU/memory size mapped onto Azure SKUs:
+
+| Plan   | Sku       |
+|--------|-----------|
+| small  | GP_Gen5_2 |
+| medium | GP_Gen5_4 |
+| large  | GP_Gen5_8 |
+
+For more information about the pricing tiers in Azure Database for PostgreSQL, see the
+[Microsoft documentation](https://docs.microsoft.com/en-us/azure/postgresql/concepts-pricing-tiers)
+
+<p class="note">
+  <strong>Note:</strong> The maximum vCores is dependent on the Service Tier.
+  <code>B_</code> = Basic, <code>GP_</code> = General Purpose, and <code>MO_</code> = Memory Optimized.
+  See below for details.
+</p>
+
+<%# The note below used to be "Note: the same family (B, GP, or MO.) Otherwise Azure will refuse the update request."
+I copied the new note from above. %>
+<p class="note">
+  <strong>Note:</strong> When updating a service instance, the SKU for the updated
+  service instance must remain in the same family (<code>B</code>, <code>GP</code>, or <code>MO</code>).
+  <%# Should this say tier or family? GP_S is a tier. Can you only use the tiers listed here? %>
+  If you update to a different family, Azure refuses the update request.
+</p>
+
+#### <a id="azure-postgresql-storage"></a>Storage
+
+Storage auto grow is enabled on Azure.
+For more information about storage auto grow, see the
+[Microsoft documentation](https://docs.microsoft.com/en-us/azure/postgresql/concepts-pricing-tiers#storage-auto-grow)
+Initial storage sizes are per plan.
+
+#### <a id="azure-postgresql-skus"></a> SKUs
+
+This is usually formatted as <code>TIER\_FAMILY\_NUMBER-OF-CORES</code>. Where:
+<ul>
+  <li>Examples of <code>TIER</code> are <code>B</code>, <code>GP</code>, and <code>MO</code></li>
+  <li>Examples of <code>FAMILY</code> are <code>Gen4</code> and <code>Gen5</code></li>
+</ul>
+Example SKUs are <code>B\_Gen4\_1</code> and <code>G\P_Gen5\_8</code>.
+
+This overrides the number of <code>cores</code> conversion into SKU per the table below.
+
+The table below shows the mapping of number of cores to the corresponding SKU:
+
+| Cores | Instance class |
+|-------|----------------|
+| 1     | GP\_Gen5\_1      |
+| 2     | GP\_Gen5\_2      |
+| 4     | GP\_Gen5\_4      |
+| 8     | GP\_Gen5\_8      |
+| 16    | GP\_Gen5\_16     |
+| 32    | GP\_Gen5\_32     |
+| 64    | GP\_Gen5\_64     |
+<%# Is this table necessary? Can we link to this information in the Microsoft docs? %>
+
+For more information about Azure SKUs, see the
+<a href="https://docs.microsoft.com/en-us/azure/mysql/concepts-pricing-tiers">Microsoft documentation</a>.
+
+### <a id="azure-postgresql-azure-parameters"></a> Azure Specific Configuration Parameters
+
+As well as those the parameters in [Platform Specific Configuration Parameters](#azure-postgresql-platform-parameters)
+above, you can also configure service specific parameters.
+<%# What is the difference between the platform and Azure specific config parameter sections? %>
+
+You can provision a service by running:
+
+```
+cf create-service csb-azure-postgresql PLAN-NAME SERVICE-INSTANCE-NAME -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+You can update the plan or configuration parameters for a service instance by running:
+
+```
+cf update-service SERVICE-INSTANCE-NAME [-p NEW-PLAN] -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+The table below lists the parameters you can configure, using the `-c` flag, when
+provisioning a csb-azure-postgresql service:
+
+<table>
+  <thead>
+    <tr>
+    <th width="20%">Parameter Name</th>
+    <th width="10%">Type</th>
+    <th width="50%">Description</th>
+    <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>instance_name</code></td>
+    <td>string</td>
+    <td>The name of the Azure instance to create.</td>
+    <td><code>csb-mysql-INSTANCE-ID</code></td>
+  </tr>
+  <tr>
+    <td><code>location</code></td>
+    <td>string</td>
+    <td>
+      The Azure region in which to deploy the service instance.
+      <p class="note">
+        <strong>Note:</strong> Currently Azure SQL is not available in all regions.
+        If you configure a region that is unavailable, <%= vars.product_short %> fails.
+      </p>
+    </td>
+    <td><code>westus</code></td>
+  </tr>
+  <tr>
+    <td><code>resource_group</code></td>
+    <td>string</td>
+    <td>The Azure resource group in which to create the instance.</td>
+    <td><code>rg-INSTANCE-NAME</code></td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>authorized_network</code></td>
+    <td>string</td>
+    <td>
+      The subnet ID, in long form, of the Azure Virtual Network (VNet) or subnet
+      that is attached to this instance to allow remote access.
+      By default no VNets are allowed access.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>sku_name</code></td>
+    <td>string</td>
+    <td>
+      The Azure stock-keeping unit (SKU).
+      For more information about configuring this parameter, see <a href="#azure-postgresql-skus">SKUs</a> above.
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>use_tls</code></td>
+    <td>boolean</td>
+    <td>Use TLS for database connections.</td>
+    <td><code>true</code></td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+</table>
+
+### <a id="azure-postgresql-binding-creds"></a> Binding Credentials
+
+The format for binding credentials for PostgreSQL is as follows:
+
+```json
+{
+    "name" : "DATABASE-NAME",
+    "hostname" : "DATABASE-SERVER-HOST",
+    "port" : "DATABASE-SERVER-PORT",
+    "username" : "AUTHENTICATION-USERNAME",
+    "password" : "AUTHENTICATION-PASSWORD",
+    "uri" : "DATABASE-CONNECTION-URI",
+    "jdbcUrl" : "JDBC-FORMAT-CONNECTION-URI"
+}
+```
+
+
+## <a id="azure-storage-account"></a> Azure Storage Account
+
+This section applies to csb-azure-storage-account.
+This section details the plans and configuration parameters available for Azure Storage Account.
+
+### <a id="azure-storage-account-plans"></a> Plans
+
+The table below lists the plans for Azure Storage Account:
+
+| Plan | Description |
+|------|-------------|
+| standard | General-purpose V2 account. Locally redundant, standard tier |
+
+### <a id="azure-storage-account-parameters"></a> Configuration Parameters
+
+You can provision a service by running:
+
+```
+cf create-service csb-azure-storage-account PLAN-NAME SERVICE-INSTANCE-NAME -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+You can update the configuration parameters for a service instance by running:
+
+```
+cf update-service SERVICE-INSTANCE-NAME -c '{"PARAMETER-NAME": "PARAMETER-VALUE"}'
+```
+
+The table below lists the parameters you can configure, using the `-c` flag, when
+provisioning a csb-azure-storage-account service:
+
+<table>
+  <thead>
+    <tr>
+      <th width="20%">Parameter Name</th>
+      <th width="10%">Type</th>
+      <th width="50%">Description</th>
+      <th width="20%">Default</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>storage_account_type</code></td>
+    <td>string</td>
+    <td>
+      The account type - <code>BlobStorage</code>, <code>BlockBlobStorage</code>,
+      <code>FileStorage</code>, <code>Storage</code>, or <code>StorageV2</code>.
+    </td>
+    <td><code>StorageV2</code></td>
+  </tr>
+  <tr>
+    <td><code>tier</code></td>
+    <td>string</td>
+    <td>The storage tier to use - <code>Standard</code> or <code>Premium</code>.</td>
+    <td><code>Standard</code></td>
+  </tr>
+  <tr>
+    <td><code>replication_type</code></td>
+    <td>string</td>
+    <td>The replication type - <code>LRS</code>, <code>GRS</code>, <code>RAGRS</code>, or <code>ZRS</code>.</td>
+    <td><code>LRS</code></td>
+  </tr>
+  <tr>
+    <td><code>location</code></td>
+    <td>string</td>
+    <td>The Azure region in which to deploy the service instance. <%# Should we add the note about not being available in all regions here like in Azure SQL above? %></td>
+    <td><code>westus</code></td>
+  </tr>
+  <tr>
+    <td><code>resource_group</code></td>
+    <td>string</td>
+    <td>The Azure resource group in which to create the instance.</td>
+    <td><code>rg-ACCOUNT-NAME</code> (<code>ACCOUNT-NAME</code> is always generated)</td>
+  </tr>
+  <tr>
+    <td><code>azure_tenant_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure tenant for the service instance.</td>
+    <td>The value the operator entered for <strong>Tenant ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_subscription_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure subscription for the service instance.</td>
+    <td>The value the operator entered for <strong>Subscription ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_id</code></td>
+    <td>string</td>
+    <td>The ID of the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client ID</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>azure_client_secret</code></td>
+    <td>string</td>
+    <td>The secret (password) for the Azure service principal to authenticate for service instance creation.</td>
+    <td>The value the operator entered for <strong>Client Secret</strong> in <%= vars.ops_manager %>.</td>
+  </tr>
+  <tr>
+    <td><code>skip_provider_registration</code></td>
+    <td>boolean</td>
+    <td>Set to <code>true</code> to skip automatic Azure provider registration.
+    Set if the service principal being used does not have the rights to register providers.</td>
+    <td><code>false</code></td>
+  </tr>
+  <tr>
+    <td><code>authorized_networks</code></td>
+    <td>list (string)</td>
+    <td>A list of resource IDs for subnets of the authorized Azure Vnet.</td>
+    <td><code>[]</code></td>
+  </tr>
+</table>
+
+### <a id="azure-storage-account-binding-creds"></a> Binding Credentials
+
+The format for binding credentials for Azure Storage Account is as follows:
+
+```json
+{
+    "storage_account_name" : "STORAGE-ACCOUNT-NAME",
+    "primary_access_key" : "PRIMARY-ACCESS-KEY",
+    "secondary_access_key" : "SECONDARY-ACCESS-KEY"
+}
+```
