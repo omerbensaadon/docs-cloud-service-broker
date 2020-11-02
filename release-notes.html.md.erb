@@ -7,10 +7,20 @@ owner: Cloud Service Broker
 
 These are release notes for <%= vars.product_short %>.
 
-##<a id="1-1-0"></a> v1.1.x
+##<a id="1-1-0"></a> v1.1.0
 
-**Release Date:** MONTH DAY, 2020
+**Release Date:** November 4, 2020
 
 New features in this release:
 
-* Initial release for the <%= vars.product_short %> on Azure tile.
+[BREAKING CHANGE] Subsume is no longer provided as a separate service in the CF Marketplace, it is now a plan for the only currently available service: MSSQL DB 
+[NEW] Provided a cleaner pattern for subsuming existing MSSQL DB instances from the Microsoft Azure Service Broker. <a href= https://docs.pivotal.io/cloud-service-broker/1-1/azure-mssql-subsume.html> See documentation for details.</a>
+[NEW] Added support for Azure SQL Short Term Retention Period (See Issue <a href= https://github.com/pivotal/cloud-service-broker/issues/100> #100 </a>
+
+Bug Fixes: 
+[BUG FIX] Fixed a bug where Azure Storage configuration was not shown in the tile. Azure Storage can now be configured in the tile 
+[BUG FIX] 
+
+Known Issues: 
+[MSSQL SUBSUME] The team ran into an issue where the Microsoft Azure Service Broker was not able to bind/unbind to apps after a subsume was executed. We were unable to replicate the issue, but are working on making sure it was an narrowly defined edge-case.
+[AZURE STORAGE] Azure Storage Plan config incorrecly labled as "Azure Event Hubs." Does not impact functionality. 
