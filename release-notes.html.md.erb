@@ -11,16 +11,42 @@ These are release notes for <%= vars.product_short %>.
 
 **Release Date:** November 4, 2020
 
-New features in this release:
+### Breaking Changes
+Breaking changes in this release:
 
-[BREAKING CHANGE] Subsume is no longer provided as a separate service in the CF Marketplace, it is now a plan for the only currently available service: MSSQL DB 
-[NEW] Provided a cleaner pattern for subsuming existing MSSQL DB instances from the Microsoft Azure Service Broker. <a href= https://docs.pivotal.io/cloud-service-broker/1-1/azure-mssql-subsume.html> See documentation for details.</a>
-[NEW] Added support for Azure SQL Short Term Retention Period (See Issue <a href= https://github.com/pivotal/cloud-service-broker/issues/100> #100 </a>
+* **Subsume is no longer provided as a separate service in the CF Marketplace:**
+It is now a plan for the only currently available service: MSSQL DB
 
-Bug Fixes: 
-[BUG FIX] Fixed a bug where Azure Storage configuration was not shown in the tile. Azure Storage can now be configured in the tile 
-[BUG FIX] 
 
-Known Issues: 
-[MSSQL SUBSUME] The team ran into an issue where the Microsoft Azure Service Broker was not able to bind/unbind to apps after a subsume was executed. We were unable to replicate the issue, but are working on making sure it was an narrowly defined edge-case.
-[AZURE STORAGE] Azure Storage Plan config incorrecly labled as "Azure Event Hubs." Does not impact functionality. 
+### Features
+New features and changes in this release:
+
+* **Provides a cleaner pattern for subsuming existing MSSQL DB instances from the Microsoft Azure Service Broker:**
+For more information, see [Subsuming a Microsoft Azure Service Broker MSSQL Database Instance](/azure-mssql-subsume.html).
+* **Adds support for Azure SQL Short Term Retention Period:**
+For more information about the original issue, see
+[Issue #100 - Control backup retention period for Azure SQL DB](https://github.com/pivotal/cloud-service-broker/issues/100) in GitHub.
+
+
+### Resolved Issues
+This release has the following fixes:
+
+* **Azure Storage can now be configured in the tile:**
+Previously, there was an issue where Azure Storage configuration was not shown in the tile.
+
+
+### Known Issues
+This release has the following issues:
+
+* **Microsoft Azure Service Broker is not able to bind/unbind:**
+This issue might occur to apps after a subsume is executed.
+
+* **Incorrect Label:**
+The Azure Storage Plan config is incorrectly labeled as "Azure Event Hubs".
+This does not impact functionality.
+
+
+## <a id="view"></a> View Release Notes for Another Version
+
+To view the release notes for another product version, select the version from
+dropdown at the top of this page.
