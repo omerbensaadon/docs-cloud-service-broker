@@ -5,6 +5,13 @@ owner: Cloud Service Broker
 
 <strong><%= modified_date %></strong>
 
+<p class="note">
+  <strong>Note:</strong> The pattern for subsuming existing instances in v1.1.0 differs from the process detailed in v1.0.0. Please note that the "subsume" 
+plan for MSSQL only exists in v1.1.0. For customers using v1.0.0 (highly discouraged) please refer to <a href = https://docs.pivotal.io/cloud-service-broker/1-0/installing-with-azure.html> 
+  the documentation in v1.0.0 found here. </a>
+</p>
+      
+      
 This topic describes moving an MSSQL database instance
 from the Microsoft Azure Service Broker for VMware Tanzu tile
 to the <%= vars.product_short %> on Azure tile.
@@ -14,15 +21,15 @@ to another is called _subsuming_ the instance.
 
 ## <a id='about'></a> About Subsuming MSSQL Database Instance
 
-Because the Microsoft Azure Service (MAS) Broker for VMware Tanzu tile
+Because the Microsoft Azure Service Broker (MASB) for VMware Tanzu tile
 is going out of support, it is important to move MSSQL database instances that
-were created by the MAS Broker over to the <%= vars.product_short %>.
+were created by the MASB over to the <%= vars.product_short %>.
 
 Subsuming the instance allows you to move the database from the control of one broker
 to the control of another without migrating the data.
 
-After the subsuming process, you can manage the instance and the associated MSSQL database
-just like any other service instance.
+**After the subsuming process, you can manage the instance and the associated MSSQL database
+just like any other service instance.**
 
 For general information about the Microsoft Azure Service Broker for VMware Tanzu tile,
 see [Azure Service Broker](https://docs.pivotal.io/partners/azure-sb/index.html).
@@ -32,28 +39,23 @@ see [Azure Service Broker](https://docs.pivotal.io/partners/azure-sb/index.html)
 Detailed steps for subsuming are given below.
 However, the outline of the process is:
 
-+ Create a new Cloud Service-brokered instance,
-  importing information about the MSSQL database.
++ Create a new Cloud Service-brokered instance
++ Import information about the MSSQL database instance using the "subsume" plan in CloudFoundry Marketplace (`cf m`).
 + Unbind apps from the old MAS-brokered instance.
-+ Bind apps to the new Cloud Service-brokered instance.
-+ Purge the connections between the old MAS-brokered instance and the MSSQL database.
++ Bind apps to the new <%= vars.product_short %> instance.
++ Purge the connections between the old MAS-brokered instance and the MSSQL database (**don't delete service instances**, more on that later).
++ Restage any applications which were connected to the legacy database.
 
 
 ##<a id="prereq"></a> Prerequisite
 
-Before you can subsume an MSSQL database instance,
-you must have the admin password for the database.
-This password cannot be automatically discovered.
-It was probably set when the server was created.
 
-The database username _is_ automatically discovered,
-so ensure you use the password that matches the database user that was specified during setup.
 See [Broker Config](https://docs.pivotal.io/partners/azure-sb/installing.html#broker-config),
 in _Installing and Configuring Microsoft Azure Service Broker_.
 
-## <a id='subsume'></a> Subsume a Microsoft Azure Service Broker MSSQL Database Instance
+## <a id='subsume'></a> Subsume a Microsoft Azure Service Broker (MASB) MSSQL Database Instance
 
-To subsume control of an existing MAS-brokered MSSQL database instance to
+To subsume control of an existing MASB-brokered MSSQL database instance to
 the <%= vars.product_short %>:
 
 1. Get the MAS-brokered database instance details by running:
@@ -108,11 +110,17 @@ the <%= vars.product_short %>:
       --resource-group azure-service-broker --query id -o tsv
     </pre>
 
+    The variable in the next step, `AZURE-RESOURCE-ID`, refers to the output of this command in full. An example output has been provided below 
+    
+    ```
+    /subscriptions/000abc00-0000-00ab-0abc-00000000/resourceGroups/resource-group/providers/Microsoft.Sql/servers/server-name/databases/database-name
+    ```
+
 3. Create a new MSSQL service instance using <%= vars.product_short %>  and
    import the existing MSSQL resource by choosing the "subsume" plan and including the metadata as shown:
 
     ```
-    cf create-service csb-masb-mssql-db subsume NEW-SERVICE-INSTANCE -c '{"admin_password":"SERVER-ADMIN-PASSWORD", "azure_db_id", "AZURE-RESOURCE-ID"}'
+    cf create-service csb-azure-mssql-db subsume NEW-SERVICE-INSTANCE -c '{"azure_db_id", "AZURE-RESOURCE-ID", "server": "test_server"}'
     ```
 
     Where:
@@ -126,8 +134,8 @@ the <%= vars.product_short %>:
     For example:
 
     <pre class="terminal">
-$ cf create-service csb-masb-mssql-db-subsume current secondary-db -c \
- '{"admin_password":"PA55W0RD","azure_db_id":"/subscriptions/e7c0ac8a-0416-11eb-ae0e-3bbe060ffff9/resourceGroups/broker/providers/Microsoft.Sql/servers/masb-test-server/databases/test-db"}'
+$ cf create-service csb-azure-mssql-db subsume secondary-db -c \
+ '{"admin_password":"PA55W0RD","azure_db_id":"/subscriptions/000abc00-0000-00ab-0abc-00000000/resourceGroups/broker/providers/Microsoft.Sql/servers/masb-test-server/databases/test-db"}'
     </pre>
 
 
@@ -161,6 +169,12 @@ $ cf unbind-service my-app masb-instance
 
     Because Cloud Service Broker creates new credentials at bind time,
     this creates new binding credentials for the app.
+
+6. Restage the app
+
+    ```
+    cf restage test-spring
+    ```
 
 1. Remove record of the old MAS-brokered database instance and any child objects
    from Cloud Foundry by running:
