@@ -122,15 +122,14 @@ the <%= vars.product_short %>:
    import the existing MSSQL resource by choosing the "subsume" plan and including the metadata as shown:
 
     ```
-    cf create-service csb-azure-mssql-db subsume NEW-SERVICE-INSTANCE -c '{"azure_db_id", "AZURE-RESOURCE-ID", "server": "test_server"}'
+    cf create-service csb-azure-mssql-db subsume NEW-SERVICE-INSTANCE -c '{"azure_db_id", "AZURE-RESOURCE-ID", "server": "SERVER-NAME"}'
     ```
 
     Where:
     * `NEW-SERVICE-INSTANCE` is a name you choose for the new service instance
        that <%= vars.product_short %> creates to replace the MSAB service instance.
-    * `SERVER-ADMIN-PASSWORD` is the admin password for the database.
-       See [Prerequisite](#prereq) above.
-    * `AZURE-RESOURCE-ID` is found in the output of step 2 above.
+    * `AZURE-RESOURCE-ID` is found in the output of the previous step
+    * `SERVER-NAME` is the same as the `server-name` in the previous step
 
 
     For example:
