@@ -136,7 +136,7 @@ the <%= vars.product_short %>:
 
     <pre class="terminal">
 $ cf create-service csb-azure-mssql-db subsume secondary-db -c \
- '{"admin_password":"PA55W0RD","azure_db_id":"/subscriptions/000abc00-0000-00ab-0abc-00000000/resourceGroups/broker/providers/Microsoft.Sql/servers/masb-test-server/databases/test-db"}'
+ '{"azure_db_id":"/subscriptions/000abc00-0000-00ab-0abc-00000000/resourceGroups/broker/providers/Microsoft.Sql/servers/masb-test-server/databases/test-db", "server": "test_server"}'
     </pre>
 
 
