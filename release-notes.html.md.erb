@@ -11,17 +11,15 @@ These are release notes for <%= vars.product_short %>.
 
 **Release Date:** November 4, 2020
 
-### Breaking Changes
-Breaking changes in this release:
-
-* **Subsume is no longer provided as a separate service in the CF Marketplace:**
-It is now a plan for the only currently available service: MSSQL DB
-
+<p class="note breaking"><<strong>Breaking Change:</strong>
+Subsume is no longer provided as a separate service in the Cloud Foundry marketplace.
+It is now a plan that is currently only available for the MSSQL Database service.
+</p>
 
 ### Features
 New features and changes in this release:
 
-* **Provides a cleaner pattern for subsuming existing MSSQL DB instances from the Microsoft Azure Service Broker:**
+* **Provides a cleaner pattern for subsuming existing MSSQL database instances from the Microsoft Azure Service Broker:**
 For more information, see [Subsuming a Microsoft Azure Service Broker MSSQL Database Instance](./azure-mssql-subsume.html).
 * **Adds support for Azure SQL Short Term Retention Period:**
 For more information about the original issue, see
@@ -38,7 +36,7 @@ Previously, there was an issue where Azure Storage configuration was not shown i
 ### Known Issues
 This release has the following issues:
 
-* **Microsoft Azure Service Broker is not able to bind/unbind:**
+* **Microsoft Azure Service Broker is not able to bind or unbind:**
 This issue might occur to apps after a subsume is executed.
 
 * **Incorrect Label:**
