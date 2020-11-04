@@ -412,46 +412,6 @@ provisioning a csb-azure-mssql-db service:
   </tr>
 </table>
 
-### <a id="azure-mssql-db-global-defaults"></a> Configure Global Defaults
-
-<%# Who is this section for? Developers or Operators? When should it be used? See also similar sections below. %>
-
-Operators usually configure `server_credentials` for developers to use.
-
-<%# See [configuration documentation](./configuration.md) and
-[Azure installation documentation](azure-installation.md) for reference.
--- Need proper link for configuration.md and azure-installation.md and further clarification. %>
-
-To globally configure `server_credentials`, include the following in the configuration file for the
-broker:
-<%# Where is this config file? How to do this? %>
-
-```yaml
-service:
-  csb-azure-mssql-db:
-    provision:
-      defaults: '{
-        "server_credentials": {
-          "server1": {
-            "admin_username":"ADMIN-USERNAME",
-            "admin_password":"ADMIN-PASSWORD",
-            "server_name":"SERVER_NAME",
-            "server_resource_group":"SERVER-RESOURCE-GROUP"
-          },
-          "server2": {
-            "admin_username":"ADMIN-USERNAME",
-            ...
-          }
-        }
-      }'
-```
-<%# does it matter that this file has admin_username, admin_password, server_name,
-server_resource_group in a different order to the server_credentials row of the table? %>
-
-Developers can create a new failover group database on `server1` by running, for example:
-
-<pre class="terminal">$ cf create-service csb-azure-mssql-db medium medium-sql -c '{"server":"server1"}'</pre>
-
 ### <a id="azure-mssql-db-binding-creds"></a> Binding Credentials
 
 The format for binding credentials for an Azure SQL database is as follows:
@@ -1071,64 +1031,6 @@ provisioning a csb-azure-mssql-db-failover-group service:
     <td><code>false</code></td>
   </tr>
 </table>
-
-### <a id="azure-mssql-fog-preconfig-global-defaults"></a> Configure Global Defaults
-
-Operators usually configure `server_credentials_pairs` for developers to use.
-
-<%# See [configuration documentation](./configuration.md) and
-[Azure installation documentation](azure-installation.md) for reference.
--- Need proper link for configuration.md and azure-installation.md and further clarification. %>
-
-To globally configure `server_credential_pairs`, include the following in the
-configuration file for the broker:
-<%# Where is this config file? How to do this? %>
-
-```yaml
-service:
-  csb-azure-mssql-db-failover-group:
-    provision:
-      defaults: '{
-        "server_credential_pairs": {
-          "pair1": {
-            "admin_username":"ADMIN-USERNAME",
-            "admin_password":"ADMIN-PASSWORD",
-            "primary": {
-              "server_name":"SERVER-NAME",
-              "resource_group":"RESOURCE-GROUP"
-            },
-            "secondary": {
-              "server_name":"SERVER-NAME",
-              "resource_group":"RESOURCE-GROUP"
-            },
-          "pair2": {
-            "admin_username":"ADMIN-USERNAME",
-            ...
-          }
-        }
-      }'
-```
-
-Developers can create a new failover group database on `pair1` by running:
-
-For example:
-<pre class="terminal">$ cf create-service csb-azure-mssql-db-failover-group medium medium-fog -c '{"server_pair":"pair1"}'</pre>
-
-To allow multiple foundations to connect to a single database, for example, for
-foundations in primary and secondary failover locations, the same server credential
-pairs must be configured in each foundation.
-
-To do so, developers can:
-
-1. Create a failover group database in one foundation by running:
-
-    For example:
-    <pre class="terminal">$ cf create-service csb-azure-mssql-db-failover-group medium medium-fog -c '{"server_pair":"pair1", "instance_name":"fog-instance","db_name":"db"}'</pre>
-
-1. Connect to that database in the second foundation by running:
-
-    For example:
-    <pre class="terminal">$ cf create-service csb-azure-mssql-db-failover-group existing medium-fog -c '{"server_pair":"pair1","instance_name": "csb-failover-group-test", "db_name":"test-db"}'</pre>
 
 ### <a id="azure-mssql-fog-preconfig-binding-creds"></a> Binding Credentials
 
