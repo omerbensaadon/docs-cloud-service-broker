@@ -26,24 +26,21 @@ For more information, see [Subsuming a Microsoft Azure Service Broker MSSQL Data
 * **Adds support for Azure SQL Short Term Retention Period:**
 For more information about the original issue, see
 [Issue #100 - Control backup retention period for Azure SQL DB](https://github.com/pivotal/cloud-service-broker/issues/100) in GitHub.
-
+* **Added clearer error messaging to subsume functionality** 
 
 ### Resolved Issues
 This release has the following fixes:
 
 * **Azure Storage can now be configured in the tile:**
 Previously, there was an issue where Azure Storage configuration was not shown in the tile.
-
+* **Fixed incorrect labeling in Azure Redis Config** 
 
 ### Known Issues
 This release has the following issues:
 
-* **Microsoft Azure Service Broker is not able to bind/unbind:**
-This issue might occur to apps after a subsume is executed.
-
-* **Incorrect Label:**
-The Azure Storage Plan config is incorrectly labeled as "Azure Event Hubs".
-This does not impact functionality.
+* **`cf update-service` Data Loss:** 
+Any parameters provided in `cf create-service` must also be provided in `cf update-service` or the broker will substitute default values for those parameters. 
+In the case that this parameter is somehting like `db_name` this can result in data loss. 
 
 
 ## <a id="view"></a> View Release Notes for Another Version
