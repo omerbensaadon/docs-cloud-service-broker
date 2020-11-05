@@ -36,10 +36,11 @@ Previously, there was an issue where Azure Storage configuration was not shown i
 ### Known Issues
 This release has the following issues:
 
-* **Data Loss when updating services**
-Any parameters provided in a `cf create-service` command must also be provided in the `cf update-service` command.
+* **Data Loss when updating services:**
+Any parameters provided in the `cf create-service` command must also be provided
+in the `cf update-service` command.
 Otherwise, the broker substitutes default values for those parameters.<br>
-For example, if the parameter was `db_name` when the service was created,
+For example, if you provided the parameter `db_name` when the service was created,
 omitting this parameter from the update service command would result in data loss.
 
 
