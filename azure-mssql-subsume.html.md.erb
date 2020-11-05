@@ -6,17 +6,17 @@ owner: Cloud Service Broker
 <strong><%= modified_date %></strong>
 
 <p class="note">
-  <strong>Note:</strong> The pattern for subsuming existing instances in v1.1.0 differs from the process
-  detailed in v1.0.0.
-  Please note that the "subsume" plan for MSSQL only exists in v1.1.0.
-  For customers using v1.0.0 (highly discouraged) please refer to
-  <a href = https://docs.pivotal.io/cloud-service-broker/1-0/installing-with-azure.html>
-  the documentation in v1.0.0 found here. </a>
+  <strong>Note:</strong> The procedure for subsuming existing instances in
+  <%= vars.product_full %> v1.1 differs from the procedure in v1.0.
+  The "subsume" plan for MSSQL only exists in v1.1.
+  If you are using v1.0, see
+  <a href="https://docs.pivotal.io/csb-azure/1-0/installing-with-azure.html">
+    Subsuming a Microsoft Azure Service Broker MSSQL Database Instance</a>
+  in <%= vars.product_short %> v1.0.
 </p>
 
-This topic describes moving an MSSQL database instance
-from the Microsoft Azure Service Broker for VMware Tanzu tile
-to the <%= vars.product_short %> on Azure tile.
+This topic describes moving an MSSQL database instance from the Microsoft Azure
+Service Broker for VMware Tanzu tile to the <%= vars.product_full %> tile.
 
 This process of moving control of an instance from one broker tile
 to another is called _subsuming_ the instance.
@@ -30,8 +30,8 @@ were created by the MASB over to the <%= vars.product_short %>.
 Subsuming the instance allows you to move the database from the control of one broker
 to the control of another without migrating the data.
 
-**After the subsuming process, you can manage the instance and the associated MSSQL database
-just like any other service instance.**
+After the subsuming process, you can manage the instance and the associated MSSQL database
+just like any other service instance.
 
 For general information about the Microsoft Azure Service Broker for VMware Tanzu tile,
 see [Azure Service Broker](https://docs.pivotal.io/partners/azure-sb/index.html).
@@ -41,11 +41,13 @@ see [Azure Service Broker](https://docs.pivotal.io/partners/azure-sb/index.html)
 Detailed steps for subsuming are given below.
 However, the outline of the process is:
 
-+ Create a new Cloud Service-brokered instance
-+ Import information about the MSSQL database instance using the "subsume" plan in the Cloud Foundry Marketplace (`cf m`).
++ Create a new Cloud Service-brokered instance.
++ Import information about the MSSQL database instance using the "subsume" plan
+in the Cloud Foundry marketplace.
 + Unbind apps from the old MAS-brokered instance.
 + Bind apps to the new <%= vars.product_short %> instance.
-+ Purge the connections between the old MAS-brokered instance and the MSSQL database (**don't delete service instances**, more on that later).
++ Purge the connections between the old MAS-brokered instance and the MSSQL database.
+Do not delete service instances.
 + Restage any apps which were connected to the legacy database.
 
 
@@ -85,7 +87,7 @@ the <%= vars.product_short %>:
     Showing status of last operation from service masb-instance...
 
     status:    create succeeded
-    message:   Created logical database database-name on logical server server-name.
+    message:   Created logical database my-database on logical server my-server.
     started:   2020-08-20T21:06:57Z
     updated:   2020-08-20T21:08:04Z
     </pre>
@@ -108,37 +110,33 @@ the <%= vars.product_short %>:
     For example:
 
     <pre class="terminal">
-    $ az sql db show  --name database-name --server server-name \
+    $ az sql db show  --name my-database --server my-server \
       --resource-group azure-service-broker --query id -o tsv
+
+    /subscriptions/000abc00-0000-00ab-0abc-00000000/resourceGroups/resource-group/providers/Microsoft.Sql/servers/my-server/databases/my-database
     </pre>
-
-    The variable in the next step, `AZURE-RESOURCE-ID`, refers to the output of this command in full. An example output has been provided below
-
-    ```
-    /subscriptions/000abc00-0000-00ab-0abc-00000000/resourceGroups/resource-group/providers/Microsoft.Sql/servers/server-name/databases/database-name
-    ```
 
 3. Create a new MSSQL service instance using <%= vars.product_short %>  and
    import the existing MSSQL resource by choosing the "subsume" plan and including the metadata as shown:
 
     ```
-    cf create-service csb-azure-mssql-db subsume NEW-SERVICE-INSTANCE -c '{"azure_db_id", "AZURE-RESOURCE-ID", "server": "SERVER-NAME"}'
+    cf create-service csb-azure-mssql-db subsume NEW-SERVICE-INSTANCE \
+    -c '{"azure_db_id", "AZURE-RESOURCE-ID", "server": "SERVER-NAME"}'
     ```
 
     Where:
     * `NEW-SERVICE-INSTANCE` is a name you choose for the new service instance
        that <%= vars.product_short %> creates to replace the MSAB service instance.
-    * `AZURE-RESOURCE-ID` is found in the output of the previous step
-    * `SERVER-NAME` is the same as the `server-name` in the previous step
+    * `AZURE-RESOURCE-ID` is the output of the `az sql db show` command in the previous step.
+    * `SERVER-NAME` is the same as the previous step.
 
 
     For example:
 
     <pre class="terminal">
-$ cf create-service csb-azure-mssql-db subsume secondary-db -c \
- '{"azure_db_id":"/subscriptions/000abc00-0000-00ab-0abc-00000000/resourceGroups/broker/providers/Microsoft.Sql/servers/masb-test-server/databases/test-db", "server": "test_server"}'
+$ cf create-service csb-azure-mssql-db subsume secondary-db \
+  -c '{"azure_db_id":"/subscriptions/000abc00-0000-00ab-0abc-00000000/resourceGroups/resource-group/providers/Microsoft.Sql/servers/my-server/databases/my-database", "server": "my-server"}'
     </pre>
-
 
 4. Disconnect the app from the MASB service binding by running:
 
@@ -148,9 +146,9 @@ $ cf create-service csb-azure-mssql-db subsume secondary-db -c \
 
     Where:
     * `APP-NAME` is the app using the database.
-    * `MASB-SERVICE-INSTANCE` is the name of the service instance,
-    the MAS-brokered database instance.
+    * `MASB-SERVICE-INSTANCE` is the name of the MAS-brokered database instance.
 
+    For example:
     <pre class="terminal">
 $ cf unbind-service my-app masb-instance
     </pre>
@@ -163,15 +161,15 @@ $ cf unbind-service my-app masb-instance
 
     Where `NEW-SERVICE-INSTANCE` is the name of the <%= vars.product_short %> service instance
     that you created in step 3 above.
-
+    <br><br>
     For example:
 
-    <pre class="terminal">$cf bind-service my-app secondary-db </pre>
+    <pre class="terminal">$ cf bind-service my-app secondary-db </pre>
 
-    Because Cloud Service Broker creates new credentials at bind time,
+    Because <%= vars.product_short %> creates new credentials at bind time,
     this creates new binding credentials for the app.
 
-6. Restage the app
+6. Restage the app:
 
     ```
     cf restage APP-NAME
