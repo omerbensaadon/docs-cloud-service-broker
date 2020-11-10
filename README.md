@@ -1,4 +1,4 @@
-# docs-cloud-service-broker
+# docs-csb-azure
 
 ## Branches in this Content Repo
 
@@ -13,6 +13,7 @@ Then, if necessary, immediately cherry-pick/copy any changes that you want to pu
 | Branch Name| Use for… |
 |------------| ---------|
 | master     | 1.n Use for staging doc for the next release. (staged here: http://docs-pcf-staging.cfapps.io/cloud-service-broker/1-n/) |
+| 1.1     | 1.1 (live: http://docs.pivotal.io/cloud-service-broker/1-1/) |
 | 1.0     | 1.0 (live: http://docs.pivotal.io/cloud-service-broker/1-0/) |
 | GCP-AWS-docs | This branch contains the installing-with-gcp.html.md.erb and installing-with-aws.html.md.erb topics. We are keeping these topics for when CSB supports these IaaSes |
 
@@ -20,7 +21,7 @@ Then, if necessary, immediately cherry-pick/copy any changes that you want to pu
 
 ## Book Repo
 
-The book repo associated with this content is [pivotal-cf/docs-book-csb](https://github.com/pivotal-cf/docs-book-csb).
+The book repo associated with this content is [pivotal-cf/docs-book-csb-azure](https://github.com/pivotal-cf/docs-book-csb-azure).
 
 ### Staging Environment
 
@@ -28,7 +29,7 @@ When a commit is made into any of the above branches, the documentation is deplo
 [this concourse build][docs-staging-deploy]. All the supported versions will be accessible on the
 [staging website][docs-staging].
 
-[docs-staging]:        http://docs-pcf-staging.cfapps.io/cloud-service-broker/
+[docs-staging]:        http://docs-pcf-staging.cfapps.io/csb-azure/
 
 
 ### Making Your Documentation Changes Live
