@@ -21,7 +21,8 @@ Service Broker for VMware Tanzu tile to the <%= vars.product_full %> tile.
 This process of moving control of an instance from one broker tile
 to another is called _subsuming_ the instance.
 
-## <a id='about'></a> About Subsuming MSSQL Database Instance
+
+## <a id='about'></a> About Subsuming an MSSQL Database Instance
 
 Because the Microsoft Azure Service Broker (MASB) for VMware Tanzu tile
 is going out of support, it is important to move MSSQL database instances that
@@ -36,6 +37,7 @@ just like any other service instance.
 For general information about the Microsoft Azure Service Broker for VMware Tanzu tile,
 see [Azure Service Broker](https://docs.pivotal.io/partners/azure-sb/index.html).
 
+
 ## <a id='process'></a> Overview of the Process
 
 Detailed steps for subsuming are given below.
@@ -43,7 +45,7 @@ However, the outline of the process is:
 
 + Create a new Cloud Service-brokered instance.
 + Import information about the MSSQL database instance using the "subsume" plan
-in the Cloud Foundry marketplace.
+in the Cloud Foundry Marketplace.
 + Unbind apps from the old MAS-brokered instance.
 + Bind apps to the new <%= vars.product_short %> instance.
 + Purge the connections between the old MAS-brokered instance and the MSSQL database.
@@ -53,9 +55,9 @@ Do not delete service instances.
 
 ##<a id="prereq"></a> Prerequisite
 
-
 See [Broker Config](https://docs.pivotal.io/partners/azure-sb/installing.html#broker-config),
 in _Installing and Configuring Microsoft Azure Service Broker_.
+
 
 ## <a id='subsume'></a> Subsume a Microsoft Azure Service Broker (MASB) MSSQL Database Instance
 
@@ -185,9 +187,12 @@ $ cf unbind-service my-app masb-instance
 
     <pre class="terminal">$ cf purge-service-instance masb-instance</pre>
 
-    <p class="note warning"><strong> Warning:</strong> Do not run <code>cf delete-service</code>
-    because then the Microsoft Azure Service Broker deletes the Azure MSSQL resource, that is, the database.
-</p>
+    <p class="note warning">
+      <strong> Warning:</strong> Do not run <code>cf delete-service</code>
+      because then the Microsoft Azure Service Broker deletes the Azure MSSQL
+      resource, that is, the database.
+    </p>
+
 
 ## <a id="next-steps"></a> Next Steps
 
