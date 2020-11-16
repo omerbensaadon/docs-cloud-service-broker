@@ -1,4 +1,4 @@
-# docs-csb-azure
+csb-azure# docs-csb-azure
 
 ## Branches in this Content Repo
 
@@ -12,9 +12,9 @@ Then, if necessary, immediately cherry-pick/copy any changes that you want to pu
 
 | Branch Name| Use for… |
 |------------| ---------|
-| master     | 1.n Use for staging doc for the next release. (staged here: http://docs-pcf-staging.cfapps.io/cloud-service-broker/1-n/) |
-| 1.1     | 1.1 (live: http://docs.pivotal.io/cloud-service-broker/1-1/) |
-| 1.0     | 1.0 (live: http://docs.pivotal.io/cloud-service-broker/1-0/) |
+| master     | 1.n Use for staging doc for the next release. (staged here: http://docs-pcf-staging.cfapps.io/csb-azure/1-n/) |
+| 1.1     | 1.1 (live: http://docs.pivotal.io/csb-azure/1-1/) |
+| 1.0     | 1.0 (live: http://docs.pivotal.io/csb-azure/1-0/) |
 | GCP-AWS-docs | This branch contains the installing-with-gcp.html.md.erb and installing-with-aws.html.md.erb topics. We are keeping these topics for when CSB supports these IaaSes |
 
 
@@ -38,7 +38,7 @@ Click the deploy button in the pipeline! Living the dream :-D
 
 ### Contributing Documentation
 
-If there is some documentation to add for an unreleased patch version of Cloud Service Broker then create a branch off of the **live** branch
+If there is some documentation to add for an unreleased patch version of Cloud Service Broker for Azure then create a branch off of the **live** branch
 you intend to modify and create a pull request against that branch.
 After the version that change is targeting is released, the pull request can be merged and will be live
 the next time a documentation deployment occurs.
@@ -50,7 +50,7 @@ then you will need to:
 
 ### Partials
 
-Cross-product partials (if any) for Cloud Service Broker are single sourced from the [Docs Partials](https://github.com/pivotal-cf/docs-partials) repository.
+Cross-product partials (if any) for Cloud Service Broker for Azure are single sourced from the [Docs Partials](https://github.com/pivotal-cf/docs-partials) repository.
 
 ### Releasing a New Minor Version
 
@@ -58,12 +58,12 @@ Because **master** is the latest and greatest documentation, the process would b
 for the version that **master** was targeting during that time.
 A corresponding section in **config.yml** in the [docs-book-pcfservices][docs-book-pcfservices] repository would also need to be made.
 
-After this point, **master** will then be the target for the next version of the Cloud Service Broker product.
+After this point, **master** will then be the target for the next version of the Cloud Service Broker for Azure product.
 
 
 ## Style Guide
 
-This is a word list for terminology and word usage specific to the Cloud Service Broker for docs.
+This is a word list for terminology and word usage specific to the Cloud Service Broker for Azure docs.
 
 |Use|Don't use|Notes|
 |---|---------|-----|
