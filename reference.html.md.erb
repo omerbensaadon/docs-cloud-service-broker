@@ -196,14 +196,14 @@ main table {
       The Azure stock-keeping unit (SKU).
       For more information about configuring this parameter, see <a href="#azure-mssql-skus">SKUs</a> above.
     </td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>authorized_network</code></td>
     <td>string</td>
     <td>The Azure subnet ID, in long form, that the instance is connected to through a service endpoint.
     The subnet must have the <code>Microsoft.sql</code> service enabled.</td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
   <tr>
@@ -360,7 +360,7 @@ provisioning a csb-azure-mssql-db service:
       This must match one of the <code>SERVER</code> parameters in <code>server_credentials</code>.
       For example, <code>SERVER-1</code> in the code snippet in the <code>server_credentials</code> row below.
     </td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>server_credentials</code></td>
@@ -370,7 +370,7 @@ provisioning a csb-azure-mssql-db service:
       Format: <pre><code>{ "SERVER-1": { "server_name":"...", "server_resource_group":"...", "admin_username":"...", "admin_password":"..."}, "SERVER-2":{"server_name":..., ...}...}</code></pre>
       One of the values you use for <code>SERVER</code> must match the <code>server</code> parameter above.
     </td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>azure_tenant_id</code></td>
@@ -403,7 +403,7 @@ provisioning a csb-azure-mssql-db service:
       The Azure stock-keeping unit (SKU).
       For more information about configuring this parameter, see <a href="#azure-mssql-db-skus">SKUs</a> above.
     </td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>skip_provider_registration</code></td>
@@ -535,7 +535,7 @@ provisioning a csb-azure-mssql-server service:
     <td>string</td>
     <td>The Azure subnet ID, in long form, that the instance is connected to through a service endpoint.
     The subnet must have the <code>Microsoft.sql</code> service enabled.</td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>skip_provider_registration</code></td>
@@ -733,14 +733,14 @@ provisioning a csb-azure-mssql-failover-group service:
       The Azure stock-keeping unit (SKU).
       For more information about configuring this parameter, see <a href="#azure-mssql-fog-skus">SKUs</a> above.
     </td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>authorized_network</code></td>
     <td>string</td>
     <td>The Azure subnet ID, in long form, that the instance is connected to through a service endpoint.
     The subnet must have the <code>Microsoft.sql</code> service enabled.</td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>skip_provider_registration</code></td>
@@ -968,7 +968,7 @@ provisioning a csb-azure-mssql-db-failover-group service:
       This must match one of the <code>PAIR</code> parameters in <code>server_credentials_pairs</code>.
       For example, <code>PAIR-1</code> in the code snippet in the <code>server_credentials_pairs</code> row below.
     </td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>server_credential_pairs</code></td>
@@ -978,7 +978,7 @@ provisioning a csb-azure-mssql-db-failover-group service:
       Format: <pre><code>{ "PAIR-1": { "admin_username":"...", "admin_password":"...", "primary":{"server_name":"...", "resource_group":"..."}, "secondary":{"server_name":"...", "resource_group":"..."}, "PAIR-2":...}</code></pre>
       One of the values you use for <code>PAIR</code> must match the <code>server_pair</code> parameter above.
     </td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>read_write_endpoint_failover_policy</code></td>
@@ -1023,7 +1023,7 @@ provisioning a csb-azure-mssql-db-failover-group service:
       The Azure stock-keeping unit (SKU).
       For more information about configuring this parameter, see <a href="#azure-mssql-fog-preconfig-skus">SKUs</a> above.
     </td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>skip_provider_registration</code></td>
@@ -1175,7 +1175,7 @@ provisioning a csb-azure-mssql-fog-run-failover service:
     <td><code>fog_instance_name</code></td>
     <td>string</td>
     <td>The name of the service instance for the failover group to target.</td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>server_pair_name</code></td>
@@ -1185,7 +1185,7 @@ provisioning a csb-azure-mssql-fog-run-failover service:
       This must match one of the <code>PAIR</code> parameters in <code>server_pairs</code>.
       For example, <code>PAIR-1</code> in the code snippet in the <code>server_credentials_pairs</code> row below.
     </td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>server_pairs</code></td>
@@ -1195,7 +1195,7 @@ provisioning a csb-azure-mssql-fog-run-failover service:
       Format: <pre><code>{ "PAIR-1": { "primary":{"server_name":"...", "resource_group":..."}, "secondary":{"server_name":"...", "resource_group":..."}, "PAIR-2":...}</code></pre>
       One of the values you use for <code>PAIR</code> must match the <code>server_pair_name</code> parameter above.
     </td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>azure_tenant_id</code></td>
@@ -1412,7 +1412,7 @@ provisioning a csb-azure-postgresql service:
       that is attached to this instance to allow remote access.
       By default no VNets are allowed access.
     </td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>sku_name</code></td>
@@ -1421,7 +1421,7 @@ provisioning a csb-azure-postgresql service:
       The Azure stock-keeping unit (SKU).
       For more information about configuring this parameter, see <a href="#azure-postgresql-skus">SKUs</a> above.
     </td>
-    <td></td>
+    <td>n/a</td>
   </tr>
   <tr>
     <td><code>use_tls</code></td>
