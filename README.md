@@ -1,4 +1,4 @@
-csb-azure# docs-csb-azure
+# docs-csb-azure
 
 ## Branches in this Content Repo
 
