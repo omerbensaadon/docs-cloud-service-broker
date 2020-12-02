@@ -25,7 +25,7 @@ New features and changes in this release:
 ### Resolved Issues
 This release has the following fixes:
 
-* **Data Loss when updating services:** Any parameters provided to `cf create-service` are now preserved
+* **Data loss when updating services:** Any parameters provided to `cf create-service` are now preserved
  and used as defaults during `cf update-service`.
 
 ##<a id="1-1-0"></a> v1.1.0
@@ -57,7 +57,7 @@ Previously, there was an issue where Azure Storage configuration was not shown i
 ### Known Issues
 This release has the following issues:
 
-* **Data Loss when updating services:**
+* **Data loss when updating services:**
 Any parameters provided in the `cf create-service` command must also be provided
 in the `cf update-service` command.
 Otherwise, the broker substitutes default values for those parameters.<br>
