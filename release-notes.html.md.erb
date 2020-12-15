@@ -10,17 +10,31 @@ These are release notes for <%= vars.product_short %>.
 
 ##<a id="1-1-2"></a> v1.1.2
 
-**Release Date:** December 14, 2020
+**Release Date:** December 15, 2020
 
 
-## New Features: 
-[NEW] Delivered #146. Added Azure Virtual network integration for Azure Redis Cache Premium plans
+### New Features
 
+New features and changes in this release:
 
-## Bug Fixes: 
-[CRITICAL FIX] Create service-key or bind-service on non-primary site of a AzureSQL FOG DB, no longer exposes admin username and password
-[CRITICAL FIX] Fixed #156. Credentials are no longer output in plain text in application console logs.
-[FIX] Fixed #151. Execute permission previously denied on stored procedures after Azure SQL subsume should now be permissible. 
+* **Azure Virtual Network (VNet) integration:** Added for Azure Redis Cache premium plans.
+
+### Resolved Issues
+
+This release has the following fixes:
+
+* **Admin username and password for a AzureSQL Failover Group database no longer exposed:**
+`create service-key` and `bind-service` on the non-primary site of a AzureSQL
+Failover Group database no longer exposes the admin username and password.
+
+* **Credentials are no longer output in plain text in application console logs.**
+
+* **Execute permissions no longer denied:** Execute permissions previously denied on
+stored procedures after Azure SQL subsume are now permissible.
+
+### Known Issues
+
+There are no known issues for this release.
 
 
 ##<a id="1-1-1"></a> v1.1.1
@@ -39,7 +53,7 @@ New features and changes in this release:
 For more information about Advanced Threat Protection for Azure Database for MySQL, see the
 [Microsoft documentation](https://docs.microsoft.com/en-us/azure/mysql/howto-database-threat-protection-portal).
 * **Added subsume functionality for Azure MySQL failover group (FoG) instances:**
-For information about subsuming Azure MySQL FoG instances, see 
+For information about subsuming Azure MySQL FoG instances, see
 [Subsuming a Microsoft Azure Service Broker MSSQL Database Fail Over Group Instance](https://github.com/pivotal/cloud-service-broker/blob/master/docs/subsume-masb-mssql-db-fog.md)
 in GitHub.
 
