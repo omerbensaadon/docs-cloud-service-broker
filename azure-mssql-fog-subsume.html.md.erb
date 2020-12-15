@@ -48,7 +48,7 @@ Do not delete service instances.
 
 Before you subsume a FoG instance, you must have:
 
-* PREREQUISITE. See [Broker Config](https://docs.pivotal.io/partners/azure-sb/installing.html#broker-config),
+* See [Broker Config](https://docs.pivotal.io/partners/azure-sb/installing.html#broker-config),
 in _Installing and Configuring Microsoft Azure Service Broker_.
 * The names of the primary server and secondary server that are joined to the FoG.
   You can find these names in the Azure portal.
@@ -125,7 +125,7 @@ the <%= vars.product_short %>:
     There are no bound apps for this service.
     </pre>
 
-2. Get the Azure resource IDs for the FoG and it's databases by running the following on the Azure CLI:
+2. Get the Azure resource IDs for the FoG and its databases by running the following on the Azure CLI:
 
     Primary database ID:
 
@@ -145,10 +145,10 @@ the <%= vars.product_short %>:
     az sql failover-group show --name FOG-NAME --server PRIMARY-SERVER-NAME \
     --resource-group FOG-RESOURCE-GROUP --query id -o tsv
     ```
-
-    Where<%# Place |Where| immediately below the closing code tag. %>:
+    Where:
     * `FOG-NAME` is the logical name in the `message` line of the output in the step above.
-    * `FOG-RESOURCE-GROUP` is the **Default Resource Group** in the Default Parameters Config<%# |config| is preferred. %> pane  o<%# Delete the double space. %>f the Azure Service Broker tile.
+    * `FOG-RESOURCE-GROUP` is the **Default Resource Group** in the Default Parameters Config pane
+       of the Azure Service Broker tile.
       See [Default Parameters Config](https://docs.pivotal.io/partners/azure-sb/installing.html#defaultparameters-config)
       in _Installing and Configuring Microsoft Azure Service Broker_.
     * `PRIMARY-SERVER-NAME` and `SECONDARY-SERVER-NAME` are the server names joined to the FoG, it may<%# |can| usually works better. Use |might| to convey possibility. %> be necessary to consult the Azure portal to find these
