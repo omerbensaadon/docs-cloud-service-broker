@@ -1,5 +1,5 @@
 ---
-title: Subsuming a Microsoft Azure Service Broker MSSQL Database Instance
+title: Subsuming a Microsoft Azure Service Broker MSSQL Failover Group Instance
 owner: Cloud Service Broker
 ---
 
@@ -9,8 +9,8 @@ owner: Cloud Service Broker
 This topic describes moving a MSSQL database Failover Group (FoG) instance from the Microsoft Azure
 Service Broker for VMware Tanzu tile to the <%= vars.product_full %> tile.
 
-This process of moving control of an instance from one broker tile (in this case, the Legacy MSSQL broker)
-to another is called _subsuming_ the instance.
+This process of moving control of an instance from one broker tile, in this case the legacy MSSQL
+broker tile, to another is called _subsuming_ the instance.
 
 
 ## <a id='about'></a> About Subsuming an MSSQL Database Failover Group (FoG) Instance
@@ -35,7 +35,7 @@ Detailed steps for subsuming are given below.
 However, the outline of the process is:
 
 + Create a new Cloud Service-brokered instance.
-+ Import information about the MSSQL FoGdatabase instance using the "subsume" plan
++ Import information about the MSSQL FoG database instance using the "subsume" plan
 in the Cloud Foundry Marketplace.
 + Unbind apps from the old MAS-brokered instance.
 + Bind apps to the new <%= vars.product_short %> instance.
@@ -60,7 +60,6 @@ the <%= vars.product_short %>:
     ```
     cf service MASB-SERVICE-INSTANCE
     ```
-
     Where `MASB-SERVICE-INSTANCE` is the name of the MAS-brokered database instance.
     <br><br>
     For example:
@@ -84,16 +83,18 @@ the <%= vars.product_short %>:
     updated:   2020-08-20T21:08:04Z
     </pre>
 
-Three ID's are necessary - the fail over group resource and the primary and secondary DB ids.
+    Three identities are necessary: <%# Necessary for what? %>
+    * The FoG resource
+    * The primary database identity
+    * The secondary database identity
 
-1. Get the MASB-brokered fail over group instance details by running:
+1. Get the MASB-brokered FoG instance details by running:
 
     ```
     cf service MASB-SERVICE-INSTANCE
     ```
-
-    Where is `MASB-SERVICE-INSTANCE` is the name of the service instance,
-    the MAS-brokered database instance.
+    Where is `MASB-SERVICE-INSTANCE` is the name of the service instance, the MAS-brokered database
+    instance.
 
     For example:
 ```
@@ -116,30 +117,30 @@ started:   2020-11-11T00:39:40Z
 updated:   2020-11-11T00:41:44Z
 
 There are no bound apps for this service.
-```
+```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
 
 2. Get the Azure resource IDs for the FoG and it's databases by running the following on the Azure CLI:
 
-    Primary database id:
-    ```
+    Primary database ID:
+    ```<%# Put a newline between the stem and the opening code tag. %>
     az sql failover-group show --name FOG-NAME --server PRIMARY-SERVER-NAME --resource-group FOG-RESOURCE-GROUP --query databases[0] -o tsv
     ```
-    Secondary database id:
-    ```
+    Secondary database ID:
+    ```<%# Put a newline between the stem and the opening code tag. %>
     az sql failover-group show --name FOG-NAME --server SECONDARY-SERVER-NAME --resource-group FOG-RESOURCE-GROUP --query databases[0] -o tsv
     ```
-    Fail over group id:
-    ```
+    FoG ID:
+    ```<%# Put a newline between the stem and the opening code tag. %>
     az sql failover-group show --name FOG-NAME --server PRIMARY-SERVER-NAME --resource-group FOG-RESOURCE-GROUP --query id -o tsv
     ```
 
-    Where:
+    Where<%# Place |Where| immediately below the closing code tag. %>:
     * `FOG-NAME` is the logical name in the `message` line of the output in the step above.
-    * `FOG-RESOURCE-GROUP` is the **Default Resource Group** in the Default Parameters Config pane  of the Azure Service Broker tile.
+    * `FOG-RESOURCE-GROUP` is the **Default Resource Group** in the Default Parameters Config<%# |config| is preferred. %> pane  o<%# Delete the double space. %>f the Azure Service Broker tile.
       See [Default Parameters Config](https://docs.pivotal.io/partners/azure-sb/installing.html#defaultparameters-config)
       in _Installing and Configuring Microsoft Azure Service Broker_.
-    * `PRIMARY-SERVER-NAME` and `SECONDARY-SERVER-NAME` are the server names joined to the fail over group, it may be necessary to consult the Azure portal to find these
- 
+    * `PRIMARY-SERVER-NAME` and `SECONDARY-SERVER-NAME` are the server names joined to the FoG, it may<%# |can| usually works better. Use |might| to convey possibility. %> be necessary to consult the Azure portal to find these
+
 
     For example:
 
@@ -148,40 +149,40 @@ There are no bound apps for this service.
       --resource-group azure-service-broker --query id -o tsv
     </pre>
 
-    The variable in the next step, `AZURE-RESOURCE-ID`, refers to the output of this command in full. An example output has been provided below 
-    
+    The variable in the next step, `AZURE-RESOURCE-ID`, refers to the output of this command in full. An example output has been<%# Consider changing to |is| or |has| or rewrite for active voice. %> provided below
+
     ```
     /subscriptions/000abc00-0000-00ab-0abc-00000000/resourceGroups/resource-group/providers/Microsoft.Sql/servers/server-name/databases/database-name
     ```
-3. Create a new MSSQL service instance using Cloud Service Broker  and
-   import the existing MSSQL fail over group resource by choosing the "subsume" plan and including the metadata as shown:
+3. Create a new MSSQL service instance using Cloud Service Broker<%# Use <%= vars.product_short or, if in alt text, #{vars.product_short} %>  a<%# Delete the double space. %>nd
+   import the existing MSSQL FoG resource by choosing the "subsume" plan and including the metadata as shown:
 
-      ```
-     cf create-service csb-azure-mssql-db-failover-group subsume NEW-SERVICE-INSTANCE -c 
+      <%# Indent 0, 4, 8, or 12 spaces. %>```
+     cf create-service csb-azure-mssql-db-failover-group subsume NEW-SERVICE-INSTANCE<%# |SERVICE-INSTANCE-NAME| is preferred. %> -c
         '{
-	 "azure_primary_db_id": "PRIMARY-AZURE-DB-ID",
-    "azure_secondary_db_id": "SECONDARY-AZURE-DB-ID",
+   "azure_primary_db_id": "PRIMARY-AZURE-DB<%# |database| is preferred. %>-ID",
+    "azure_secondary_db_id": "SECONDARY-AZURE-DB<%# |database| is preferred. %>-ID",
       "auzure_fog_id": "FOG-AZURE-ID",
-	    "server_pair": "FOG-SERVER-PAIR"
+      "server_pair": "FOG-SERVER-PAIR"
    }'
-     ```
+     <%# Indent 0, 4, 8, or 12 spaces. %>```
 
-    Where:
-    * `NEW-SERVICE-INSTANCE` is a name you choose for the new service instance
+    Where<%# Place |Where| immediately below the closing code tag. %>:
+    * `NEW-SERVICE-INSTANCE<%# |SERVICE-INSTANCE-NAME| is preferred. %>` is a name you choose for the new service instance
        that creates to replace the MSAB service instance.
     * `SERVER-ADMIN-PASSWORD` is the admin password for the database.
        See Prerequisite Section above.
-    * `PRIMARY-AZURE-DB-ID` , `SECONDARY-AZURE-DB-ID` and `FOG-AZURE-ID` are found in the outputs of step 2 above. 
+    * `PRIMARY-AZURE-DB-ID` , `SECONDARY-AZURE-DB-ID` and `FOG-AZURE-ID` are found in the outputs of step 2 above.
 
 4. Disconnect the app from the MASB service binding by running:
 
     ```
-    cf unbind-service APP-NAME MASB-SERVICE-INSTANCE
+    cf unbind-service APP-NAME MASB-SERVICE-INSTANCE<%# |SERVICE-INSTANCE-NAME| is preferred. %>
     ```
 
-    Where:
+    Where<%# Place |Where| immediately below the closing code tag. %>:
     * `APP-NAME` is the app using the database.
-    * `MASB-SERVICE-INSTANCE` is the name of the MAS-brokered database instance.
+    * `MASB-SERVICE-INSTANCE<%# |SERVICE-INSTANCE-NAME| is preferred. %>` is the name of the MAS-brokered database instance.
 
     For example:
     <pre class="terminal">
@@ -191,10 +192,10 @@ $ cf unbind-service my-app masb-instance
 5. Bind the app to the new service instance by running:
 
     ```
-    cf bind-service APP-NAME NEW-SERVICE-INSTANCE
+    cf bind-service APP-NAME NEW-SERVICE-INSTANCE<%# |SERVICE-INSTANCE-NAME| is preferred. %>
     ```
 
-    Where `NEW-SERVICE-INSTANCE` is the name of the <%= vars.product_short %> service instance
+    Where<%# Place |Where| immediately below the closing code tag. %> `NEW-SERVICE-INSTANCE<%# |SERVICE-INSTANCE-NAME| is preferred. %>` is the name of the <%= vars.product_short %> service instance
     that you created in step 3 above.
     <br><br>
     For example:
@@ -214,7 +215,7 @@ $ cf unbind-service my-app masb-instance
    from Cloud Foundry by running:
 
     ```
-    cf purge-service-instance MASB-SERVICE-INSTANCE
+    cf purge-service-instance MASB-SERVICE-INSTANCE<%# |SERVICE-INSTANCE-NAME| is preferred. %>
     ```
 
     For example:
@@ -230,6 +231,6 @@ $ cf unbind-service my-app masb-instance
 
 ## <a id="next-steps"></a> Next Steps
 
-When all MAS-brokered service instances for all apps have been moved to Cloud Service-brokered instances,
+When all MAS-brokered service instances for all apps have been<%# Consider replacing with |were| or shifting to present tense. %> moved to Cloud Service-brokered instances,
 you can uninstall the Microsoft Azure Service Broker for VMware Tanzu tile
 from <%= vars.ops_manager %>.
