@@ -46,6 +46,16 @@ Do not delete service instances.
 
 ##<a id="prereq"></a> Prerequisite
 
+Before you subsume a FoG instance, you must have:
+
+* PREREQUISITE. See [Broker Config](https://docs.pivotal.io/partners/azure-sb/installing.html#broker-config),
+in _Installing and Configuring Microsoft Azure Service Broker_.
+* The names of the primary server and secondary server that are joined to the FoG.
+  You can find these names in the Azure portal.
+
+<%# How are these server names different from the primary database identity and secondary database identity
+ that you mentioned after step 1? %>
+
 See [Broker Config](https://docs.pivotal.io/partners/azure-sb/installing.html#broker-config),
 in _Installing and Configuring Microsoft Azure Service Broker_.
 
@@ -83,11 +93,6 @@ the <%= vars.product_short %>:
     updated:   2020-08-20T21:08:04Z
     </pre>
 
-    Three identities are necessary: <%# Necessary for what? %>
-    * The FoG resource
-    * The primary database identity
-    * The secondary database identity
-
 1. Get the MASB-brokered FoG instance details by running:
 
     ```
@@ -97,41 +102,48 @@ the <%= vars.product_short %>:
     instance.
 
     For example:
-```
-cf service masb-fog-db-80124
-Showing info of service masb-fog-db-80124 in org pivotal / space ernie as admin...
 
-name:            masb-fog-db-80124
-service:         azure-sqldb-failover-group
-tags:
-plan:            SecondaryDatabaseWithFailoverGroup
-description:     Azure SQL Database Failover Group Service
-documentation:
-dashboard:
+    <pre class="terminal">
+    $ cf service masb-fog-db-80124
+    Showing info of service masb-fog-db-80124 in org pivotal / space ernie as admin...
 
-Showing status of last operation from service masb-fog-db-80124...
+    name:            masb-fog-db-80124
+    service:         azure-sqldb-failover-group
+    tags:
+    plan:            SecondaryDatabaseWithFailoverGroup
+    description:     Azure SQL Database Failover Group Service
+    documentation:
+    dashboard:
 
-status:    create succeeded
-message:   Created failover group masb-fog-db-80124.
-started:   2020-11-11T00:39:40Z
-updated:   2020-11-11T00:41:44Z
-
-There are no bound apps for this service.
-```<%# Define any non-obvious placeholders present in the code snippet in the style of |Where PLACEHOLDER is...| %>
+    Showing status of last operation from service masb-fog-db-80124...
+    
+    status:    create succeeded
+    message:   Created failover group masb-fog-db-80124.
+    started:   2020-11-11T00:39:40Z
+    updated:   2020-11-11T00:41:44Z
+    
+    There are no bound apps for this service.
+    </pre>
 
 2. Get the Azure resource IDs for the FoG and it's databases by running the following on the Azure CLI:
 
     Primary database ID:
-    ```<%# Put a newline between the stem and the opening code tag. %>
-    az sql failover-group show --name FOG-NAME --server PRIMARY-SERVER-NAME --resource-group FOG-RESOURCE-GROUP --query databases[0] -o tsv
+
+    ```
+    az sql failover-group show --name FOG-NAME --server PRIMARY-SERVER-NAME \
+    --resource-group FOG-RESOURCE-GROUP --query databases[0] -o tsv
     ```
     Secondary database ID:
-    ```<%# Put a newline between the stem and the opening code tag. %>
-    az sql failover-group show --name FOG-NAME --server SECONDARY-SERVER-NAME --resource-group FOG-RESOURCE-GROUP --query databases[0] -o tsv
+
+    ```
+    az sql failover-group show --name FOG-NAME --server SECONDARY-SERVER-NAME \
+    --resource-group FOG-RESOURCE-GROUP --query databases[0] -o tsv
     ```
     FoG ID:
-    ```<%# Put a newline between the stem and the opening code tag. %>
-    az sql failover-group show --name FOG-NAME --server PRIMARY-SERVER-NAME --resource-group FOG-RESOURCE-GROUP --query id -o tsv
+
+    ```
+    az sql failover-group show --name FOG-NAME --server PRIMARY-SERVER-NAME \
+    --resource-group FOG-RESOURCE-GROUP --query id -o tsv
     ```
 
     Where<%# Place |Where| immediately below the closing code tag. %>:
